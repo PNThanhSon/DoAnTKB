@@ -1,4 +1,6 @@
 ### IntelliJ IDEA ###
+.idea/      # Thêm dòng này để bỏ qua thư mục cấu hình dự án của IntelliJ
+*.iml       # Thêm dòng này để bỏ qua các tệp cấu hình module của IntelliJ
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
@@ -27,3 +29,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Build Output ###
+# Thêm mục này để bỏ qua output của các công cụ build
+target/   # Output mặc định của Maven
+build/    # Output mặc định của Gradle
