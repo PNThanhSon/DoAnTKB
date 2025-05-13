@@ -1,6 +1,6 @@
 ### IntelliJ IDEA ###
-.idea/      # Thêm dòng này để bỏ qua thư mục cấu hình dự án của IntelliJ
-*.iml       # Thêm dòng này để bỏ qua các tệp cấu hình module của IntelliJ
+.idea/
+*.iml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
