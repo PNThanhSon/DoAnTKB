@@ -81,12 +81,8 @@ public class MainFormController {
         }
     }
 
-    /**
-     * Xử lý sự kiện khi nhấn vào MenuItem "Trang chủ".
-     * Đặt lại nội dung vùng center về giao diện chào mừng ban đầu.
-     */
     @FXML
-    private void handleTrangChu(ActionEvent event) {
+    private void handleTrangChu(ActionEvent event) { // Xử lí sự kiện khi nhấn vào menuItem Trang chủ
         resetToDefaultCenterContent();
     }
 
@@ -104,7 +100,7 @@ public class MainFormController {
             profileController.setGiaoVienData(loggedInGiaoVien);
 
             if (mainBorderPane != null) {
-                mainBorderPane.setCenter(profileRoot);
+                mainBorderPane.setCenter(profileRoot); // Đặt nội dung mới vào vùng center
             } else {
                 System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
                 showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị thông tin cá nhân trong trang chính.");
@@ -175,7 +171,7 @@ public class MainFormController {
         }
     }
 
-    private void loadViewIntoCenter(String fxmlFileName) {
+    private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Parent viewRoot = loader.load();
