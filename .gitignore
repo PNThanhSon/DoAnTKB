@@ -34,3 +34,6 @@ bin/
 # Thêm mục này để bỏ qua output của các công cụ build
 target/   # Output mặc định của Maven
 build/    # Output mặc định của Gradle
+
+### Logs ###
+*.log
