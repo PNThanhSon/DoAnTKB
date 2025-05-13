@@ -1,4 +1,4 @@
-// Giả sử các file nằm trực tiếp trong thư mục src (default package)
+package entities;// Giả sử các file nằm trực tiếp trong thư mục src (default package)
 
 public class GiaoVien {
     private String maGV;
@@ -58,7 +58,7 @@ public class GiaoVien {
 
     @Override
     public String toString() {
-        return "GiaoVien{" +
+        return "entities.GiaoVien{" +
                 "maGV='" + maGV + '\'' +
                 ", hoTen='" + hoGV + " " + tenGV + '\'' +
                 ", email='" + email + '\'' +

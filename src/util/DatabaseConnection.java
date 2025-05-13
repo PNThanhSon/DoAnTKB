@@ -1,3 +1,5 @@
+package util;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -45,7 +47,7 @@ public class DatabaseConnection {
             }
         } else {
             System.err.println("THẤT BẠI! Không thể kết nối tới Oracle Database. Vui lòng kiểm tra lại:");
-            System.err.println("1. Thông tin DB_URL, DB_USER, DB_PASSWORD trong file DatabaseConnection.java có chính xác không.");
+            System.err.println("1. Thông tin DB_URL, DB_USER, DB_PASSWORD trong file util.DatabaseConnection.java có chính xác không.");
             System.err.println("2. Dịch vụ Oracle Database (và Listener) có đang chạy trên máy chủ và cổng đã chỉ định không.");
             System.err.println("3. Firewall có đang chặn kết nối đến cổng của Oracle Database không.");
             System.err.println("4. File JAR của Oracle JDBC driver đã được thêm vào thư viện (classpath) của project chưa.");

@@ -1,5 +1,6 @@
-// Giả sử các file nằm trực tiếp trong thư mục src (default package)
+package controllers;// Giả sử các file nằm trực tiếp trong thư mục src (default package)
 
+import entities.GiaoVien;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -34,8 +35,8 @@ public class ProfileController {
     }
 
     /**
-     * Nhận đối tượng GiaoVien và hiển thị thông tin lên các Label.
-     * @param giaoVien Đối tượng GiaoVien chứa thông tin người dùng.
+     * Nhận đối tượng entities.GiaoVien và hiển thị thông tin lên các Label.
+     * @param giaoVien Đối tượng entities.GiaoVien chứa thông tin người dùng.
      */
     public void setGiaoVienData(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;

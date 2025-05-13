@@ -12,7 +12,7 @@ public class DangNhapForm extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            URL fxmlUrl = getClass().getResource("DangNhapForm.fxml");
+            URL fxmlUrl = getClass().getResource("form/DangNhapForm.fxml");
 
             if (fxmlUrl == null) {
                 System.err.println("LỖI NGHIÊM TRỌNG: Không tìm thấy file DangNhapForm.fxml.");

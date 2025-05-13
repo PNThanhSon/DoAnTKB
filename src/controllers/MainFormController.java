@@ -1,5 +1,6 @@
-// Giả sử các file nằm trực tiếp trong thư mục src (default package)
+package controllers;// Giả sử các file nằm trực tiếp trong thư mục src (default package)
 
+import entities.GiaoVien;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -93,7 +94,7 @@ public class MainFormController {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/ProfileForm.fxml"));
             Parent profileRoot = loader.load();
 
             ProfileController profileController = loader.getController();
@@ -148,7 +149,7 @@ public class MainFormController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("DangNhapForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/DangNhapForm.fxml"));
             Parent loginRoot = loader.load();
             Stage loginStage = new Stage();
             loginStage.setTitle("Đăng Nhập Hệ Thống");
@@ -165,7 +166,7 @@ public class MainFormController {
     private void handleQuanLyGiaoVien(ActionEvent event) {
         if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
             // Ví dụ: loadViewIntoCenter("QuanLyGiaoVienForm.fxml");
-            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở form/chức năng Quản lý Giáo Viên.");
+            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở /form/chức năng Quản lý Giáo Viên.");
         } else {
             showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
         }

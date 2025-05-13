@@ -1,3 +1,6 @@
+package controllers;
+
+import entities.GiaoVien;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import util.DatabaseConnection;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -107,7 +111,7 @@ public class DangNhapController {
     private void ChuyenGiaoDien(GiaoVien giaoVien, ActionEvent event) throws IOException {
         Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("MainForm.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/MainForm.fxml"));
         Parent mainFormRoot = loader.load();
 
         MainFormController mainFormController = loader.getController();
