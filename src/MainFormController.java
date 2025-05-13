@@ -1,0 +1,206 @@
+// Giả sử các file nằm trực tiếp trong thư mục src (default package)
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font; // Cần import Font
+import javafx.geometry.Insets; // Cần import Insets
+import javafx.geometry.Pos;   // Cần import Pos
+import javafx.stage.Stage;
+
+
+import java.io.IOException;
+
+public class MainFormController {
+
+    @FXML
+    private BorderPane mainBorderPane;
+
+    @FXML
+    private VBox centerContentArea; // VBox ban đầu trong vùng center
+
+    @FXML
+    private Label welcomeLabel;
+
+    @FXML
+    private MenuItem menuQLGiaoVien;
+
+    @FXML
+    private MenuItem menuXemThongTinCaNhan;
+
+    // THAY ĐỔI Ở ĐÂY: Khai báo MenuItem cho Trang chủ
+    @FXML
+    private MenuItem menuTrangChu;
+
+    private GiaoVien loggedInGiaoVien;
+
+    public void setLoggedInGiaoVien(GiaoVien giaoVien) {
+        this.loggedInGiaoVien = giaoVien;
+        updateWelcomeMessage();
+        applyPermissions();
+        // Khi MainForm được tải lần đầu, đảm bảo nội dung center là mặc định
+        resetToDefaultCenterContent();
+    }
+
+    @FXML
+    public void initialize() {
+        if (loggedInGiaoVien == null) {
+            welcomeLabel.setText("Xin chào! (Chưa có thông tin người dùng)");
+        }
+        // Đảm bảo centerContentArea được hiển thị khi khởi tạo (nếu nó không phải là null)
+        if (mainBorderPane != null && centerContentArea != null && mainBorderPane.getCenter() == null) {
+            mainBorderPane.setCenter(centerContentArea);
+        }
+    }
+
+    private void updateWelcomeMessage() {
+        if (loggedInGiaoVien != null) {
+            welcomeLabel.setText("Xin chào! Thầy/cô " +
+                    (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                    (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                    " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+        }
+    }
+
+    private void applyPermissions() {
+        if (loggedInGiaoVien != null && menuQLGiaoVien != null) {
+            if ("ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
+                menuQLGiaoVien.setVisible(true);
+            } else {
+                menuQLGiaoVien.setVisible(false);
+            }
+        } else if (menuQLGiaoVien != null) {
+            menuQLGiaoVien.setVisible(false);
+        }
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn vào MenuItem "Trang chủ".
+     * Đặt lại nội dung vùng center về giao diện chào mừng ban đầu.
+     */
+    @FXML
+    private void handleTrangChu(ActionEvent event) {
+        resetToDefaultCenterContent();
+    }
+
+    @FXML
+    private void handleXemThongTinCaNhan(ActionEvent event) {
+        if (loggedInGiaoVien == null) {
+            showAlert(Alert.AlertType.WARNING, "Chưa Đăng Nhập", "Không có thông tin người dùng để hiển thị.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileForm.fxml"));
+            Parent profileRoot = loader.load();
+
+            ProfileController profileController = loader.getController();
+            profileController.setGiaoVienData(loggedInGiaoVien);
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(profileRoot);
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị thông tin cá nhân trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang thông tin cá nhân.\nChi tiết: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Đặt lại nội dung vùng center về giao diện chào mừng mặc định.
+     * Giao diện này được định nghĩa bởi VBox có fx:id="centerContentArea" trong MainForm.fxml.
+     * Nếu centerContentArea không được tìm thấy, sẽ tạo một Label chào mừng đơn giản.
+     */
+    private void resetToDefaultCenterContent() {
+        if (mainBorderPane != null) {
+            if (centerContentArea != null) {
+                mainBorderPane.setCenter(centerContentArea);
+            } else {
+                // Fallback nếu centerContentArea không được inject (ví dụ: fx:id bị thiếu trong FXML)
+                // Hoặc nếu bạn muốn tạo nội dung mặc định động
+                System.out.println("Thông báo: centerContentArea không được inject, tạo nội dung mặc định.");
+                Label defaultLabel = new Label("Chào mừng đến với hệ thống!");
+                defaultLabel.setFont(new Font("System", 18)); // Sử dụng tên font hợp lệ
+                Label subLabel = new Label("Sử dụng menu để điều hướng các chức năng.");
+                subLabel.setFont(new Font("System", 14));
+
+                VBox defaultVBox = new VBox(20, defaultLabel, subLabel); // Khoảng cách giữa các label là 20
+                defaultVBox.setAlignment(Pos.CENTER); // Căn giữa nội dung của VBox
+                defaultVBox.setPadding(new Insets(30)); // Thêm padding
+                mainBorderPane.setCenter(defaultVBox);
+            }
+        } else {
+            System.err.println("Lỗi: mainBorderPane chưa được inject trong resetToDefaultCenterContent.");
+        }
+    }
+
+
+    @FXML
+    private void handleDangXuat(ActionEvent event) {
+        Stage currentStage = (Stage) mainBorderPane.getScene().getWindow();
+        if (currentStage != null) {
+            currentStage.close();
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("DangNhapForm.fxml"));
+            Parent loginRoot = loader.load();
+            Stage loginStage = new Stage();
+            loginStage.setTitle("Đăng Nhập Hệ Thống");
+            loginStage.setScene(new Scene(loginRoot));
+            loginStage.setResizable(false);
+            loginStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể quay lại trang đăng nhập.");
+        }
+    }
+
+    @FXML
+    private void handleQuanLyGiaoVien(ActionEvent event) {
+        if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
+            // Ví dụ: loadViewIntoCenter("QuanLyGiaoVienForm.fxml");
+            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở form/chức năng Quản lý Giáo Viên.");
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
+        }
+    }
+
+    private void loadViewIntoCenter(String fxmlFileName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
+            Parent viewRoot = loader.load();
+
+            // Object controller = loader.getController();
+            // if (controller instanceof SomeFeatureController && loggedInGiaoVien != null) {
+            //    ((SomeFeatureController) controller).initData(loggedInGiaoVien); // Ví dụ truyền dữ liệu
+            // }
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(viewRoot);
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Tải Giao Diện", "Không thể tải: " + fxmlFileName);
+        }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}

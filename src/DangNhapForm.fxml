@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane alignment="CENTER" hgap="10" prefHeight="280.0" prefWidth="420.0" vgap="15"
+          xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="DangNhapController">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
+    </padding>
+
+    <Label text="ĐĂNG NHẬP HỆ THỐNG" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="0">
+        <font>
+            <Font name="System Bold" size="20.0"/>
+        </font>
+        <GridPane.margin>
+            <Insets bottom="25.0"/>
+        </GridPane.margin>
+    </Label>
+
+    <Label text="Mã Giáo Viên:" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <font><Font size="13.0"/></font>
+    </Label>
+    <TextField fx:id="maGvField" promptText="Nhập mã giáo viên" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <font><Font size="13.0"/></font>
+    </TextField>
+
+    <Label text="Mật khẩu:" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <font><Font size="13.0"/></font>
+    </Label>
+    <PasswordField fx:id="matKhauField" promptText="Nhập mật khẩu" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <font><Font size="13.0"/></font>
+    </PasswordField>
+
+    <Label fx:id="statusLabel" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" textFill="RED" wrapText="true">
+        <GridPane.margin>
+            <Insets top="10.0" bottom="15.0"/>
+        </GridPane.margin>
+        <font>
+            <Font name="System Italic" size="13.0"/>
+        </font>
+    </Label>
+
+    <HBox alignment="CENTER" spacing="25" GridPane.columnSpan="2" GridPane.rowIndex="4">
+        <Button fx:id="loginButton" defaultButton="true" onAction="#LayThongTinDangNhap" text="Đăng Nhập" minWidth="110.0">
+            <font><Font size="13.0" name="System Bold"/></font>
+        </Button>
+    </HBox>
+
+    <columnConstraints>
+        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="230.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints valignment="CENTER"/>
+        <RowConstraints valignment="CENTER"/>
+        <RowConstraints valignment="CENTER"/>
+        <RowConstraints minHeight="35.0" valignment="CENTER"/>
+        <RowConstraints valignment="CENTER"/>
+    </rowConstraints>
+</GridPane>

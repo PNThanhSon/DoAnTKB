@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainFormController">
+    <top>
+        <VBox>
+            <MenuBar>
+                <Menu mnemonicParsing="false" text="Hệ Thống">
+                    <MenuItem fx:id="menuTrangChu" mnemonicParsing="false" onAction="#handleTrangChu" text="Trang chủ" />
+                    <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
+                    <MenuItem fx:id="menuDangXuat" mnemonicParsing="false" onAction="#handleDangXuat" text="Đăng xuất" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="Quản Lý">
+                    <MenuItem fx:id="menuQLGiaoVien" mnemonicParsing="false" onAction="#handleQuanLyGiaoVien" text="Quản lý Giáo Viên" />
+                    <MenuItem mnemonicParsing="false" text="Quản lý Lớp Học (Dự kiến)" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="Chức Năng">
+                    <MenuItem mnemonicParsing="false" text="Xem các thời khóa biểu" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="Trợ Giúp">
+                    <MenuItem mnemonicParsing="false" text="Thông tin ứng dụng" />
+                </Menu>
+            </MenuBar>
+            <VBox alignment="CENTER" prefHeight="51.0" prefWidth="800.0" spacing="10" style="-fx-background-color: #e9ecef; -fx-padding: 15px; -fx-border-color: #ced4da; -fx-border-width: 0 0 1 0;">
+                <Label prefHeight="86.0" prefWidth="555.0" text="HỆ THỐNG QUẢN LÝ THỜI KHÓA BIỂU TRƯỜNG HỌC" textAlignment="CENTER">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                </Label>
+                <Label fx:id="welcomeLabel" text="Xin chào! Thầy/cô ">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+            </VBox>
+        </VBox>
+    </top>
+    <center>
+        <VBox fx:id="centerContentArea" alignment="TOP_CENTER" spacing="20" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <Label text="Chào mừng đến với hệ thống!">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Label>
+            <Label text="Sử dụng menu để điều hướng các chức năng." />
+        </VBox>
+    </center>
+    <bottom>
+        <Label text="© 2025 - Phần mềm Quản lý Thời Khóa Biểu" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="10.0" top="10.0" />
+            </BorderPane.margin>
+            <font>
+                <Font size="11.0" />
+            </font>
+        </Label>
+    </bottom>
+</BorderPane>
