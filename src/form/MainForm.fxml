@@ -15,21 +15,27 @@
             <MenuBar>
                 <Menu mnemonicParsing="false" text="Hệ Thống">
                     <MenuItem fx:id="menuTrangChu" mnemonicParsing="false" onAction="#handleTrangChu" text="Trang chủ" />
-                    <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
                     <MenuItem fx:id="menuDangXuat" mnemonicParsing="false" onAction="#handleDangXuat" text="Đăng xuất" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Quản Lý">
+               <MenuItem mnemonicParsing="false" text="Quản lý Thời Khóa Biểu" />
                     <MenuItem fx:id="menuQLGiaoVien" mnemonicParsing="false" onAction="#handleQuanLyGiaoVien" text="Quản lý Giáo Viên" />
-                    <MenuItem mnemonicParsing="false" text="Quản lý Lớp Học (Dự kiến)" />
+                    <MenuItem mnemonicParsing="false" text="Quản lý Lớp Học" />
+               <MenuItem mnemonicParsing="false" text="Quản lý Môn Học" />
+               <MenuItem mnemonicParsing="false" text="Quản lý Tổ Chuyên Môn" />
+               <MenuItem mnemonicParsing="false" text="Quản lý Chức vụ" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Chức Năng">
                     <MenuItem mnemonicParsing="false" text="Xem các thời khóa biểu" />
+                    <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
+               <MenuItem mnemonicParsing="false" text="Phản hồi ý kiến" />
+               <MenuItem mnemonicParsing="false" text="Báo cáo thống kê" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Trợ Giúp">
                     <MenuItem mnemonicParsing="false" text="Thông tin ứng dụng" />
                 </Menu>
             </MenuBar>
-            <VBox alignment="CENTER" prefHeight="51.0" prefWidth="800.0" spacing="10" style="-fx-background-color: #e9ecef; -fx-padding: 15px; -fx-border-color: #ced4da; -fx-border-width: 0 0 1 0;">
+            <VBox alignment="CENTER" prefHeight="55.0" prefWidth="850.0" spacing="10" style="-fx-background-color: #e9ecef; -fx-padding: 15px; -fx-border-color: #ced4da; -fx-border-width: 0 0 1 0;">
                 <Label prefHeight="86.0" prefWidth="555.0" text="HỆ THỐNG QUẢN LÝ THỜI KHÓA BIỂU TRƯỜNG HỌC" textAlignment="CENTER">
                     <font>
                         <Font name="System Bold" size="22.0" />
