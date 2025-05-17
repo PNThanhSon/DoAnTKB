@@ -54,6 +54,9 @@ public class GiaoVien {
     public void setMaGV(String maGV) { this.maGV = maGV; }
     public void setHoGV(String hoGV) { this.hoGV = hoGV; }
     public void setTenGV(String tenGV) { this.tenGV = tenGV; }
+    public void setEmail(String email) { this.email = email; }
+    public void setSdt(String sdt) { this.sdt = sdt; }
+    public void setGhiChu(String ghiChu) { this.ghiChu = ghiChu; }
     // ... thêm các setters khác nếu cần
 
     @Override
@@ -64,4 +67,6 @@ public class GiaoVien {
                 ", email='" + email + '\'' +
                 '}';
     }
+
+
 }
