@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="TimeTableForm"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="400.0" prefWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TimeTableController">
+   <Label prefHeight="84.0" prefWidth="255.0" text="XEM CÁC THỜI KHÓA BIỂU">
+      <font>
+         <Font name="System Bold" size="20.0"/>
+      </font>
+   </Label>
+   <Button fx:id="btnTKBToanTruong" contentDisplay="CENTER" mnemonicParsing="false" text="Toàn trường"
+           textAlignment="CENTER"/>
+   <Button fx:id="btnTKBLopCN" contentDisplay="CENTER" mnemonicParsing="false" text="Lớp chủ nhiệm"
+           textAlignment="CENTER"/>
+   <Button fx:id="btnTKBToCM" contentDisplay="CENTER" mnemonicParsing="false" text="Tổ chuyên môn"
+           textAlignment="CENTER"/>
+   <Button fx:id="btnTKBCaNhan" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleTKBCaNhan" text="Cá nhân" textAlignment="CENTER"/>
+</VBox>

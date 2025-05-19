@@ -1,6 +1,7 @@
 package controllers;// Giả sử các file nằm trực tiếp trong thư mục src (default package)
 
 import entities.GiaoVien;
+import entities.VaiTroGV;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,12 +21,14 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainFormController {
+    @FXML
+    public MenuItem menuDangXuat;
 
     @FXML
     private BorderPane mainBorderPane;
 
     @FXML
-    private VBox centerContentArea; // VBox ban đầu trong vùng center
+    private VBox centerContentArea;
 
     @FXML
     private Label welcomeLabel;
@@ -36,7 +39,9 @@ public class MainFormController {
     @FXML
     private MenuItem menuXemThongTinCaNhan;
 
-    // THAY ĐỔI Ở ĐÂY: Khai báo MenuItem cho Trang chủ
+    @FXML
+    private MenuItem menuXemCacTKB;
+
     @FXML
     private MenuItem menuTrangChu;
 
@@ -48,6 +53,7 @@ public class MainFormController {
         applyPermissions();
         // Khi MainForm được tải lần đầu, đảm bảo nội dung center là mặc định
         resetToDefaultCenterContent();
+        if (loggedInGiaoVien.getVaiTro() == VaiTroGV.ADMIN) {}
     }
 
     @FXML
@@ -63,20 +69,28 @@ public class MainFormController {
 
     private void updateWelcomeMessage() {
         if (loggedInGiaoVien != null) {
-            welcomeLabel.setText("Xin chào! Thầy/cô " +
-                    (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
-                    (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
-                    " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            if (loggedInGiaoVien.getGioiTinh().equals("Nam")) {
+                welcomeLabel.setText("Xin chào! Thầy " +
+                        (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                        (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                        " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            } else if (loggedInGiaoVien.getGioiTinh().equals("Nữ")) {
+                welcomeLabel.setText("Xin chào! Cô " +
+                        (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                        (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                        " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            } else {
+                welcomeLabel.setText("Xin chào! Giáo viên " +
+                        (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                        (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                        " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            }
         }
     }
 
     private void applyPermissions() {
         if (loggedInGiaoVien != null && menuQLGiaoVien != null) {
-            if ("ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-                menuQLGiaoVien.setVisible(true);
-            } else {
-                menuQLGiaoVien.setVisible(false);
-            }
+            menuQLGiaoVien.setVisible("ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV()));
         } else if (menuQLGiaoVien != null) {
             menuQLGiaoVien.setVisible(false);
         }
@@ -109,6 +123,31 @@ public class MainFormController {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang thông tin cá nhân.\nChi tiết: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleXemCacTKB(ActionEvent event) {
+        if (loggedInGiaoVien == null) {
+            showAlert(Alert.AlertType.WARNING, "Chưa Đăng Nhập", "Không có gì để hiển thị.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TimeTableForm.fxml"));
+            Parent profileRoot = loader.load();
+
+            TimeTableController TTControl = loader.getController();
+            TTControl.initData(loggedInGiaoVien, mainBorderPane);
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(profileRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị TimeTableForm trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
         }
     }
 

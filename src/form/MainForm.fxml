@@ -26,7 +26,7 @@
                <MenuItem mnemonicParsing="false" text="Quản lý Chức vụ" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Chức Năng">
-                    <MenuItem mnemonicParsing="false" text="Xem các thời khóa biểu" />
+                    <MenuItem fx:id="menuXemCacTKB" mnemonicParsing="false" onAction="#handleXemCacTKB" text="Xem các thời khóa biểu" />
                     <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
                <MenuItem mnemonicParsing="false" text="Phản hồi ý kiến" />
                <MenuItem mnemonicParsing="false" text="Báo cáo thống kê" />

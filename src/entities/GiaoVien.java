@@ -14,8 +14,30 @@ public class GiaoVien {
     private String sdt;
     private String matKhau;
     private String ghiChu;
+    private VaiTroGV  vaiTro; //ĐỂ PHÂN QUYỀN
 
-    // Constructor đầy đủ
+    // Constructor cho đăng nhập
+    public GiaoVien(String maGV, String hoGV, String tenGV, String gioiTinh,
+                    String chuyenMon, String maTCM, Integer soTietQuyDinh,
+                    Integer soTietThucHien, Integer soTietDuThieu, String email,
+                    String sdt, String matKhau, String ghiChu, VaiTroGV vaiTro) {
+        this.maGV = maGV;
+        this.hoGV = hoGV;
+        this.tenGV = tenGV;
+        this.gioiTinh = gioiTinh;
+        this.chuyenMon = chuyenMon;
+        this.maTCM = maTCM;
+        this.soTietQuyDinh = soTietQuyDinh;
+        this.soTietThucHien = soTietThucHien;
+        this.soTietDuThieu = soTietDuThieu;
+        this.email = email;
+        this.sdt = sdt;
+        this.matKhau = matKhau;
+        this.ghiChu = ghiChu;
+        this.vaiTro = vaiTro; //QUAN TRỌNG ĐỂ PHÂN QUYỀN!!!
+    }
+
+    // Constructor cho việc thêm mới giáo viên
     public GiaoVien(String maGV, String hoGV, String tenGV, String gioiTinh,
                     String chuyenMon, String maTCM, Integer soTietQuyDinh,
                     Integer soTietThucHien, Integer soTietDuThieu, String email,
@@ -35,6 +57,7 @@ public class GiaoVien {
         this.ghiChu = ghiChu;
     }
 
+
     // Getters
     public String getMaGV() { return maGV; }
     public String getHoGV() { return hoGV; }
@@ -49,6 +72,7 @@ public class GiaoVien {
     public String getSdt() { return sdt; }
     public String getMatKhau() { return matKhau; } // Cần cho việc xác thực
     public String getGhiChu() { return ghiChu; }
+    public VaiTroGV getVaiTro() { return vaiTro; }
 
     // Setters (Thêm nếu bạn cần cập nhật thông tin đối tượng sau khi tạo)
     public void setMaGV(String maGV) { this.maGV = maGV; }
