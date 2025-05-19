@@ -16,9 +16,10 @@ import javafx.scene.layout.BorderPane;
 
 import java.util.List;
 
-public class TKBCaNhanController {
+public class TKBLopCNController {
 
     @FXML private Label tkbBuoiLabel; // Label mới để hiển thị buổi của TKB
+    @FXML private Label tkbLopCNLabel; // Label mới để hiển thị lớp chủ nhiệm
     @FXML private ComboBox<HocKy> hocKyComboBox;
     @FXML private ComboBox<ThoiKhoaBieu> tkbComboBox;
 
@@ -42,7 +43,7 @@ public class TKBCaNhanController {
     private static final double ROW_HEIGHT = 28.0;
     private static final double ESTIMATED_HEADER_HEIGHT = 30.0;
 
-    public TKBCaNhanController() {
+    public TKBLopCNController() {
         thoiKhoaBieuDAO = new ThoiKhoaBieuDAO();
     }
 
@@ -76,6 +77,7 @@ public class TKBCaNhanController {
 
     public void initData(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;
+        tkbLopCNLabel.setText("THỜI KHÓA BIỂU LỚP " + thoiKhoaBieuDAO.getTenLopCN(currentGiaoVien.getMaGV())); // Label thông báo lớp chủ nhiệm
     }
 
     private void setupTableColumns(TableColumn<TietHocData, String> tietCol,
@@ -148,7 +150,7 @@ public class TKBCaNhanController {
 
             System.out.println("Đang tải TKB: " + selectedTKB.getMaTKB() +
                     " (Buổi: " + selectedTKB.getBuoi() +
-                    ") cho GV: " + currentGiaoVien.getMaGV());
+                    ") cho lớp chủ nhiệm của GV: " + currentGiaoVien.getMaGV());
             loadThoiKhoaBieuData(selectedTKB, currentGiaoVien.getMaGV());
         } else {
             tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
@@ -164,7 +166,7 @@ public class TKBCaNhanController {
         // Khởi tạo lại các hàng cho bảng (giờ chỉ có một bảng tkbDataList)
         initializeTableRows(tkbDataList);
 
-        List<ChiTietTKB> chiTietList = thoiKhoaBieuDAO.getChiTietTKBForGiaoVien(selectedTKB.getMaTKB(), maGV);
+        List<ChiTietTKB> chiTietList = thoiKhoaBieuDAO.getChiTietTKBForLopCN(selectedTKB.getMaTKB(), maGV);
 
         if (chiTietList == null || chiTietList.isEmpty()) {
             System.out.println("Không có chi tiết TKB nào cho GV " + maGV + " với TKB " + selectedTKB.getMaTKB());

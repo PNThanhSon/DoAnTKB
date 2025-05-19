@@ -7,15 +7,17 @@ public class ChiTietTKB {
     private int tiet;       // 1-5 (hoặc 1-10 nếu bạn không chia buổi)
     private String tenMonHoc; // Sẽ được lấy từ JOIN với bảng MONHOC
     private String maLop;
-    // Bạn có thể thêm MaPhongHoc nếu cần lấy từ CHITIETTKB và hiển thị
+    private String hoTenGV;
 
     // Constructor này sẽ được sử dụng trong DAO
-    public ChiTietTKB(int thu, int tiet, String tenMonHoc, String maLop) {
+    public ChiTietTKB(int thu, int tiet, String tenMonHoc, String maLop, String hoTenGV) {
         this.thu = thu;
         this.tiet = tiet;
         this.tenMonHoc = tenMonHoc;
         this.maLop = maLop;
+        this.hoTenGV = hoTenGV;
     }
+
 
     public int getThu() {
         return thu;
@@ -36,6 +38,7 @@ public class ChiTietTKB {
         StringBuilder sb = new StringBuilder();
         boolean hasLop = maLop != null && !maLop.isEmpty();
         boolean hasMonHoc = tenMonHoc != null && !tenMonHoc.isEmpty();
+        boolean hasGV = hoTenGV != null && !hoTenGV.isEmpty();
 
         if (hasLop) {
             sb.append(maLop);
@@ -46,7 +49,13 @@ public class ChiTietTKB {
             }
             sb.append(tenMonHoc);
         }
-        if (!hasLop && !hasMonHoc) {
+        if (hasGV) {
+            if (hasLop || hasMonHoc) {
+                sb.append(" - ");
+            }
+            sb.append(hoTenGV);
+        }
+        if (!hasLop && !hasMonHoc || !hasGV && !hasMonHoc) {
             return ""; // Trả về chuỗi rỗng nếu không có thông tin
         }
         return sb.toString();
