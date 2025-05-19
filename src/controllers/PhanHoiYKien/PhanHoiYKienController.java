@@ -118,7 +118,7 @@ public class PhanHoiYKienController {
         }
 
         // sort theo ngày gửi
-        FXCollections.sort(listYkienCurrent, Comparator.comparing(YKien::getNgayGui));
+        FXCollections.sort(listYkienCurrent, Comparator.comparing(YKien::getNgayGui).reversed());
         tableYKien.setItems(filteredList); // truyen data vao bang
         // phân quyền, bảo mật về mặt fontend cho chức năng tìm kiếm
         ishideFuntion();

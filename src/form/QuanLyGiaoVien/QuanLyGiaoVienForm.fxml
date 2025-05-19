@@ -30,19 +30,19 @@
                             <String fx:value="Tất cả"/>
                             <String fx:value="Nam"/>
                             <String fx:value="Nữ"/>
-
+                            <String fx:value="Khác"/>
                         </FXCollections>
                     </items>
                 </ComboBox>
 
 
                 <VBox alignment="CENTER">
-                    <Label text="     Số tiết quy định &lt; "/>
+                    <Label text="     Số tiết quy định &lt;= "/>
                 </VBox>
                 <TextField fx:id="fieldQuydinh" promptText="Nhập số tiết" prefWidth="120.0"/>
                 <Region prefWidth="20.0"/>
 
-                <Button text="Lọc" onAction="#handleLoc"/>
+                <Button text="Lọc" onAction="#handleLoc" visible="false"/>
             </HBox>
 
 

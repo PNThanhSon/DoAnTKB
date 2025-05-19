@@ -49,7 +49,7 @@ public class ThemGVController {
         }
         comboToChuyenMon.getSelectionModel().selectFirst(); // chọn dòng đầu
         //
-        comboGioiTinh.getItems().addAll("Nam", "Nữ");
+        comboGioiTinh.getItems().addAll("Nam", "Nữ", "Khác");
         comboGioiTinh.getSelectionModel().selectFirst();
     }
 

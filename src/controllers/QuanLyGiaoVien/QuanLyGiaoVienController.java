@@ -65,10 +65,10 @@ public class QuanLyGiaoVienController {
         loadDataFromDB();
         initContextMenu();
 
-        // Gắn bộ lọc khi người dùng nhập, smooth quá nên bỏ )
+        // Gắn bộ lọc khi người dùng nhập
 //        searchField.textProperty().addListener((obs, oldVal, newVal) -> updateFilterPredicate());
-//        ListGioiTinh.valueProperty().addListener((obs, oldVal, newVal) -> updateFilterPredicate());
-//        fieldTietDuThieu.textProperty().addListener((obs, oldVal, newVal) -> updateFilterPredicate());
+        ListGioiTinh.valueProperty().addListener((obs, oldVal, newVal) -> updateFilterPredicate());
+        fieldQuydinh.textProperty().addListener((obs, oldVal, newVal) -> updateFilterPredicate());
     }
 
     private void initContextMenu() {
@@ -101,7 +101,7 @@ public class QuanLyGiaoVienController {
     }
 
     private void setupComboBox() {
-        ListGioiTinh.setItems(FXCollections.observableArrayList("Tất cả", "Nam", "Nữ"));
+        ListGioiTinh.setItems(FXCollections.observableArrayList("Tất cả", "Nam", "Nữ", "Khác"));
         ListGioiTinh.setValue("Tất cả");
     }
 
@@ -130,8 +130,11 @@ public class QuanLyGiaoVienController {
 
             boolean matchGender = gioiTinh.equals("Tất cả") || gv.getGioiTinh().equals(gioiTinh);
             boolean matchTiet = tietQD.isEmpty();
+            if (tietQD.matches(".*[^0-9].*")) {
+                return false;
+            }
             if (!matchTiet && gv.getSoTietQuyDinh() != null) {
-                if (gv.getSoTietQuyDinh().intValue() < Integer.parseInt(tietQD)) {
+                if (gv.getSoTietQuyDinh().intValue() < Integer.parseInt(tietQD) + 1) {
                     matchTiet = true;
                 }
             }

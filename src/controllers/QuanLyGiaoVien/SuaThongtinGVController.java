@@ -52,7 +52,7 @@ public class SuaThongtinGVController {
         }
         comboToChuyenMon.getSelectionModel().selectFirst(); // chọn dòng đầu
         //
-        comboGioiTinh.getItems().addAll("Nam", "Nữ");
+        comboGioiTinh.getItems().addAll("Nam", "Nữ","Khác");
         comboGioiTinh.getSelectionModel().selectFirst();
     }
     // điền dữ liệu hiện tại vào form sửa
@@ -156,6 +156,9 @@ public class SuaThongtinGVController {
         if (!isIntegerField(txtSoTietTH, tbSoTietTH, "Không được để trống", "Phải là số")) isValid = false;
         if (!isIntegerField(txtSoTietDT, tbSoTietDT, "Không được để trống", "Phải là số")) isValid = false;
 
+        if (!isMinos(txtSoTietTH, tbSoTietTH, "Không được âm")) isValid = false;
+        if (!isMinos(txtSoTietQD, tbSoTietQD, "Không được âm")) isValid = false;
+
         if (isEmptyField(txtEmail, tbEmail, "Không được để trống")) {
             isValid = false;
         } else {
@@ -186,6 +189,13 @@ public class SuaThongtinGVController {
 
     private boolean isEmptyField(TextField field, Text errorLabel, String errorMessage) {
         if (field.getText() == null || field.getText().trim().isEmpty()) {
+            errorLabel.setText(errorMessage);
+            return true;
+        }
+        return false;
+    }
+    private boolean isMinos(TextField field, Text errorLabel, String errorMessage) {
+        if (field.getText().contains("-")) {
             errorLabel.setText(errorMessage);
             return true;
         }
