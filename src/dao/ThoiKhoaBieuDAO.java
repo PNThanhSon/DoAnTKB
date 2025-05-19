@@ -29,11 +29,6 @@ public class ThoiKhoaBieuDAO {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            if (conn == null) {
-                System.err.println("TKB DAO: Không thể kết nối CSDL để lấy danh sách Học Kỳ.");
-                return danhSach;
-            }
-
             while (rs.next()) {
                 danhSach.add(new HocKy(
                         rs.getString("MaHK"),
@@ -62,10 +57,6 @@ public class ThoiKhoaBieuDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            if (conn == null) {
-                System.err.println("TKB DAO: Không thể kết nối CSDL để lấy danh sách TKB theo học kỳ.");
-                return danhSach;
-            }
             pstmt.setString(1, maHK);
 
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -104,11 +95,6 @@ public class ThoiKhoaBieuDAO {
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            if (conn == null) {
-                System.err.println("TKB DAO: Không thể kết nối CSDL để lấy chi tiết TKB.");
-                return chiTietList; // Trả về danh sách rỗng nếu không có kết nối
-            }
 
             pstmt.setString(1, maTKB);
             pstmt.setString(2, maGV);

@@ -1,23 +1,15 @@
+// Trong file entities/ChiTietTKB.java
+
 package entities;
 
-/**
- * Đại diện cho một chi tiết cụ thể trong Thời Khóa Biểu,
- * ví dụ: một tiết học của một môn, tại một lớp, do một giáo viên dạy, vào một thứ và tiết nhất định.
- */
 public class ChiTietTKB {
-    private int thu;        // Ngày trong tuần, ví dụ: 2 (Thứ Hai) đến 7 (Thứ Bảy)
-    private int tiet;       // Tiết học trong ngày, ví dụ: 1 đến 5 (cho mỗi buổi)
-    private String tenMonHoc; // Tên của môn học
-    private String maLop;     // Mã của lớp học
-    // Bạn có thể thêm các thuộc tính khác như maPhongHoc nếu cần
+    private int thu;        // 2-7
+    private int tiet;       // 1-5 (hoặc 1-10 nếu bạn không chia buổi)
+    private String tenMonHoc; // Sẽ được lấy từ JOIN với bảng MONHOC
+    private String maLop;
+    // Bạn có thể thêm MaPhongHoc nếu cần lấy từ CHITIETTKB và hiển thị
 
-    /**
-     * Constructor để tạo một đối tượng ChiTietTKB.
-     * @param thu Ngày trong tuần (2-7).
-     * @param tiet Tiết học (ví dụ: 1-5).
-     * @param tenMonHoc Tên của môn học.
-     * @param maLop Mã của lớp học.
-     */
+    // Constructor này sẽ được sử dụng trong DAO
     public ChiTietTKB(int thu, int tiet, String tenMonHoc, String maLop) {
         this.thu = thu;
         this.tiet = tiet;
@@ -25,63 +17,36 @@ public class ChiTietTKB {
         this.maLop = maLop;
     }
 
-    // Getters
     public int getThu() {
         return thu;
     }
-
     public int getTiet() {
         return tiet;
     }
-
     public String getTenMonHoc() {
         return tenMonHoc;
     }
-
     public String getMaLop() {
         return maLop;
     }
 
-    // Setters (nếu bạn cần thay đổi giá trị sau khi đối tượng được tạo)
-    public void setThu(int thu) {
-        this.thu = thu;
-    }
-
-    public void setTiet(int tiet) {
-        this.tiet = tiet;
-    }
-
-    public void setTenMonHoc(String tenMonHoc) {
-        this.tenMonHoc = tenMonHoc;
-    }
-
-    public void setMaLop(String maLop) {
-        this.maLop = maLop;
-    }
-
-    /**
-     * Phương thức này giúp hiển thị thông tin của ChiTietTKB trong các ô của TableView.
-     * Định dạng hiển thị có thể là tên môn học và mã lớp.
-     * @return Chuỗi đại diện cho đối tượng ChiTietTKB.
-     */
+    // Phương thức này giúp hiển thị thông tin trong ô TableView theo yêu cầu
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        boolean hasMonHoc = tenMonHoc != null && !tenMonHoc.isEmpty();
         boolean hasLop = maLop != null && !maLop.isEmpty();
-
-        if (hasMonHoc) {
-            sb.append(tenMonHoc);
-        }
+        boolean hasMonHoc = tenMonHoc != null && !tenMonHoc.isEmpty();
 
         if (hasLop) {
-            if (hasMonHoc) {
-                sb.append("\n"); // Xuống dòng nếu có cả tên môn và mã lớp
-            }
-            sb.append("Lớp: ").append(maLop);
+            sb.append(maLop);
         }
-
-        if (!hasMonHoc && !hasLop) {
+        if (hasMonHoc) {
+            if (hasLop) {
+                sb.append(" - ");
+            }
+            sb.append(tenMonHoc);
+        }
+        if (!hasLop && !hasMonHoc) {
             return ""; // Trả về chuỗi rỗng nếu không có thông tin
         }
         return sb.toString();

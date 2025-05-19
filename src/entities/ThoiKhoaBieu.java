@@ -69,9 +69,9 @@ public class ThoiKhoaBieu {
     public String toString() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         String ngayApDungStr = (ngayApDung != null) ? sdf.format(ngayApDung) : "N/A";
-        String buoiStr = (buoi != null && !buoi.isEmpty()) ? (" (" + buoi.toUpperCase() + ")") : "";
+        String buoiStr = (buoi != null && !buoi.isEmpty()) ? (" " + buoi.toUpperCase() + " ") : "";
 
-        // Ví dụ hiển thị: TKB001 (SANG) - Áp dụng từ: 19/05/2025
-        return maTKB + buoiStr + " - Áp dụng từ: " + ngayApDungStr;
+        // Ví dụ hiển thị: TKB SANG - Áp dụng từ: 19/05/2025
+        return  buoiStr + " - Áp dụng từ: " + ngayApDungStr;
     }
 }

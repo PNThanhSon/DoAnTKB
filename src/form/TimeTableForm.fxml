@@ -5,19 +5,26 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TimeTableController">
-   <Label prefHeight="84.0" prefWidth="255.0" text="XEM CÁC THỜI KHÓA BIỂU">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TimeTableController">
+   <Label prefHeight="73.0" prefWidth="282.0" text="XEM CÁC THỜI KHÓA BIỂU">
       <font>
-         <Font name="System Bold" size="20.0"/>
+         <Font name="System Bold" size="22.0" />
       </font>
    </Label>
-   <Button fx:id="btnTKBToanTruong" contentDisplay="CENTER" mnemonicParsing="false" text="Toàn trường"
-           textAlignment="CENTER"/>
-   <Button fx:id="btnTKBLopCN" contentDisplay="CENTER" mnemonicParsing="false" text="Lớp chủ nhiệm"
-           textAlignment="CENTER"/>
-   <Button fx:id="btnTKBToCM" contentDisplay="CENTER" mnemonicParsing="false" text="Tổ chuyên môn"
-           textAlignment="CENTER"/>
-   <Button fx:id="btnTKBCaNhan" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleTKBCaNhan" text="Cá nhân" textAlignment="CENTER"/>
+   <Button fx:id="btnTKBToanTruong" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Toàn trường" textAlignment="CENTER">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font></Button>
+   <Button fx:id="btnTKBLopCN" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Lớp chủ nhiệm" textAlignment="CENTER">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font></Button>
+   <Button fx:id="btnTKBToCM" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Tổ chuyên môn" textAlignment="CENTER">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font></Button>
+   <Button fx:id="btnTKBCaNhan" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleTKBCaNhan" prefHeight="40.0" prefWidth="110.0" text="Cá nhân" textAlignment="CENTER">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font></Button>
 </VBox>

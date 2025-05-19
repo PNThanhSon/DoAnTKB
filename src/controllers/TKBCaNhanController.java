@@ -35,10 +35,10 @@ public class TKBCaNhanController {
     private GiaoVien currentGiaoVien;
     private ThoiKhoaBieuDAO thoiKhoaBieuDAO;
 
-    // ObservableList để chứa dữ liệu cho TableView (thay thế cho dataBuoiSang)
+    // ObservableList để chứa dữ liệu cho TableView
     private ObservableList<TietHocData> tkbDataList;
 
-    private static final int SO_TIET_MOI_BUOI = 5; // Cấu hình số tiết mỗi buổi
+    private static final int SO_TIET_MOI_BUOI = 5;
     private static final double ROW_HEIGHT = 28.0;
     private static final double ESTIMATED_HEADER_HEIGHT = 30.0;
 
@@ -48,7 +48,7 @@ public class TKBCaNhanController {
 
     @FXML
     public void initialize() {
-        // Thiết lập cột cho bảng (giờ chỉ có một bảng)
+        // Thiết lập cột cho bảng
         setupTableColumns(tietColumn, thu2Column, thu3Column, thu4Column, thu5Column, thu6Column, thu7Column);
 
         // Khởi tạo ObservableList (giờ chỉ có một)
