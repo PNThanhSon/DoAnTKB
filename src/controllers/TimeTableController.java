@@ -42,19 +42,6 @@ public class TimeTableController {
             setButtonVisibility(VaiTroGV.UNKNOWN);
         }
     }
-    // Nếu bạn vẫn muốn giữ setGiaoVienData riêng, bạn có thể gọi nó từ initData
-    // hoặc thêm một setter cho mainBorderPane. Ví dụ:
-    /*
-    public void setGiaoVienData(GiaoVien giaoVien) {
-        this.currentGiaoVien = giaoVien;
-        // ... logic còn lại của setGiaoVienData
-    }
-
-    public void setMainBorderPane(BorderPane mainPane) {
-        this.mainBorderPane = mainPane;
-    }
-    */
-
 
     private void setButtonVisibility(VaiTroGV vaiTroCode) {
         btnTKBToanTruong.setVisible(false); btnTKBToanTruong.setManaged(false);

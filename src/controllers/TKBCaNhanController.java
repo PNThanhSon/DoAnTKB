@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
 
 import java.util.List;
 
@@ -155,7 +154,7 @@ public class TKBCaNhanController {
             if (selectedTKB == null) {
                 System.out.println("Không có TKB nào được chọn.");
             } else if (currentGiaoVien == null) {
-                showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng đăng nhập hoặc chọn giáo viên.");
+                showAlert("Thiếu thông tin", "Vui lòng đăng nhập hoặc chọn giáo viên.");
             }
         }
     }
@@ -208,8 +207,8 @@ public class TKBCaNhanController {
         tkbTableView.refresh(); // Chỉ cần refresh một bảng
     }
 
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
