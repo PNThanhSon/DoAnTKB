@@ -171,7 +171,7 @@ public class PhanHoiYKienController {
     }
 
 
-    // Phương thức gọi khi người dùng gửi ý kiến (gắn event handler ở FXML hoặc code)
+    // Phương thức gọi khi người dùng gửi ý kiến (gắn event handler ở FXML hoặc code).
     @FXML
     private void handleGuiYKien() {
         String noiDung = txtNoiDung.getText().trim();
