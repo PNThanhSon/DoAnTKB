@@ -311,7 +311,7 @@ public class PhanHoiYKienController {
         if (status == "Đã gửi ý kiến thành công!") {
             txtStatusND.setFill(Color.GREEN);
         }
-
+        txtStatusND.setFill(Color.RED);
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(3), event -> txtStatusND.setText(""))
         );
