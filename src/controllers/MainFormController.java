@@ -1,5 +1,7 @@
 package controllers;// Giả sử các file nằm trực tiếp trong thư mục src (default package)
 
+import controllers.PhanHoiYKien.PhanHoiYKienController;
+import controllers.QuanLyGiaoVien.QuanLyGiaoVienController;
 import entities.GiaoVien;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +20,7 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class MainFormController {
 
@@ -35,6 +38,9 @@ public class MainFormController {
 
     @FXML
     private MenuItem menuXemThongTinCaNhan;
+
+    @FXML
+    private MenuItem menuPhanHoiYKien;
 
     // THAY ĐỔI Ở ĐÂY: Khai báo MenuItem cho Trang chủ
     @FXML
@@ -162,21 +168,84 @@ public class MainFormController {
         }
     }
 
+
     @FXML
     private void handleQuanLyGiaoVien(ActionEvent event) {
-        if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-            // Ví dụ: loadViewIntoCenter("QuanLyGiaoVienForm.fxml");
-            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở /form/chức năng Quản lý Giáo Viên.");
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
+        // check đăng nhập, k cần thiết
+//        if (!loggedInGiaoVien.isLoggedIn()) {
+//            showAlert(Alert.AlertType.ERROR, "Chưa Đăng Nhập", "Mời Đăng nhập trước để thực hiện các chức năng" );
+//            return;
+//        }
+
+        // check vai tro và đăng nhập, đảm bảo bảo mật về mặt backend
+        if (!loggedInGiaoVien.isAdmin()) {
+            showAlert(Alert.AlertType.ERROR, "Không có quyền", "Chỉ dành cho ADMIN hoặc phụ Trách" );
+            return;
+        }
+        // điều phối màn hình mới
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/QuanLyGiaoVien/QuanLyGiaoVienForm.fxml"));
+            Parent QLGiaoVienRoot = loader.load();
+
+            QuanLyGiaoVienController QLGiaoVienController = loader.getController(); // các bước load data đã có sẵn trong init của controller này
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(QLGiaoVienRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi:  chưa được inject. Kiểm tra fx:id trong .fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị quản lý giáo viên trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang quản lý giáo viên.\nChi tiết: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void handlePhanHoiYKien(ActionEvent event) {
+        // check đăng nhập, k cần thiết
+//        if (!loggedInGiaoVien.isLoggedIn()) {
+//            showAlert(Alert.AlertType.ERROR, "Chưa Đăng Nhập", "Mời Đăng nhập trước để thực hiện các chức năng" );
+//            return;
+//        }
+
+
+        // điều phối màn hình mới
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/PhanHoiYKien/PhanHoiYKienForm.fxml"));
+            Parent PhanHoiYKienRoot = loader.load();
+
+            PhanHoiYKienController phanHoiYKienController = loader.getController();
+
+            // truyền data user
+            phanHoiYKienController.getGiaoVienData(loggedInGiaoVien);
+
+            // Ẩn các chức năng không được quyền, bảo mật fontend
+            if (!loggedInGiaoVien.isAdmin()) {
+                phanHoiYKienController.ishideFuntion();
+            }
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(PhanHoiYKienRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: chưa được inject. Kiểm tra fx:id ");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị ");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải phan hoi y kien.\nChi tiết: " + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Parent viewRoot = loader.load();
 
+            if (loggedInGiaoVien.isAdmin()) {}
             // Object controller = loader.getController();
             // if (controller instanceof SomeFeatureController && loggedInGiaoVien != null) {
             //    ((SomeFeatureController) controller).initData(loggedInGiaoVien); // Ví dụ truyền dữ liệu

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="controllers.PhanHoiYKien.SuaYKienController"
+            prefHeight="300.0" prefWidth="500.0">
+    <center>
+        <VBox spacing="15" alignment="CENTER" >
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Sửa Ý Kiến" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Người ý kiến:" minWidth="100"/>
+                <Text fx:id="txtNguoiYKien" text = "GV002"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Nội dung:" minWidth="100"/>
+                <TextArea fx:id="txtNoiDung" prefRowCount="4" wrapText="true" prefWidth="300"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Ẩn danh:" minWidth="100"/>
+                <CheckBox fx:id="chkAnDanh" />
+            </HBox>
+
+
+            <Button text="Lưu" fx:id="btnLuu" prefWidth="100" onAction="#handleLuu"/>
+        </VBox>
+    </center>
+</BorderPane>

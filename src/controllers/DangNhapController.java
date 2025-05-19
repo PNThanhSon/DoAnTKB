@@ -1,6 +1,7 @@
 package controllers;
 
 import entities.GiaoVien;
+import entities.VaiTroGV;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -117,11 +118,12 @@ public class DangNhapController {
         MainFormController mainFormController = loader.getController();
         mainFormController.setLoggedInGiaoVien(giaoVien);
 
+
         Stage mainStage = new Stage();
         mainStage.setTitle("Trang Chính - Hệ Thống Quản Lý Thời Khóa Biểu Trường Học");
         mainStage.setScene(new Scene(mainFormRoot, 800, 600));
         mainStage.setMinWidth(700);
-        mainStage.setMinHeight(500);
+        mainStage.setMinHeight(700); // cua son 500
 
         mainStage.setOnCloseRequest(e -> {
             System.out.println("MainForm đang đóng, ứng dụng sẽ thoát.");
@@ -175,7 +177,8 @@ public class DangNhapController {
                             rs.getString("Email"),
                             rs.getString("SDT"),
                             rs.getString("MatKhau"),
-                            rs.getString("GhiChu")
+                            rs.getString("GhiChu"),
+                            xacDinhVaiTro(rs.getString("MaGV"), rs.getString("GhiChu"))
                     );
                     System.out.println("Controller/KiemTraDangNhapCSDL: Xác thực thành công cho MaGV: " + maGV);
                     return Optional.of(giaoVien);
@@ -189,4 +192,44 @@ public class DangNhapController {
         }
         return Optional.empty();
     }
+
+    private VaiTroGV xacDinhVaiTro(String maGV, String ghiChu) {
+        if ("ADMIN".equals(maGV) || "phutrachtkb".equals(ghiChu)) {
+            return VaiTroGV.ADMIN; // ADMIN hoặc giáo viên phụ trách, có quyền hạn cao
+        }
+
+        Connection conn = DatabaseConnection.getConnection();
+        String sqlKiemTraToTruongPho = "SELECT COUNT() AS SoLuong FROM TOCHUYENMON WHERE TOTRUONG = ? OR TOPHO = ?";
+        String sqlKiemTraGVCN = "SELECT COUNT() AS SoLuong FROM LOP WHERE GVCN = ?";
+
+        try (PreparedStatement pstmtTCM = conn.prepareStatement(sqlKiemTraToTruongPho)) {
+            pstmtTCM.setString(1, maGV);
+            pstmtTCM.setString(2, maGV);
+
+            try (ResultSet rsTCM = pstmtTCM.executeQuery()) {
+                if (rsTCM.next() && rsTCM.getInt("SoLuong") > 0) {
+                    return VaiTroGV.TCM; //Là tổ trưởng hoặc tổ phó chuyên môn
+                }
+            }
+        } catch (SQLException e_tcm) {
+            System.err.println("Lỗi khi kiểm tra vai trò Tổ trưởng/phó: " + e_tcm.getMessage());
+        }
+
+        try (PreparedStatement pstmtGVCN = conn.prepareStatement(sqlKiemTraGVCN)) {
+            pstmtGVCN.setString(1, maGV);
+
+            try (ResultSet rsGVCN = pstmtGVCN.executeQuery()) {
+                if (rsGVCN.next() && rsGVCN.getInt("SoLuong") > 0) {
+                    return VaiTroGV.GVCN; //Là giáo viên chủ nhiệm
+                }
+            }
+        } catch (SQLException e_tcm) {
+            System.err.println("Lỗi khi kiểm tra vai trò Giáo viên chủ nhiệm: " + e_tcm.getMessage());
+        }
+        return VaiTroGV.GV; //Giáo viên thường
+    }
+
+
+
+
 }
