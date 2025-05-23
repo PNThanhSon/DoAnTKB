@@ -51,6 +51,10 @@ public class MainFormController {
 
     @FXML
     private MenuItem menuTrangChu;
+    // Khai báo menu item cho tính năng quản lí chức vụ
+    @FXML
+    private MenuItem menuQLChucVu;
+
 
     @FXML
     private MenuItem menuBCTK;
@@ -303,6 +307,17 @@ public class MainFormController {
             showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void handleQuanLyChucVu(ActionEvent event) {
+        if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
+            loadViewIntoCenter("/form/QuanLiChucVuForm.fxml");
+            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở /form/chức năng Quản lý Chức vụ.");
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
+        }
+    }
+
 
     private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center
         try {

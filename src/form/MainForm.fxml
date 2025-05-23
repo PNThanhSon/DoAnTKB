@@ -18,13 +18,12 @@
                     <MenuItem fx:id="menuDangXuat" mnemonicParsing="false" onAction="#handleDangXuat" text="Đăng xuất"/>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Quản Lý">
-                    <MenuItem mnemonicParsing="false" text="Quản lý Thời Khóa Biểu"/>
-                    <MenuItem fx:id="menuQLGiaoVien" mnemonicParsing="false" onAction="#handleQuanLyGiaoVien"
-                              text="Quản lý Giáo Viên"/>
-                    <MenuItem mnemonicParsing="false" text="Quản lý Lớp Học"/>
-                    <MenuItem mnemonicParsing="false" text="Quản lý Môn Học"/>
-                    <MenuItem mnemonicParsing="false" text="Quản lý Tổ Chuyên Môn"/>
-                    <MenuItem mnemonicParsing="false" text="Quản lý Chức vụ"/>
+               <MenuItem mnemonicParsing="false" text="Quản lý Thời Khóa Biểu" />
+                    <MenuItem fx:id="menuQLGiaoVien" mnemonicParsing="false" onAction="#handleQuanLyGiaoVien" text="Quản lý Giáo Viên" />
+                    <MenuItem mnemonicParsing="false" text="Quản lý Lớp Học" />
+               <MenuItem mnemonicParsing="false" text="Quản lý Môn Học" />
+               <MenuItem mnemonicParsing="false" text="Quản lý Tổ Chuyên Môn" />
+               <MenuItem fx:id="menuQLChucVu" mnemonicParsing="false" onAction="#handleQuanLyChucVu" text="Quản lý Chức vụ" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Chức Năng">
                     <MenuItem fx:id="menuXemCacTKB" mnemonicParsing="false" onAction="#handleXemCacTKB" text="Xem các thời khóa biểu" />
