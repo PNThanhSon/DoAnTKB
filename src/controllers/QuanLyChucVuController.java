@@ -1,6 +1,7 @@
 package controllers;
 
 import entities.ChucVu;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,82 +12,123 @@ import java.sql.*;
 
 public class QuanLyChucVuController {
 
-    /* ======= FXML phần hiển thị ======= */
-    @FXML private TableView<ChucVu>      tableChucVu;
-    @FXML private TableColumn<ChucVu,String> colSTT;   // hiển thị chỉ số
+    /* ---------- FXML ---------- */
+    @FXML private TableView<ChucVu> tableChucVu;
+    @FXML private TableColumn<ChucVu,String> colSTT;
     @FXML private TableColumn<ChucVu,String> colMaCV;
     @FXML private TableColumn<ChucVu,String> colTenCV;
-
-    /* ======= FXML phần nhập liệu ======= */
     @FXML private TextField txtMaCV;
     @FXML private TextField txtTenCV;
 
     private final ObservableList<ChucVu> dsChucVu = FXCollections.observableArrayList();
 
-    /* ========== initialize ========== */
+    /* ---------- INIT ---------- */
     @FXML
     public void initialize() {
-        // map cột với thuộc tính
-        colMaCV.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getMaCV()));
-        colTenCV.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTenCV()));
-        // cột STT = chỉ số hàng
-        colSTT.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(String.valueOf(tableChucVu.getItems().indexOf(c.getValue()) + 1)));
+        colMaCV.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getMaCV()));
+        colTenCV.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTenCV()));
+        colSTT .setCellValueFactory(c -> new SimpleStringProperty(
+                String.valueOf(tableChucVu.getItems().indexOf(c.getValue()) + 1)));
 
         tableChucVu.setItems(dsChucVu);
-        loadData();          // nạp lúc mở form
+        loadData();
+
+        // Khi chọn hàng → đổ vào 2 TextField để tiện sửa
+        tableChucVu.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, sel) -> {
+            if (sel != null) {
+                txtMaCV.setText(sel.getMaCV());
+                txtTenCV.setText(sel.getTenCV());
+            }
+        });
     }
 
-    /* ========== NẠP DỮ LIỆU ========== */
+    /* ---------- LOAD ---------- */
     private void loadData() {
         dsChucVu.clear();
         String sql = "SELECT MaCV, TenCV FROM CHUCVU ORDER BY MaCV";
         try (Connection con = DatabaseConnection.getConnection();
-             Statement st   = con.createStatement();
-             ResultSet rs   = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                dsChucVu.add(new ChucVu(rs.getString("MaCV"), rs.getString("TenCV")));
-            }
-        } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi DB", e.getMessage());
-            e.printStackTrace();
-        }
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) dsChucVu.add(new ChucVu(rs.getString(1), rs.getString(2)));
+        } catch (SQLException e) { error(e); }
     }
 
-    /* ========== XỬ LÝ NÚT THÊM ========== */
+    /* ---------- THÊM ---------- */
     @FXML
     private void handleThemChucVu() {
-        String ma = txtMaCV.getText().trim();
+        String ma  = txtMaCV.getText().trim();
         String ten = txtTenCV.getText().trim();
+        if (ma.isEmpty() || ten.isEmpty()) { warn("Vui lòng nhập cả Mã & Tên."); return; }
 
-        if (ma.isEmpty() || ten.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Thiếu dữ liệu", "Vui lòng nhập đủ Mã & Tên chức vụ!");
-            return;
-        }
-
-        String insert = "INSERT INTO CHUCVU (MaCV, TenCV) VALUES (?, ?)";
+        String sql = "INSERT INTO CHUCVU (MaCV, TenCV) VALUES (?, ?)";
         try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(insert)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, ma); ps.setString(2, ten);
+            ps.executeUpdate();
+            dsChucVu.add(new ChucVu(ma, ten));  clearFields();
+        } catch (SQLIntegrityConstraintViolationException dup) {
+            warn("Mã chức vụ đã tồn tại!");          // Trùng khoá chính
+        } catch (SQLException e) { error(e); }
+    }
 
-            ps.setString(1, ma);
-            ps.setString(2, ten);
+    /* ---------- SỬA ---------- */
+    @FXML
+    private void handleSuaChucVu() {
+        ChucVu sel = tableChucVu.getSelectionModel().getSelectedItem();
+        if (sel == null) { warn("Chọn 1 hàng để sửa."); return; }
+
+        String newMa  = txtMaCV.getText().trim();
+        String newTen = txtTenCV.getText().trim();
+        if (newMa.isEmpty() || newTen.isEmpty()) { warn("Không được để trống ô."); return; }
+
+        // Xác nhận
+        if (!confirm("Xác nhận sửa?", "Cập nhật chức vụ \""+sel.getMaCV()+"\" thành \""+newMa+"\" ?")) return;
+
+        String sql = "UPDATE CHUCVU SET MaCV = ?, TenCV = ? WHERE MaCV = ?";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newMa); ps.setString(2, newTen); ps.setString(3, sel.getMaCV());
             ps.executeUpdate();
 
-            // cập nhật TableView
-            dsChucVu.add(new ChucVu(ma, ten));
-            txtMaCV.clear(); txtTenCV.clear();
-
+            // Cập nhật trên bảng
+            sel.setMaCV(newMa);
+            sel.setTenCV(newTen);
+            tableChucVu.refresh();
+            clearFields();
         } catch (SQLIntegrityConstraintViolationException dup) {
-            showAlert(Alert.AlertType.ERROR, "Trùng mã", "Mã chức vụ đã tồn tại!");
+            warn("Mã chức vụ mới đã tồn tại!");      // đổi sang mã đã có
+        } catch (SQLException e) { error(e); }
+    }
+
+    /* ---------- XOÁ ---------- */
+    @FXML
+    private void handleXoaChucVu() {
+        ChucVu sel = tableChucVu.getSelectionModel().getSelectedItem();
+        if (sel == null) { warn("Chọn 1 hàng để xoá."); return; }
+
+        if (!confirm("Xác nhận xoá?", "Bạn chắc muốn xoá chức vụ \""+sel.getMaCV()+"\" ?")) return;
+
+        String sql = "DELETE FROM CHUCVU WHERE MaCV = ?";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, sel.getMaCV());
+            ps.executeUpdate();
+            dsChucVu.remove(sel);  clearFields();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi DB", e.getMessage());
-            e.printStackTrace();
+            if ("23503".equals(e.getSQLState()))   // khoá ngoại ràng buộc
+                warn("Không thể xoá: chức vụ đang được dùng ở bảng khác.");
+            else error(e);
         }
     }
 
-    /* ========== tiện ích ========== */
-    private void showAlert(Alert.AlertType type, String header, String msg){
-        Alert a = new Alert(type); a.setHeaderText(header); a.setContentText(msg); a.showAndWait();
+    /* ---------- HELPER ---------- */
+    private void clearFields() { txtMaCV.clear(); txtTenCV.clear(); tableChucVu.getSelectionModel().clearSelection(); }
+
+    private void warn(String msg){ alert(Alert.AlertType.WARNING,"Cảnh báo",msg); }
+    private void error(Exception e){ alert(Alert.AlertType.ERROR,"Lỗi",e.getMessage()); e.printStackTrace(); }
+    private void alert(Alert.AlertType t, String h, String m){ Alert a=new Alert(t); a.setHeaderText(h); a.setContentText(m); a.showAndWait(); }
+    private boolean confirm(String h,String m){
+        Alert a=new Alert(Alert.AlertType.CONFIRMATION); a.setHeaderText(h); a.setContentText(m);
+        return a.showAndWait().filter(b -> b==ButtonType.OK).isPresent();
     }
 }

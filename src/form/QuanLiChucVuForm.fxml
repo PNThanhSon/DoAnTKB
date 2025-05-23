@@ -30,16 +30,23 @@
             </columns>
         </TableView>
     </center>
+    <!-- … (phần trên giữ nguyên) … -->
     <bottom>
         <HBox alignment="CENTER" spacing="10">
             <padding>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
             </padding>
+
+            <!-- Nhập mới / cập nhật -->
             <Label text="Mã chức vụ:" />
-            <TextField fx:id="txtMaCV" prefHeight="26.0" prefWidth="118.0" promptText="Nhập mã chức vụ" />
+            <TextField fx:id="txtMaCV" prefWidth="100" promptText="Nhập mã" />
             <Label text="Tên chức vụ:" />
-            <TextField fx:id="txtTenCV" prefHeight="26.0" prefWidth="137.0" promptText="Nhập tên chức vụ" />
+            <TextField fx:id="txtTenCV" prefWidth="180" promptText="Nhập tên" />
+
+            <!-- 3 nút thao tác -->
             <Button minWidth="80" onAction="#handleThemChucVu" text="Thêm" />
+            <Button minWidth="80" onAction="#handleSuaChucVu" text="Cập nhật" />
+            <Button minWidth="80" onAction="#handleXoaChucVu" text="Xóa" />
         </HBox>
     </bottom>
 </BorderPane>

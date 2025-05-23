@@ -12,5 +12,9 @@ public class ChucVu {
     }
     public String getMaCV()  { return maCV.get();  }
     public String getTenCV() { return tenCV.get(); }
+
+    public void setMaCV(String v){ maCV.set(v); }
+    public void setTenCV(String v){ tenCV.set(v); }
+
 }
 
