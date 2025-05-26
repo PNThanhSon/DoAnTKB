@@ -4,6 +4,8 @@ import entities.ChucVu;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import util.DatabaseConnection;
@@ -19,8 +21,9 @@ public class QuanLyChucVuController {
     @FXML private TableColumn<ChucVu,String> colTenCV;
     @FXML private TextField txtMaCV;
     @FXML private TextField txtTenCV;
+    @FXML private TextField txtSearch;
 
-    private final ObservableList<ChucVu> dsChucVu = FXCollections.observableArrayList();
+
 
     /* ---------- INIT ---------- */
     @FXML
@@ -40,6 +43,27 @@ public class QuanLyChucVuController {
                 txtTenCV.setText(sel.getTenCV());
             }
         });
+        tableChucVu.setItems(dsChucVu);      // gìn giữ
+        loadData();                          // nạp dữ liệu
+
+        /* ---------- Thiết lập bộ lọc ---------- */
+        filteredList = new FilteredList<>(dsChucVu, p -> true);
+
+        txtSearch.textProperty().addListener((obs, oldVal, newVal) -> {
+            String keyword = newVal.toLowerCase().trim();
+            if (keyword.isEmpty()) {
+                filteredList.setPredicate(p -> true);
+            } else {
+                filteredList.setPredicate(cv ->
+                        cv.getMaCV().toLowerCase().contains(keyword) ||
+                                cv.getTenCV().toLowerCase().contains(keyword));
+            }
+        });
+
+        /* ---------- Cho TableView dùng danh sách đã lọc + sắp xếp ---------- */
+        SortedList<ChucVu> sorted = new SortedList<>(filteredList);
+        sorted.comparatorProperty().bind(tableChucVu.comparatorProperty());
+        tableChucVu.setItems(sorted);
     }
 
     /* ---------- LOAD ---------- */
@@ -120,6 +144,10 @@ public class QuanLyChucVuController {
             else error(e);
         }
     }
+    // … (các khai báo khác)
+    private final ObservableList<ChucVu> dsChucVu = FXCollections.observableArrayList();
+    private FilteredList<ChucVu> filteredList;
+
 
     /* ---------- HELPER ---------- */
     private void clearFields() { txtMaCV.clear(); txtTenCV.clear(); tableChucVu.getSelectionModel().clearSelection(); }
