@@ -312,7 +312,6 @@ public class MainFormController {
     private void handleQuanLyChucVu(ActionEvent event) {
         if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
             loadViewIntoCenter("/form/QuanLiChucVuForm.fxml");
-            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở /form/chức năng Quản lý Chức vụ.");
         } else {
             showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
         }
