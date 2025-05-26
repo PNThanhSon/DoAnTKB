@@ -18,7 +18,7 @@
                     <MenuItem fx:id="menuDangXuat" mnemonicParsing="false" onAction="#handleDangXuat" text="Đăng xuất"/>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Quản Lý">
-               <MenuItem mnemonicParsing="false" text="Quản lý Thời Khóa Biểu" />
+               <MenuItem mnemonicParsing="false" onAction="#handleQuanLyTKB" text="Quản lý Thời Khóa Biểu" />
                     <MenuItem fx:id="menuQLGiaoVien" mnemonicParsing="false" onAction="#handleQuanLyGiaoVien" text="Quản lý Giáo Viên" />
                     <MenuItem mnemonicParsing="false" text="Quản lý Lớp Học" />
                <MenuItem mnemonicParsing="false" text="Quản lý Môn Học" />

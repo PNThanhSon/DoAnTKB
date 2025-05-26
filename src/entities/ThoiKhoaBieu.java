@@ -3,10 +3,6 @@ package entities;
 import java.text.SimpleDateFormat;
 import java.util.Date; // Sử dụng java.util.Date cho ngày tháng
 
-/**
- * Đại diện cho một Thời Khóa Biểu cụ thể, áp dụng từ một ngày nhất định,
- * cho một buổi học và thuộc một học kỳ.
- */
 public class ThoiKhoaBieu {
     private String maTKB;        // Mã định danh duy nhất cho thời khóa biểu
     private Date ngayApDung;   // Ngày bắt đầu áp dụng thời khóa biểu này (java.util.Date)
