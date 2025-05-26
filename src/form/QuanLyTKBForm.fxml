@@ -3,11 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.QuanLyTKBController">
 
-    <!-- ───────── TIÊU ĐỀ ───────── -->
+    <!-- ===== Phần tiêu đề ===== -->
     <top>
         <Label text="QUẢN LÝ THỜI KHÓA BIỂU"
                BorderPane.alignment="CENTER"
@@ -18,40 +19,75 @@
         </Label>
     </top>
 
-    <!-- ─────── Thanh công cụ ────── -->
+    <!-- ===== Vùng tìm kiếm + bảng ===== -->
     <center>
-        <VBox spacing="10.0">
+        <VBox spacing="8">
             <padding>
                 <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
             </padding>
 
-            <!-- Hàng nhập / chọn mã TKB -->
-            <HBox spacing="8" alignment="CENTER_LEFT">
-                <Label text="Mã TKB:"/>
-
-                <!--  ComboBox mã TKB, cho phép gõ để lọc -->
-                <ComboBox fx:id="cboMaTKB" prefWidth="120"
-                          editable="true" promptText="Chọn / gõ mã"/>
-
-                <!-- Ẩn TextField cũ:  txtMaTKB  (hoặc xoá hẳn) -->
-                <!--<TextField fx:id="txtMaTKB" prefWidth="120"/>-->
-
-                <Label text="Khối:"/>
-                <ComboBox fx:id="cboKhoi" prefWidth="80"/>
-                <Button text="Xem"   onAction="#handleLoad"/>
-
-                <Button text="Thêm"  onAction="#handleAddTKB"/>
-                <Button text="Xoá"   onAction="#handleDeleteTKB"/>
-                <Button text="Lưu"   onAction="#handleUpdateTKB"/>
+            <!-- Ô tìm kiếm -->
+            <HBox spacing="6" alignment="CENTER_RIGHT">
+                <Label text="Tìm MaTKB:"/>
+                <TextField fx:id="txtSearch" promptText="Nhập mã TKB cần tìm"/>
+                <Button text="Lọc"     onAction="#handleSearch"/>
+                <Button text="Tải lại" onAction="#loadData"/>
             </HBox>
 
-
-            <!-- Hàng 2: bảng dữ liệu -->
-            <TableView fx:id="table" editable="true" VBox.vgrow="ALWAYS">
-                <columnResizePolicy>
-                    <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY"/>
-                </columnResizePolicy>
+            <!-- Bảng dữ liệu -->
+            <TableView fx:id="tableTKB" prefHeight="320">
+                <columns>
+                    <TableColumn fx:id="colMaTKB"   text="Mã TKB"      prefWidth="90"/>
+                    <TableColumn fx:id="colNgayLap" text="Ngày lập"    prefWidth="100"/>
+                    <TableColumn fx:id="colNgayAD"  text="Ngày áp dụng" prefWidth="110"/>
+                    <TableColumn fx:id="colBuoi"    text="Buổi"        prefWidth="70"/>
+                    <TableColumn fx:id="colNguoiTao" text="Người tạo"   prefWidth="90"/>
+                    <TableColumn fx:id="colMaHK"    text="Mã học kỳ"    prefWidth="100"/>
+                </columns>
             </TableView>
         </VBox>
     </center>
+
+    <!-- ===== Thanh nhập liệu & nút thao tác ===== -->
+    <bottom>
+        <VBox spacing="8">
+            <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+            </padding>
+
+            <GridPane hgap="10" vgap="6">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="90"/>
+                    <ColumnConstraints prefWidth="170"/>
+                    <ColumnConstraints prefWidth="90"/>
+                    <ColumnConstraints prefWidth="170"/>
+                </columnConstraints>
+
+                <Label text="Mã TKB:"               GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtMaTKB"         GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Ngày lập (yyyy-mm-dd):" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtNgayLap"       GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <Label text="Ngày áp dụng:"         GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNgayAD"        GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Buổi:"                 GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtBuoi"          GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                <Label text="Người tạo:"            GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNguoiTao"      GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Mã HK:"                GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtMaHK"          GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+            </GridPane>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Thêm"     minWidth="80" onAction="#handleAdd"/>
+                <Button text="Sửa"      minWidth="80" onAction="#handleUpdate"/>
+                <Button text="Xóa"      minWidth="80" onAction="#handleDelete"/>
+                <Button text="Làm mới"  minWidth="80" onAction="#clearForm"/>
+            </HBox>
+        </VBox>
+    </bottom>
 </BorderPane>
