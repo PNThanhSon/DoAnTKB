@@ -149,11 +149,6 @@ public class DangNhapController {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            if (conn == null) {
-                System.err.println("Controller/KiemTraDangNhapCSDL: Không thể kết nối đến cơ sở dữ liệu.");
-                return Optional.empty();
-            }
-
             pstmt.setString(1, maGV.trim());
             pstmt.setString(2, matKhau);
 

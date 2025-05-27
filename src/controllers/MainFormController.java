@@ -216,11 +216,6 @@ public class MainFormController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Parent viewRoot = loader.load();
 
-            // Object controller = loader.getController();
-            // if (controller instanceof SomeFeatureController && loggedInGiaoVien != null) {
-            //    ((SomeFeatureController) controller).initData(loggedInGiaoVien); // Ví dụ truyền dữ liệu
-            // }
-
             if (mainBorderPane != null) {
                 mainBorderPane.setCenter(viewRoot);
             } else {

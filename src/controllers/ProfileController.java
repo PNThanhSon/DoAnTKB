@@ -214,11 +214,6 @@ public class ProfileController {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            if (conn == null) {
-                System.err.println("ProfileController/CapNhat: Không thể kết nối đến cơ sở dữ liệu.");
-                return false;
-            }
-
             pstmt.setString(1, giaoVienDaSua.getEmail());
             pstmt.setString(2, giaoVienDaSua.getSdt());
             pstmt.setString(3, giaoVienDaSua.getGhiChu());
