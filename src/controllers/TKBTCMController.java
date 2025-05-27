@@ -30,18 +30,11 @@ public class TKBTCMController {
     @FXML private ComboBox<HocKy> hocKyComboBox;
     @FXML private ComboBox<ThoiKhoaBieu> tkbComboBox;
     @FXML private ComboBox<NhomMonHocDisplay> monHocComboBox;
-
-    // Thay thế TableView bằng một container cho GridPane động
-    // Trong FXML, bạn cần có: <VBox fx:id="tkbDisplayContainer" VBox.vgrow="ALWAYS" />
-    // Hoặc <ScrollPane fx:id="tkbScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
-    //         <content><VBox fx:id="tkbDisplayArea" /></content>
-    //     </ScrollPane>
-    // Tốt hơn là dùng ScrollPane để nội dung dài có thể cuộn được.
     @FXML private ScrollPane tkbScrollPane; // Để chứa GridPane
     private GridPane tkbGridPane;
 
     private GiaoVien currentGiaoVien;
-    private ThoiKhoaBieuDAO thoiKhoaBieuDAO;
+    private final ThoiKhoaBieuDAO thoiKhoaBieuDAO;
 
     // Danh sách này không trực tiếp bind vào TableView nữa, mà dùng để build GridPane
     private final ObservableList<GiaoVienLichDayData> danhSachLichDayGV;
@@ -72,9 +65,6 @@ public class TKBTCMController {
             tkbScrollPane.setFitToWidth(true); // Quan trọng để GridPane co giãn theo chiều rộng ScrollPane
         } else {
             System.err.println("Lỗi: tkbScrollPane chưa được inject từ FXML.");
-            // Nếu không có ScrollPane, bạn có thể thêm trực tiếp vào một VBox:
-            // VBox tkbDisplayArea = new VBox(tkbGridPane); // Tạo VBox nếu FXML có VBox fx:id="tkbDisplayArea"
-            // VBox.setVgrow(tkbGridPane, Priority.ALWAYS);
         }
 
 
@@ -88,7 +78,7 @@ public class TKBTCMController {
         if (currentGiaoVien != null && currentGiaoVien.getMaTCM() != null) {
             String maTCM = currentGiaoVien.getMaTCM();
             String tenTCM = thoiKhoaBieuDAO.getTenTCMByMaTCM(maTCM); // Dùng hàm mới
-            tkbTCMLabel.setText("TKB TỔ: " + (tenTCM != null ? tenTCM.toUpperCase() : maTCM.toUpperCase()));
+            tkbTCMLabel.setText("THỜI KHÓA BIỂU " + (tenTCM != null ? tenTCM.toUpperCase() : maTCM.toUpperCase()));
             loadMonHocOptions(maTCM);
         } else {
             tkbTCMLabel.setText("TKB Tổ Chuyên Môn: Lỗi - Không có thông tin GV hoặc TCM");
@@ -150,9 +140,6 @@ public class TKBTCMController {
             // Kích hoạt lại ComboBox Môn học nếu đã chọn TKB và có thông tin TCM
             if (currentGiaoVien != null && currentGiaoVien.getMaTCM() != null) {
                 monHocComboBox.setDisable(false);
-                // Nếu muốn tự động tải lại khi TKB thay đổi và môn đã chọn:
-                // NhomMonHocDisplay selectedMon = monHocComboBox.getSelectionModel().getSelectedItem();
-                // if (selectedMon != null) handleMonHocSelection(null);
             }
         } else {
             tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");

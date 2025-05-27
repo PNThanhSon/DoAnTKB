@@ -9,36 +9,38 @@ public class ChiTietTKB {
     private final String maLop;
     private final String hoTenGV;   // Họ tên GV dạy tiết này
     private final String maGV;      // Mã GV dạy tiết này
+    private final int flag;
 
     // Constructor private, sử dụng static factory methods
-    private ChiTietTKB(int thu, int tiet, String tenMonHoc, String maLop, String hoTenGV, String maGV) {
+    private ChiTietTKB(int thu, int tiet, String tenMonHoc, String maLop, String hoTenGV, String maGV, int flag) {
         this.thu = thu;
         this.tiet = tiet;
         this.tenMonHoc = tenMonHoc; // Tên môn từ TKB (có thể khác tên nhóm môn)
         this.maLop = maLop;
         this.hoTenGV = hoTenGV;
         this.maGV = maGV;
+        this.flag = flag; //1: TKB Tổ Chuyên Môn, 2: TKB Cá Nhân, 3: TKB Lớp Chủ Nhiệm
     }
 
     /**
      * Factory method để tạo ChiTietTKB với đầy đủ thông tin cần thiết cho TKB Tổ Chuyên Môn.
      */
-    public static ChiTietTKB taoChoTKBTCM(int thu, int tiet, String tenMonHocThucTe, String maLop, String hoTenGV, String maGV) {
-        return new ChiTietTKB(thu, tiet, tenMonHocThucTe, maLop, hoTenGV, maGV);
+    public static ChiTietTKB taoChoTKBTCM(int thu, int tiet, String tenMonHocThucTe, String maLop, String hoTenGV, String maGV, int flag) {
+        return new ChiTietTKB(thu, tiet, tenMonHocThucTe, maLop, hoTenGV, maGV, flag);
     }
 
     /**
      * Factory method dùng cho TKB Cá Nhân (chỉ cần MaLop).
      */
-    public static ChiTietTKB taoChoTKBCaNhan(int thu, int tiet, String tenMonHoc, String maLop) {
-        return new ChiTietTKB(thu, tiet, tenMonHoc, maLop, null, null);
+    public static ChiTietTKB taoChoTKBCaNhan(int thu, int tiet, String tenMonHoc, String maLop, int flag) {
+        return new ChiTietTKB(thu, tiet, tenMonHoc, maLop, null, null, flag);
     }
 
     /**
      * Factory method dùng cho TKB Lớp Chủ Nhiệm (cần HoTenGV dạy).
      */
-    public static ChiTietTKB taoChoTKBLopCN(int thu, int tiet, String tenMonHoc, String hoTenGV, String maGV) {
-        return new ChiTietTKB(thu, tiet, tenMonHoc, null, hoTenGV, maGV);
+    public static ChiTietTKB taoChoTKBLopCN(int thu, int tiet, String tenMonHoc, String hoTenGV, String maGV, int flag) {
+        return new ChiTietTKB(thu, tiet, tenMonHoc, null, hoTenGV, maGV, flag);
     }
 
 
@@ -59,27 +61,23 @@ public class ChiTietTKB {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        boolean hasLop = maLop != null && !maLop.isEmpty();
-        boolean hasMonHoc = tenMonHoc != null && !tenMonHoc.isEmpty();
-        boolean hasGV = hoTenGV != null && !hoTenGV.isEmpty();
 
-        if (hasLop) {
-            sb.append(maLop);
-        }
-        if (hasMonHoc) {
-            if (hasLop) {
+        switch (flag) {
+            case 1:
+                sb.append(maLop);
+                break;
+            case 2:
+                sb.append(maLop);
                 sb.append(" - ");
-            }
-            sb.append(tenMonHoc);
-        }
-        if (hasGV) {
-            if (hasLop || hasMonHoc) {
+                sb.append(tenMonHoc);
+                break;
+            case 3:
+                sb.append(tenMonHoc);
                 sb.append(" - ");
-            }
-            sb.append(hoTenGV);
-        }
-        if (!hasLop && !hasMonHoc || !hasGV && !hasMonHoc) {
-            return ""; // Trả về chuỗi rỗng nếu không có thông tin
+                sb.append(hoTenGV);
+                break;
+            default:
+                return "";
         }
         return sb.toString();
     }

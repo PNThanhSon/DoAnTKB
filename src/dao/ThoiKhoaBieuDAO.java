@@ -31,33 +31,6 @@ public class ThoiKhoaBieuDAO {
         return null;
     }
 
-    /**
-     * Lấy tên Tổ Chuyên Môn dựa vào MaGV là Tổ Trưởng hoặc Tổ Phó.
-     * @param maGV Mã giáo viên (Tổ trưởng hoặc Tổ phó).
-     * @return Tên TCM hoặc null nếu không tìm thấy hoặc lỗi.
-     */
-    public String getTenTCMChoTruongPho(String maGV) {
-        if (maGV == null || maGV.trim().isEmpty()) return null;
-        String sql = "SELECT tcm.TenTCM FROM TOCHUYENMON tcm WHERE tcm.ToTruong = ? OR tcm.ToPho = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, maGV);
-            pstmt.setString(2, maGV);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) return rs.getString("TenTCM");
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi SQL khi lấy tên TCM cho Trưởng/Phó GV " + maGV + ": " + e.getMessage());
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Lấy tên Tổ Chuyên Môn dựa vào MaTCM.
-     * @param maTCM Mã Tổ Chuyên Môn.
-     * @return Tên TCM hoặc null nếu không tìm thấy hoặc lỗi.
-     */
     public String getTenTCMByMaTCM(String maTCM) {
         if (maTCM == null || maTCM.trim().isEmpty()) return null;
         String sql = "SELECT TenTCM FROM TOCHUYENMON WHERE MaTCM = ?";
@@ -177,7 +150,8 @@ public class ThoiKhoaBieuDAO {
                             rs.getInt("Thu"),
                             rs.getInt("Tiet"),
                             rs.getString("TenMH"),
-                            rs.getString("MaLop")
+                            rs.getString("MaLop"),
+                            2
                     ));
                 }
             }
@@ -211,7 +185,8 @@ public class ThoiKhoaBieuDAO {
                             rs.getInt("Tiet"),
                             rs.getString("TenMH"),
                             rs.getString("HoTenGV"),
-                            rs.getString("MaGV")
+                            rs.getString("MaGV"),
+                            3
                     ));
                 }
             }
@@ -261,7 +236,8 @@ public class ThoiKhoaBieuDAO {
                             rs.getString("TenMonHocTrongTKB"),
                             rs.getString("MaLop"),
                             rs.getString("HoTenGV"),
-                            rs.getString("MaGV")
+                            rs.getString("MaGV"),
+                            1
                     ));
                 }
             }
