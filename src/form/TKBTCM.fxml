@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="950.0" spacing="15.0" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TKBTCMController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <Label fx:id="tkbTCMLabel" text="TKB TỔ CHUYÊN MÔN">
+        <font>
+            <Font name="System Bold" size="24.0"/>
+        </font>
+        <VBox.margin>
+            <Insets bottom="5.0"/>
+        </VBox.margin>
+    </Label>
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <VBox.margin>
+            <Insets bottom="10.0"/>
+        </VBox.margin>
+        <Label text="Học Kỳ:">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <ComboBox fx:id="hocKyComboBox" onAction="#handleHocKySelection" prefHeight="26.0" prefWidth="220.0"
+                  promptText="Chọn học kỳ"/>
+        <Label text="Thời Khóa Biểu:">
+            <font>
+                <Font size="14.0"/>
+            </font>
+            <HBox.margin>
+                <Insets left="15.0"/>
+            </HBox.margin>
+        </Label>
+        <ComboBox fx:id="tkbComboBox" onAction="#handleTkbSelection" prefHeight="26.0" prefWidth="280.0"
+                  promptText="Chọn TKB"/>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <VBox.margin>
+            <Insets bottom="10.0"/>
+        </VBox.margin>
+        <Label fx:id="tkbBuoiLabel" text="Buổi: (chưa chọn TKB)">
+            <font>
+                <Font name="System Italic" size="15.0"/>
+            </font>
+            <HBox.margin>
+                <Insets right="20.0"/>
+            </HBox.margin>
+        </Label>
+        <Label text="Môn học của Tổ:">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <ComboBox fx:id="monHocComboBox" onAction="#handleMonHocSelection" prefHeight="26.0" prefWidth="250.0"
+                  promptText="Chọn môn học"/>
+    </HBox>
+
+    <ScrollPane fx:id="tkbScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" prefHeight="550.0" hbarPolicy="AS_NEEDED"
+                vbarPolicy="AS_NEEDED">
+        <!-- Ví dụ:
+            <content>
+                <AnchorPane />
+            </content>
+            -->
+    </ScrollPane>
+
+</VBox>

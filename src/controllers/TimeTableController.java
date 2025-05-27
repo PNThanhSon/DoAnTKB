@@ -95,7 +95,7 @@ public class TimeTableController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBLopCN.fxml"));
             Parent tkbCaNhanRoot = loader.load();
 
-            // Lấy controller của TKBCaNhanForm
+            // Lấy controller
             TKBLopCNController tkbCN = loader.getController();
             tkbCN.initData(currentGiaoVien);
 
@@ -112,11 +112,32 @@ public class TimeTableController {
 
     @FXML
     private void handleTKBToCM(ActionEvent event) {
-        // Hiện tại giữ nguyên
-        if (currentGiaoVien != null && currentGiaoVien.getMaTCM() != null) {
-            showAlert("Xem TKB Tổ Chuyên Môn", "Xem TKB cho tổ: " + currentGiaoVien.getMaTCM());
-        } else if (currentGiaoVien != null){
-            showAlert("Thông báo", "Giáo viên " + currentGiaoVien.getMaGV() + " không thuộc tổ chuyên môn nào.");
+        if (currentGiaoVien == null) {
+            showAlert("Lỗi", "Chưa có thông tin giáo viên để xem TKB cá nhân.");
+            return;
+        }
+        if (mainBorderPane == null) {
+            System.err.println("Lỗi: mainBorderPane chưa được thiết lập trong TimeTableController.");
+            showAlert("Lỗi Hệ Thống", "Không thể thay đổi nội dung hiển thị.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBTCM.fxml"));
+            Parent tkbTCMRoot = loader.load();
+
+            // Lấy controller
+            TKBTCMController tkbTCM = loader.getController();
+            tkbTCM.initData(currentGiaoVien);
+
+            mainBorderPane.setCenter(tkbTCMRoot);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Lỗi Hệ Thống", "Không thể tải trang Thời Khóa Biểu Cá Nhân.\nChi tiết: " + e.getMessage());
+        } catch (Exception e) { // Bắt các lỗi khác có thể xảy ra
+            e.printStackTrace();
+            showAlert("Lỗi Không Xác Định", "Đã xảy ra lỗi: " + e.getMessage());
         }
     }
 
@@ -136,7 +157,7 @@ public class TimeTableController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBCaNhan.fxml"));
             Parent tkbCaNhanRoot = loader.load();
 
-            // Lấy controller của TKBCaNhanForm
+            // Lấy controller
             TKBCaNhanController tkbCaNhanController = loader.getController();
             tkbCaNhanController.initData(currentGiaoVien);
 
