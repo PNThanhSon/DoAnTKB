@@ -14,7 +14,7 @@ public class GiaoVien {
     private String sdt;
     private String matKhau;
     private String ghiChu;
-    private VaiTroGV  vaiTro; //ĐỂ PHÂN QUYỀN
+    private VaiTroGV vaiTro; //ĐỂ PHÂN QUYỀN
 
     // Constructor cho đăng nhập
     public GiaoVien(String maGV, String hoGV, String tenGV, String gioiTinh,

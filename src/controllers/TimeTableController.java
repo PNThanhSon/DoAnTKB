@@ -75,8 +75,28 @@ public class TimeTableController {
 
     @FXML
     private void handleTKBToanTruong(ActionEvent event) {
-        // Hiện tại giữ nguyên, sau này có thể load FXML tương tự
-        showAlert("Xem TKB Toàn Trường", "Chức năng xem TKB toàn trường.");
+        if (currentGiaoVien == null) {
+            showAlert("Lỗi", "Chưa có thông tin giáo viên để xem TKB cá nhân.");
+            return;
+        }
+        if (mainBorderPane == null) {
+            System.err.println("Lỗi: mainBorderPane chưa được thiết lập trong TimeTableController.");
+            showAlert("Lỗi Hệ Thống", "Không thể thay đổi nội dung hiển thị.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBToanTruong.fxml"));
+            Parent tkbTTRoot = loader.load();
+
+            mainBorderPane.setCenter(tkbTTRoot); // Đặt nội dung mới vào vùng center của BorderPane chính
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Lỗi Hệ Thống", "Không thể tải trang Thời Khóa Biểu Toàn trường.\nChi tiết: " + e.getMessage());
+        } catch (Exception e) { // Bắt các lỗi khác có thể xảy ra
+            e.printStackTrace();
+            showAlert("Lỗi Không Xác Định", "Đã xảy ra lỗi: " + e.getMessage());
+        }
     }
 
     @FXML

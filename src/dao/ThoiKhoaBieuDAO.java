@@ -14,6 +14,98 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ThoiKhoaBieuDAO {
+    public List<GiaoVien> getDanhSachGiaoVien() {
+        List<GiaoVien> danhSach = new ArrayList<>();
+        String sql = "SELECT MaGV, HoGV, TenGV, GioiTinh, ChuyenMon, MaTCM, SoTietQuyDinh, " +
+                "SoTietThucHien, SoTietDuThieu, Email, SDT, MatKhau, GhiChu " +
+                "FROM GIAOVIEN ORDER BY MaGV";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                while (rs.next()) {
+                    Integer soTietQD = rs.getObject("SoTietQuyDinh") != null ? rs.getInt("SoTietQuyDinh") : null;
+                    Integer soTietTH = rs.getObject("SoTietThucHien") != null ? rs.getInt("SoTietThucHien") : null;
+                    Integer soTietDT = rs.getObject("SoTietDuThieu") != null ? rs.getInt("SoTietDuThieu") : null;
+
+                    GiaoVien giaoVien = new GiaoVien(
+                            rs.getString("MaGV"),
+                            rs.getString("HoGV"),
+                            rs.getString("TenGV"),
+                            rs.getString("GioiTinh"),
+                            rs.getString("ChuyenMon"),
+                            rs.getString("MaTCM"),
+                            soTietQD,
+                            soTietTH,
+                            soTietDT,
+                            rs.getString("Email"),
+                            rs.getString("SDT"),
+                            rs.getString("MatKhau"),
+                            rs.getString("GhiChu")
+                    );
+                    danhSach.add(giaoVien);
+                }
+            }
+        } catch (SQLException e) {
+            // Thay thế bằng logger trong ứng dụng thực tế
+            System.err.println("Lỗi SQL khi lấy danh sách giáo viên: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return danhSach;
+    }
+
+    public List<Lop> getDanhSachTatCaLop() {
+        List<Lop> danhSach = new ArrayList<>();
+        String sql = "SELECT MaLop, TenLop, Khoi, GVCN FROM LOP ORDER BY Khoi, TenLop";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (conn == null) {
+                System.err.println("DAO: Không thể kết nối CSDL để lấy danh sách Lớp.");
+                return danhSach;
+            }
+            while (rs.next()) {
+                danhSach.add(new Lop(
+                        rs.getString("MaLop"),
+                        rs.getString("TenLop"),
+                        rs.getString("Khoi"),
+                        rs.getString("GVCN")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi lấy danh sách tất cả Lớp: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return danhSach;
+    }
+
+    public List<ToChuyenMon> getDanhSachTatCaTCM() {
+        List<ToChuyenMon> danhSach = new ArrayList<>();
+        String sql = "SELECT MaTCM, TenTCM, ToTruong, ToPho FROM TOCHUYENMON ORDER BY TenTCM";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (conn == null) {
+                System.err.println("DAO: Không thể kết nối CSDL để lấy danh sách TCM.");
+                return danhSach;
+            }
+            while (rs.next()) {
+                danhSach.add(new ToChuyenMon(
+                        rs.getString("MaTCM"),
+                        rs.getString("TenTCM"),
+                        rs.getString("ToTruong"),
+                        rs.getString("ToPho")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi lấy danh sách tất cả TCM: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return danhSach;
+    }
 
     public String getTenLopCN(String maGV) {
         if (maGV == null || maGV.trim().isEmpty()) return null;
