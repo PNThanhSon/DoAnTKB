@@ -89,6 +89,8 @@ public class TimeTableController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBToanTruong.fxml"));
             Parent tkbTTRoot = loader.load();
 
+            TKBToanTruongController tkbTT = loader.getController();
+            tkbTT.initData(mainBorderPane);
             mainBorderPane.setCenter(tkbTTRoot); // Đặt nội dung mới vào vùng center của BorderPane chính
         } catch (IOException e) {
             e.printStackTrace();

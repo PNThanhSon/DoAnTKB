@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class TKBLopCNController {
     @FXML private Label tkbLopCNLabel; // Label mới để hiển thị lớp chủ nhiệm
     @FXML private ComboBox<HocKy> hocKyComboBox;
     @FXML private ComboBox<ThoiKhoaBieu> tkbComboBox;
+    @FXML private ComboBox<Lop> lopComboBox;
+    @FXML private HBox hBoxLop;
 
     // TableView chính (thay thế cho sangTableView)
     @FXML private TableView<TietHocData> tkbTableView; // Đổi tên từ sangTableView
@@ -33,7 +36,7 @@ public class TKBLopCNController {
     @FXML private TableColumn<TietHocData, ChiTietTKB> thu7Column; // Đổi tên
 
     private GiaoVien currentGiaoVien;
-    private ThoiKhoaBieuDAO thoiKhoaBieuDAO;
+    private final ThoiKhoaBieuDAO thoiKhoaBieuDAO;
 
     // ObservableList để chứa dữ liệu cho TableView
     private ObservableList<TietHocData> tkbDataList;
@@ -41,6 +44,8 @@ public class TKBLopCNController {
     private static final int SO_TIET_MOI_BUOI = 5;
     private static final double ROW_HEIGHT = 28.0;
     private static final double ESTIMATED_HEADER_HEIGHT = 30.0;
+    private String maLop = "";
+    ThoiKhoaBieu selectedTKB = null;
 
     public TKBLopCNController() {
         thoiKhoaBieuDAO = new ThoiKhoaBieuDAO();
@@ -72,11 +77,20 @@ public class TKBLopCNController {
         // Tải danh sách học kỳ
         loadHocKyOptions();
         tkbComboBox.setDisable(true);
+        lopComboBox.setDisable(true);
     }
 
     public void initData(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;
-        tkbLopCNLabel.setText("THỜI KHÓA BIỂU LỚP " + thoiKhoaBieuDAO.getTenLopCN(currentGiaoVien.getMaGV())); // Label thông báo lớp chủ nhiệm
+        maLop = thoiKhoaBieuDAO.getTenLopCN(currentGiaoVien.getMaGV());
+        tkbLopCNLabel.setText("THỜI KHÓA BIỂU LỚP " + maLop);
+        hBoxLop.setVisible(false);
+        hBoxLop.setManaged(false);
+    }
+
+    public void initDataAdmin() {
+        tkbLopCNLabel.setText("THỜI KHÓA BIỂU LỚP");
+        loadLopOptions();
     }
 
     private void setupTableColumns(TableColumn<TietHocData, String> tietCol,
@@ -110,7 +124,25 @@ public class TKBLopCNController {
         } else {
             hocKyComboBox.setPromptText("Không có học kỳ");
             tkbComboBox.setDisable(true);
+            lopComboBox.setDisable(true);
         }
+    }
+
+    private void loadLopOptions() {
+        List<Lop> lopList = thoiKhoaBieuDAO.getDanhSachTatCaLop();
+        lopComboBox.getItems().clear();
+        if (lopList != null && !lopList.isEmpty()) {
+            lopComboBox.setItems(FXCollections.observableArrayList(lopList));
+        } else {
+            lopComboBox.setPromptText("Không có lớp");
+        }
+    }
+
+    @FXML
+    private void handleLopSelection(ActionEvent event) {
+        maLop = lopComboBox.getSelectionModel().getSelectedItem().getMaLop();
+        tkbLopCNLabel.setText("THỜI KHÓA BIỂU LỚP " + maLop);
+        if (selectedTKB != null) loadThoiKhoaBieuData(selectedTKB, maLop);
     }
 
     @FXML
@@ -118,6 +150,7 @@ public class TKBLopCNController {
         HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
         tkbComboBox.getItems().clear();
         tkbComboBox.setDisable(true);
+        lopComboBox.setDisable(true);
         tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
         clearTableData();
 
@@ -126,6 +159,7 @@ public class TKBLopCNController {
             if (tkbList != null && !tkbList.isEmpty()) {
                 tkbComboBox.setItems(FXCollections.observableArrayList(tkbList));
                 tkbComboBox.setDisable(false);
+                lopComboBox.setDisable(false);
             } else {
                 tkbComboBox.setPromptText("Không có TKB cho học kỳ này");
             }
@@ -136,10 +170,10 @@ public class TKBLopCNController {
 
     @FXML
     private void handleTkbSelection(ActionEvent event) {
-        ThoiKhoaBieu selectedTKB = tkbComboBox.getSelectionModel().getSelectedItem();
+        selectedTKB = tkbComboBox.getSelectionModel().getSelectedItem();
         clearTableData(); // Xóa dữ liệu bảng cũ
 
-        if (selectedTKB != null && currentGiaoVien != null) {
+        if (selectedTKB != null) {
             // Cập nhật label buổi
             if (selectedTKB.getBuoi() != null && !selectedTKB.getBuoi().isEmpty()) {
                 tkbBuoiLabel.setText("Buổi: " + selectedTKB.getBuoi().toUpperCase());
@@ -147,28 +181,23 @@ public class TKBLopCNController {
                 tkbBuoiLabel.setText("Buổi: (Không xác định)");
             }
 
-            System.out.println("Đang tải TKB: " + selectedTKB.getMaTKB() +
-                    " (Buổi: " + selectedTKB.getBuoi() +
-                    ") cho lớp chủ nhiệm của GV: " + currentGiaoVien.getMaGV());
-            loadThoiKhoaBieuData(selectedTKB, currentGiaoVien.getMaGV());
+            loadThoiKhoaBieuData(selectedTKB, maLop);
         } else {
             tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
             if (selectedTKB == null) {
                 System.out.println("Không có TKB nào được chọn.");
-            } else if (currentGiaoVien == null) {
-                showAlert("Thiếu thông tin", "Vui lòng đăng nhập hoặc chọn giáo viên.");
             }
         }
     }
 
-    private void loadThoiKhoaBieuData(ThoiKhoaBieu selectedTKB, String maGV) {
+    private void loadThoiKhoaBieuData(ThoiKhoaBieu selectedTKB, String maLop) {
         // Khởi tạo lại các hàng cho bảng (giờ chỉ có một bảng tkbDataList)
         initializeTableRows(tkbDataList);
 
-        List<ChiTietTKB> chiTietList = thoiKhoaBieuDAO.getChiTietTKBForLopCN(selectedTKB.getMaTKB(), maGV);
+        List<ChiTietTKB> chiTietList = thoiKhoaBieuDAO.getChiTietTKBForLopCN(selectedTKB.getMaTKB(), maLop);
 
         if (chiTietList == null || chiTietList.isEmpty()) {
-            System.out.println("Không có chi tiết TKB nào cho GV " + maGV + " với TKB " + selectedTKB.getMaTKB());
+            System.out.println("Không có chi tiết TKB nào cho " + maLop + " với TKB " + selectedTKB.getMaTKB());
         } else {
             for (ChiTietTKB ct : chiTietList) {
                 int tietIndex = ct.getTiet() - 1; // Giả sử tiết 1 là index 0

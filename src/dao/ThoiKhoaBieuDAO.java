@@ -254,21 +254,20 @@ public class ThoiKhoaBieuDAO {
     }
 
     // Hàm này dùng cho TKB của Lớp chủ nhiệm
-    public List<ChiTietTKB> getChiTietTKBForLopCN(String maTKB, String maGV) {
+    public List<ChiTietTKB> getChiTietTKBForLopCN(String maTKB, String maLop) {
         List<ChiTietTKB> chiTietList = new ArrayList<>();
 
         String sql = "SELECT ct.Thu, ct.Tiet, mh.TenMH, ct.MaLop, gv.MaGV, gv.HoGV || ' ' || gv.TenGV AS HoTenGV " +
                 "FROM CHITIETTKB ct " +
                 "JOIN MONHOC mh ON ct.MaMH = mh.MaMH " +
                 "JOIN GIAOVIEN gv ON ct.MaGV = gv.MaGV " +
-                "JOIN LOP l ON ct.MaLop = l.MaLop " +
-                "WHERE ct.MaTKB = ? AND l.GVCN = ? " +
+                "WHERE ct.MaTKB = ? AND ct.MaLop = ? " +
                 "ORDER BY ct.Thu, ct.Tiet";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, maTKB);
-            pstmt.setString(2, maGV);
+            pstmt.setString(2, maLop);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {

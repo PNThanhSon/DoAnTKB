@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class TKBCaNhanController {
     @FXML private Label tkbBuoiLabel; // Label mới để hiển thị buổi của TKB
     @FXML private ComboBox<HocKy> hocKyComboBox;
     @FXML private ComboBox<ThoiKhoaBieu> tkbComboBox;
+    @FXML private HBox hBoxGV;
+    @FXML private ComboBox<GiaoVien> GVComboBox;
+    @FXML private Label mainLabel;
 
     // TableView chính (thay thế cho sangTableView)
     @FXML private TableView<TietHocData> tkbTableView; // Đổi tên từ sangTableView
@@ -40,6 +44,8 @@ public class TKBCaNhanController {
     private static final int SO_TIET_MOI_BUOI = 5;
     private static final double ROW_HEIGHT = 28.0;
     private static final double ESTIMATED_HEADER_HEIGHT = 30.0;
+    String maGV = "";
+    ThoiKhoaBieu selectedTKB;
 
     public TKBCaNhanController() {
         thoiKhoaBieuDAO = new ThoiKhoaBieuDAO();
@@ -71,10 +77,19 @@ public class TKBCaNhanController {
         // Tải danh sách học kỳ
         loadHocKyOptions();
         tkbComboBox.setDisable(true);
+        GVComboBox.setDisable(true);
     }
 
     public void initData(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;
+        maGV = giaoVien.getMaGV();
+        hBoxGV.setVisible(false);
+        hBoxGV.setManaged(false);
+    }
+
+    public void initDataAdmin() {
+        mainLabel.setText("THỜI KHÓA BIỂU GIÁO VIÊN");
+        loadGVOptions();
     }
 
     private void setupTableColumns(TableColumn<TietHocData, String> tietCol,
@@ -108,7 +123,26 @@ public class TKBCaNhanController {
         } else {
             hocKyComboBox.setPromptText("Không có học kỳ");
             tkbComboBox.setDisable(true);
+            GVComboBox.setDisable(true);
         }
+    }
+
+    private void loadGVOptions() {
+        List<GiaoVien> GVList = thoiKhoaBieuDAO.getDanhSachGiaoVien();
+        GVComboBox.getItems().clear();
+        if (GVList != null && !GVList.isEmpty()) {
+            GVComboBox.setItems(FXCollections.observableArrayList(GVList));
+        } else {
+            GVComboBox.setPromptText("Không có GV");
+        }
+    }
+
+    @FXML
+    private void handleGVSelection(ActionEvent event) {
+        GiaoVien selectedGV = GVComboBox.getSelectionModel().getSelectedItem();
+        maGV = selectedGV.getMaGV();
+        mainLabel.setText("THỜI KHÓA BIỂU CỦA " + selectedGV.getHoGV() + " " + selectedGV.getTenGV());
+        if (selectedTKB != null) loadThoiKhoaBieuData(selectedTKB, maGV);
     }
 
     @FXML
@@ -116,6 +150,7 @@ public class TKBCaNhanController {
         HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
         tkbComboBox.getItems().clear();
         tkbComboBox.setDisable(true);
+        GVComboBox.setDisable(true);
         tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
         clearTableData();
 
@@ -124,6 +159,7 @@ public class TKBCaNhanController {
             if (tkbList != null && !tkbList.isEmpty()) {
                 tkbComboBox.setItems(FXCollections.observableArrayList(tkbList));
                 tkbComboBox.setDisable(false);
+                GVComboBox.setDisable(false);
             } else {
                 tkbComboBox.setPromptText("Không có TKB cho học kỳ này");
             }
@@ -134,10 +170,10 @@ public class TKBCaNhanController {
 
     @FXML
     private void handleTkbSelection(ActionEvent event) {
-        ThoiKhoaBieu selectedTKB = tkbComboBox.getSelectionModel().getSelectedItem();
+        selectedTKB = tkbComboBox.getSelectionModel().getSelectedItem();
         clearTableData(); // Xóa dữ liệu bảng cũ
 
-        if (selectedTKB != null && currentGiaoVien != null) {
+        if (selectedTKB != null) {
             // Cập nhật label buổi
             if (selectedTKB.getBuoi() != null && !selectedTKB.getBuoi().isEmpty()) {
                 tkbBuoiLabel.setText("Buổi: " + selectedTKB.getBuoi().toUpperCase());
@@ -147,14 +183,12 @@ public class TKBCaNhanController {
 
             System.out.println("Đang tải TKB: " + selectedTKB.getMaTKB() +
                     " (Buổi: " + selectedTKB.getBuoi() +
-                    ") cho GV: " + currentGiaoVien.getMaGV());
-            loadThoiKhoaBieuData(selectedTKB, currentGiaoVien.getMaGV());
+                    ") cho GV: " + maGV);
+            loadThoiKhoaBieuData(selectedTKB, maGV);
         } else {
             tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
             if (selectedTKB == null) {
                 System.out.println("Không có TKB nào được chọn.");
-            } else if (currentGiaoVien == null) {
-                showAlert("Thiếu thông tin", "Vui lòng đăng nhập hoặc chọn giáo viên.");
             }
         }
     }
@@ -198,6 +232,7 @@ public class TKBCaNhanController {
         tkbComboBox.getItems().clear();
         tkbComboBox.setPromptText("Chọn TKB để xem");
         tkbComboBox.setDisable(true);
+        GVComboBox.setDisable(true);
         tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
         clearTableData();
     }

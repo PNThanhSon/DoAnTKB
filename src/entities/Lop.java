@@ -20,6 +20,6 @@ public class Lop {
 
     @Override
     public String toString() {
-        return tenLop + " (" + maLop + ")"; // Hiển thị trong ComboBox
+        return maLop; // Hiển thị trong ComboBox
     }
 }

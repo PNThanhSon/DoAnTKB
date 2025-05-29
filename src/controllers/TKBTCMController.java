@@ -31,6 +31,8 @@ public class TKBTCMController {
     @FXML private ComboBox<ThoiKhoaBieu> tkbComboBox;
     @FXML private ComboBox<NhomMonHocDisplay> monHocComboBox;
     @FXML private ScrollPane tkbScrollPane; // Để chứa GridPane
+    @FXML private HBox hBoxTo;
+    @FXML private ComboBox<ToChuyenMon> toComboBox;
     private GridPane tkbGridPane;
 
     private GiaoVien currentGiaoVien;
@@ -42,6 +44,7 @@ public class TKBTCMController {
     private static final int SO_TIET_MOI_BUOI = 5;
     private static final String[] THU_TRONG_TUAN_LABEL = {"Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"};
     private static final int[] THU_TRONG_TUAN_DBVAL = {2, 3, 4, 5, 6, 7}; // Giá trị Thứ trong CSDL
+    private String maTCM = "";
 
     public TKBTCMController() {
         thoiKhoaBieuDAO = new ThoiKhoaBieuDAO();
@@ -71,14 +74,18 @@ public class TKBTCMController {
         loadHocKyOptions();
         tkbComboBox.setDisable(true);
         monHocComboBox.setDisable(true);
+        toComboBox.setDisable(true);
     }
 
     public void initData(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;
+        maTCM = currentGiaoVien.getMaTCM();
         if (currentGiaoVien != null && currentGiaoVien.getMaTCM() != null) {
             String maTCM = currentGiaoVien.getMaTCM();
             String tenTCM = thoiKhoaBieuDAO.getTenTCMByMaTCM(maTCM); // Dùng hàm mới
             tkbTCMLabel.setText("THỜI KHÓA BIỂU " + (tenTCM != null ? tenTCM.toUpperCase() : maTCM.toUpperCase()));
+            hBoxTo.setVisible(false);
+            hBoxTo.setManaged(false);
             loadMonHocOptions(maTCM);
         } else {
             tkbTCMLabel.setText("TKB Tổ Chuyên Môn: Lỗi - Không có thông tin GV hoặc TCM");
@@ -86,6 +93,31 @@ public class TKBTCMController {
             hocKyComboBox.setDisable(true); // Cũng vô hiệu hóa nếu không có TCM
             tkbComboBox.setDisable(true);
         }
+    }
+
+    public void initDataAdmin() {
+        tkbTCMLabel.setText("THỜI KHÓA BIỂU TỔ CHUYÊN MÔN");
+        loadToChuyenMonOptions();
+    }
+
+    private void loadToChuyenMonOptions() {
+        List<ToChuyenMon> toList = thoiKhoaBieuDAO.getDanhSachTatCaTCM();
+        toComboBox.getItems().clear();
+        if (toList != null && !toList.isEmpty()) {
+            toComboBox.setItems(FXCollections.observableArrayList(toList));
+        } else {
+            toComboBox.setPromptText("Không có Tổ Chuyên Môn");
+        }
+    }
+
+    @FXML
+    private void handleToSelection(ActionEvent event) {
+        ToChuyenMon selectedTo = toComboBox.getSelectionModel().getSelectedItem();
+        maTCM = selectedTo.getMaTCM();
+        String tenTCM = thoiKhoaBieuDAO.getTenTCMByMaTCM(maTCM);
+        tkbTCMLabel.setText("THỜI KHÓA BIỂU " + (tenTCM != null ? tenTCM.toUpperCase() : maTCM.toUpperCase()));
+        loadMonHocOptions(maTCM);
+        monHocComboBox.setDisable(false);
     }
 
     private void loadHocKyOptions() {
@@ -114,6 +146,7 @@ public class TKBTCMController {
         HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
         tkbComboBox.getItems().clear();
         tkbComboBox.setDisable(true);
+        toComboBox.setDisable(true);
         tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
         clearTKBDisplay();
 
@@ -137,13 +170,13 @@ public class TKBTCMController {
 
         if (selectedTKB != null) {
             tkbBuoiLabel.setText("Buổi: " + (selectedTKB.getBuoi() != null ? selectedTKB.getBuoi().toUpperCase() : "N/A"));
-            // Kích hoạt lại ComboBox Môn học nếu đã chọn TKB và có thông tin TCM
-            if (currentGiaoVien != null && currentGiaoVien.getMaTCM() != null) {
-                monHocComboBox.setDisable(false);
-            }
+            monHocComboBox.setDisable(false);
+            toComboBox.setDisable(false);
+
         } else {
             tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
-            monHocComboBox.setDisable(true); // Nếu TKB bỏ chọn, vô hiệu hóa chọn môn
+            monHocComboBox.setDisable(true);
+            toComboBox.setDisable(true);
         }
     }
 
@@ -153,10 +186,7 @@ public class TKBTCMController {
         ThoiKhoaBieu selectedTKB = tkbComboBox.getSelectionModel().getSelectedItem();
         clearTKBDisplay();
 
-        if (selectedNhomMonHoc != null && selectedTKB != null && currentGiaoVien != null && currentGiaoVien.getMaTCM() != null) {
-            System.out.println("Đang tải TKB cho TCM: " + currentGiaoVien.getMaTCM() +
-                    ", TKB ID: " + selectedTKB.getMaTKB() +
-                    ", Nhóm Môn: " + selectedNhomMonHoc.getTenMonHocChung());
+        if (selectedNhomMonHoc != null && selectedTKB != null) {
             loadAndDisplayThoiKhoaBieuForTCM(selectedTKB, selectedNhomMonHoc);
         }
     }
@@ -173,7 +203,7 @@ public class TKBTCMController {
         List<ChiTietTKB> tatCaChiTiet = thoiKhoaBieuDAO.getChiTietTKBForTCM(
                 selectedTKB.getMaTKB(),
                 cacMaMHCuaNhom,
-                currentGiaoVien.getMaTCM()
+                maTCM
         );
 
         if (tatCaChiTiet.isEmpty()) {

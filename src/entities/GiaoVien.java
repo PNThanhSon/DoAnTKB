@@ -85,11 +85,7 @@ public class GiaoVien {
 
     @Override
     public String toString() {
-        return "entities.GiaoVien{" +
-                "maGV='" + maGV + '\'' +
-                ", hoTen='" + hoGV + " " + tenGV + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return hoGV + " " + tenGV;
     }
 
 
