@@ -1,4 +1,4 @@
-package controllers;
+package controllers.XemTKB;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,7 +31,7 @@ public class TKBToanTruongController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBCaNhan.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBCaNhan.fxml"));
             Parent tkbCaNhanRoot = loader.load();
 
             TKBCaNhanController tkbGV = loader.getController();
@@ -57,7 +57,7 @@ public class TKBToanTruongController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBLopCN.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBLopCN.fxml"));
             Parent tkbLopRoot = loader.load();
 
             TKBLopCNController tkbLop = loader.getController();
@@ -83,7 +83,7 @@ public class TKBToanTruongController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBTCM.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBTCM.fxml"));
             Parent tkbTCMRoot = loader.load();
 
             TKBTCMController tkbTo = loader.getController();

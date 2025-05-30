@@ -1,5 +1,5 @@
 // Trong file controllers/TimeTableController.java
-package controllers;
+package controllers.XemTKB;
 
 import entities.GiaoVien;
 import entities.VaiTroGV;
@@ -86,7 +86,7 @@ public class TimeTableController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBToanTruong.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBToanTruong.fxml"));
             Parent tkbTTRoot = loader.load();
 
             TKBToanTruongController tkbTT = loader.getController();
@@ -114,7 +114,7 @@ public class TimeTableController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBLopCN.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBLopCN.fxml"));
             Parent tkbCaNhanRoot = loader.load();
 
             // Lấy controller
@@ -145,7 +145,7 @@ public class TimeTableController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBTCM.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBTCM.fxml"));
             Parent tkbTCMRoot = loader.load();
 
             // Lấy controller
@@ -176,7 +176,7 @@ public class TimeTableController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TKBCaNhan.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TKBCaNhan.fxml"));
             Parent tkbCaNhanRoot = loader.load();
 
             // Lấy controller

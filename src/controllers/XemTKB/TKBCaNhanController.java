@@ -1,4 +1,4 @@
-package controllers;
+package controllers.XemTKB;
 
 import dao.ThoiKhoaBieuDAO;
 import entities.*;

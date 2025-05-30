@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="950.0" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TKBLopCNController">
+<VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="950.0" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.XemTKB.TKBCaNhanController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-    <Label fx:id="tkbLopCNLabel" text="THỜI KHÓA BIỂU LỚP (lớp)">
+    <Label fx:id="mainLabel" text="THỜI KHÓA BIỂU CÁ NHÂN">
         <font>
             <Font name="System Bold" size="24.0" />
         </font>
@@ -42,14 +42,14 @@
         </Label>
         <ComboBox fx:id="tkbComboBox" onAction="#handleTkbSelection" prefHeight="26.0" prefWidth="265.0" promptText="Chọn TKB để xem" />
     </HBox>
-    <HBox fx:id="hBoxLop" alignment="CENTER" prefHeight="34.0" prefWidth="910.0" spacing="10.0">
-        <Label text="Lớp">
-           <font>
-               <Font size="14.0"/>
-           </font>
+
+    <HBox fx:id="hBoxGV" alignment="CENTER" prefHeight="34.0" prefWidth="910.0" spacing="10.0">
+        <Label text="Giáo viên">
+            <font>
+                <Font size="14.0" />
+            </font>
         </Label>
-        <ComboBox fx:id="lopComboBox" onAction="#handleLopSelection" prefHeight="26.0" prefWidth="132.0"
-                  promptText="Chọn lớp"/>
+        <ComboBox fx:id="GVComboBox" onAction="#handleGVSelection" prefHeight="26.0" prefWidth="194.0" promptText="Chọn giáo viên" />
     </HBox>
 
     <Label fx:id="tkbBuoiLabel" text="Buổi: (chưa chọn TKB)">
@@ -61,7 +61,7 @@
         </VBox.margin>
     </Label>
 
-    <TableView fx:id="tkbTableView" maxWidth="1000.0">
+    <TableView fx:id="tkbTableView" maxWidth="850.0">
         <columns>
             <TableColumn fx:id="tietColumn" editable="false" prefWidth="70.0" sortable="false" style="-fx-alignment: CENTER; -fx-font-weight: bold;" text="Tiết" />
             <TableColumn fx:id="thu2Column" editable="false" prefWidth="120.0" sortable="false" text="Thứ 2" />

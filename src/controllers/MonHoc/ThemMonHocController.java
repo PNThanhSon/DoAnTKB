@@ -1,7 +1,7 @@
 package controllers.MonHoc;
 
-import DAO.MonHocDAO;
-import DAO.ToChuyenMonDAO;
+import dao.MonHocDAO;
+import dao.ToChuyenMonDAO;
 import entities.MonHoc;
 import entities.ToChuyenMon;
 import javafx.collections.FXCollections;
@@ -61,10 +61,7 @@ public class ThemMonHocController {
     @FXML
     private void handleThem() {
         if (validateInputs()) {
-            MonHoc newMonHoc = new MonHoc();
-            newMonHoc.setMaMH(txtMaMH.getText().trim());
-            newMonHoc.setTenMH(txtTenMH.getText().trim());
-            newMonHoc.setKhoi(comboKhoi.getValue());
+            MonHoc newMonHoc = new MonHoc(txtMaMH.getText().trim(), txtTenMH.getText().trim(), comboKhoi.getValue(), null);
             ToChuyenMon selectedTCM = comboToChuyenMon.getValue();
             if (selectedTCM != null) {
                 newMonHoc.setMaTCM(selectedTCM.getMaTCM());

@@ -1,13 +1,9 @@
 package controllers.LopHoc; // Correct package
 
-import DAO.GiaoVienDAO;
-import DAO.LopHocDAO;
+import dao.GiaoVienDAO;
+import dao.LopHocDAO;
 import entities.GiaoVien;
-import entities.LopHoc;
-// Imports for other controllers in the same package
-import controllers.LopHoc.ThemLopHocController;
-import controllers.LopHoc.SuaLopHocController;
-
+import entities.Lop;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -40,17 +36,17 @@ public class QuanLyLopHocController {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> comboKhoiFilter;
     @FXML private ComboBox<GiaoVien> comboGVCNFilter;
-    @FXML private TableView<LopHoc> tableLopHoc;
+    @FXML private TableView<Lop> tableLopHoc;
     @FXML private Text txtThongBao;
 
-    @FXML private TableColumn<LopHoc, String> colMaLop;
-    @FXML private TableColumn<LopHoc, String> colTenLop;
-    @FXML private TableColumn<LopHoc, String> colKhoi;
-    @FXML private TableColumn<LopHoc, String> colTenGVCN;
+    @FXML private TableColumn<Lop, String> colMaLop;
+    @FXML private TableColumn<Lop, String> colTenLop;
+    @FXML private TableColumn<Lop, String> colKhoi;
+    @FXML private TableColumn<Lop, String> colTenGVCN;
 
     private final LopHocDAO lopHocDAO = new LopHocDAO();
     private final GiaoVienDAO giaoVienDAO = new GiaoVienDAO();
-    private ObservableList<LopHoc> danhSachLopHocCurrent = FXCollections.observableArrayList();
+    private ObservableList<Lop> danhSachLopHocCurrent = FXCollections.observableArrayList();
     private Map<String, String> maGvToTenGvMap;
 
     @FXML
@@ -67,7 +63,7 @@ public class QuanLyLopHocController {
         comboKhoiFilter.valueProperty().addListener((obs, oldV, newV) -> handleFilter());
         comboGVCNFilter.valueProperty().addListener((obs, oldV, newV) -> handleFilter());
 
-        comboGVCNFilter.setConverter(new StringConverter<GiaoVien>() {
+        comboGVCNFilter.setConverter(new StringConverter<>() {
             @Override
             public String toString(GiaoVien gv) {
                 // If gv is null, it represents the "Tất cả" option
@@ -90,7 +86,7 @@ public class QuanLyLopHocController {
         colKhoi.setCellValueFactory(new PropertyValueFactory<>("khoi"));
 
         colTenGVCN.setCellValueFactory(cellData -> {
-            String maGVCN = cellData.getValue().getMaGVCN();
+            String maGVCN = cellData.getValue().getGvcn();
             return new SimpleStringProperty(maGvToTenGvMap.getOrDefault(maGVCN, maGVCN != null ? maGVCN : "Chưa có"));
         });
     }
@@ -194,7 +190,7 @@ public class QuanLyLopHocController {
     }
 
     private void handleSua() {
-        LopHoc selectedLopHoc = tableLopHoc.getSelectionModel().getSelectedItem();
+        Lop selectedLopHoc = tableLopHoc.getSelectionModel().getSelectedItem();
         if (selectedLopHoc == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn một lớp học để sửa.");
             return;
@@ -225,7 +221,7 @@ public class QuanLyLopHocController {
     }
 
     private void handleXoa() {
-        LopHoc selectedLopHoc = tableLopHoc.getSelectionModel().getSelectedItem();
+        Lop selectedLopHoc = tableLopHoc.getSelectionModel().getSelectedItem();
         if (selectedLopHoc == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn một lớp học để xóa.");
             return;

@@ -12,7 +12,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
-<VBox spacing="15.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MonHoc.SuaMonHocController">
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MonHoc.SuaMonHocController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -23,7 +23,7 @@
 
         <Label text="Tên Môn Học:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
         <TextField fx:id="txtTenMH" promptText="Ví dụ: Toán lớp 10, Vật Lý 6" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Text fx:id="tbTenMH" fill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Text fx:id="tbTenMH" GridPane.columnIndex="2" GridPane.rowIndex="1" />
 
         <Label text="Khối:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
         <ComboBox fx:id="comboKhoi" prefWidth="220.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -40,14 +40,14 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Text fx:id="tbKhoi" fill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Text fx:id="tbKhoi" GridPane.columnIndex="2" GridPane.rowIndex="2" />
 
         <Label text="Tổ Chuyên Môn:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
         <ComboBox fx:id="comboToChuyenMon" prefWidth="220.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        <Text fx:id="tbMaTCM" fill="RED" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Text fx:id="tbMaTCM" GridPane.columnIndex="2" GridPane.rowIndex="3" />
     </GridPane>
     <HBox alignment="CENTER_RIGHT" spacing="10.0">
-        <Button onAction="#handleLuu" text="Lưu Thay Đổi" style="-fx-background-color: #28a745; -fx-text-fill: white;" />
+        <Button onAction="#handleLuu" text="Lưu Thay Đổi" />
         <Button onAction="#handleHuy" text="Hủy" />
     </HBox>
 </VBox>

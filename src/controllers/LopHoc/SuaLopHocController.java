@@ -1,9 +1,9 @@
 package controllers.LopHoc;
 
-import DAO.GiaoVienDAO;
-import DAO.LopHocDAO;
+import dao.GiaoVienDAO;
+import dao.LopHocDAO;
 import entities.GiaoVien;
-import entities.LopHoc;
+import entities.Lop;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -29,7 +29,7 @@ public class SuaLopHocController {
 
     private Stage dialogStage;
     private Runnable onSuccess; // Callback khi sửa thành công
-    private LopHoc lopHocToEdit; // Đối tượng Lớp học đang được sửa
+    private Lop lopHocToEdit; // Đối tượng Lớp học đang được sửa
     private final LopHocDAO lopHocDAO = new LopHocDAO();
     private final GiaoVienDAO giaoVienDAO = new GiaoVienDAO(); // Sử dụng GiaoVienDAO bạn cung cấp
 
@@ -38,12 +38,13 @@ public class SuaLopHocController {
         loadGiaoVienData(); // Tải danh sách giáo viên cho ComboBox
 
         // Custom display cho ComboBox Giáo viên
-        comboGVCN.setConverter(new StringConverter<GiaoVien>() {
+        comboGVCN.setConverter(new StringConverter<>() {
             @Override
             public String toString(GiaoVien gv) {
                 // Hiển thị "Họ Tên (Mã GV)" hoặc null nếu gv là null
                 return gv == null ? null : (gv.getHoGV() + " " + gv.getTenGV() + " (" + gv.getMaGV() + ")");
             }
+
             @Override
             public GiaoVien fromString(String string) {
                 // Không cần cho ComboBox không cho phép nhập tự do
@@ -73,7 +74,7 @@ public class SuaLopHocController {
     }
 
     // Nhận đối tượng LopHoc cần sửa và điền thông tin vào form
-    public void setLopHocToEdit(LopHoc lopHoc) {
+    public void setLopHocToEdit(Lop lopHoc) {
         this.lopHocToEdit = lopHoc;
         populateForm();
     }
@@ -86,7 +87,7 @@ public class SuaLopHocController {
             comboKhoi.setValue(lopHocToEdit.getKhoi());
 
             // Chọn giáo viên chủ nhiệm hiện tại trong ComboBox
-            String maGVCNToSelect = lopHocToEdit.getMaGVCN();
+            String maGVCNToSelect = lopHocToEdit.getGvcn();
             if (maGVCNToSelect != null) {
                 GiaoVien gvcnSelected = null;
                 // Tìm đối tượng GiaoVien trong danh sách của ComboBox có MaGV khớp
@@ -112,9 +113,9 @@ public class SuaLopHocController {
 
             GiaoVien selectedGVCN = comboGVCN.getValue();
             if (selectedGVCN != null) {
-                lopHocToEdit.setMaGVCN(selectedGVCN.getMaGV());
+                lopHocToEdit.setGvcn(selectedGVCN.getMaGV());
             } else {
-                lopHocToEdit.setMaGVCN(null); // Cho phép MaGVCN là null nếu CSDL cho phép
+                lopHocToEdit.setGvcn(null); // Cho phép MaGVCN là null nếu CSDL cho phép
             }
 
             try {

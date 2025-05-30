@@ -14,7 +14,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
-<BorderPane fx:id="QLMHBorderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MonHoc.QuanLyMonHocController">
+<BorderPane fx:id="QLMHBorderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MonHoc.QuanLyMonHocController">
     <top>
         <VBox spacing="10.0">
             <padding>
@@ -57,7 +57,7 @@
                 <TableColumn fx:id="colTenTCM" prefWidth="200.0" text="Tổ Chuyên Môn" />
             </columns>
             <BorderPane.margin>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="0.0" />
+                <Insets bottom="10.0" left="10.0" right="10.0"/>
             </BorderPane.margin>
         </TableView>
     </center>
@@ -67,7 +67,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
             <Text fx:id="txtThongBao" style="-fx-fill: green;" HBox.hgrow="ALWAYS" />
-            <Button onAction="#handleThem" text="Thêm Môn Học" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+            <Button onAction="#handleThem" text="Thêm Môn Học"/>
             <Button onAction="#handleLamMoi" text="Làm Mới" />
         </HBox>
     </bottom>

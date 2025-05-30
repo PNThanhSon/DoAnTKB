@@ -1,6 +1,6 @@
-package DAO;
+package dao;
 
-import entities.LopHoc;
+import entities.Lop;
 import util.DatabaseConnection; // Đảm bảo bạn đã có class này
 
 import java.sql.Connection;
@@ -13,7 +13,7 @@ import java.util.List;
 public class LopHocDAO {
 
     // Thêm một lớp học mới
-    public void themLopHoc(LopHoc lh) throws SQLException {
+    public void themLopHoc(Lop lh) throws SQLException {
         // Bảng LOP có các cột: MaLop, TenLop, Khoi, GVCN
         String sql = "INSERT INTO LOP (MaLop, TenLop, Khoi, GVCN) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -21,19 +21,19 @@ public class LopHocDAO {
             stmt.setString(1, lh.getMaLop());
             stmt.setString(2, lh.getTenLop());
             stmt.setString(3, lh.getKhoi());
-            stmt.setString(4, lh.getMaGVCN()); // GVCN là MaGVCN trong LopHoc.java
+            stmt.setString(4, lh.getGvcn()); // GVCN là MaGVCN trong LopHoc.java
             stmt.executeUpdate();
         }
     }
 
     // Cập nhật thông tin một lớp học
-    public void capNhatLopHoc(LopHoc lh) throws SQLException {
+    public void capNhatLopHoc(Lop lh) throws SQLException {
         String sql = "UPDATE LOP SET TenLop = ?, Khoi = ?, GVCN = ? WHERE MaLop = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, lh.getTenLop());
             stmt.setString(2, lh.getKhoi());
-            stmt.setString(3, lh.getMaGVCN());
+            stmt.setString(3, lh.getGvcn());
             stmt.setString(4, lh.getMaLop());
             stmt.executeUpdate();
         }
@@ -50,15 +50,15 @@ public class LopHocDAO {
     }
 
     // Lấy thông tin một lớp học bằng Mã Lớp
-    public LopHoc getLopHocById(String maLop) throws SQLException {
+    public Lop getLopHocById(String maLop) throws SQLException {
         String sql = "SELECT MaLop, TenLop, Khoi, GVCN FROM LOP WHERE MaLop = ?";
-        LopHoc lopHoc = null;
+        Lop lopHoc = null;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, maLop);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    lopHoc = new LopHoc(
+                    lopHoc = new Lop(
                             rs.getString("MaLop"),
                             rs.getString("TenLop"),
                             rs.getString("Khoi"),
@@ -71,8 +71,8 @@ public class LopHocDAO {
     }
 
     // Tra cứu lớp học
-    public List<LopHoc> tracuuLopHoc(String keyword, String khoiFilter, String maGVCNFilter) throws SQLException {
-        List<LopHoc> danhSachLopHoc = new ArrayList<>();
+    public List<Lop> tracuuLopHoc(String keyword, String khoiFilter, String maGVCNFilter) throws SQLException {
+        List<Lop> danhSachLopHoc = new ArrayList<>();
         // Giả sử bạn muốn join với bảng GIAOVIEN để lấy tên GVCN hiển thị
         // Nếu không, câu SELECT sẽ đơn giản hơn: "SELECT MaLop, TenLop, Khoi, GVCN FROM LOP WHERE 1=1"
         StringBuilder sqlBuilder = new StringBuilder(
@@ -109,7 +109,7 @@ public class LopHocDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    LopHoc lopHoc = new LopHoc(
+                    Lop lopHoc = new Lop(
                             rs.getString("MaLop"),
                             rs.getString("TenLop"),
                             rs.getString("Khoi"),
@@ -130,7 +130,7 @@ public class LopHocDAO {
     }
 
     // Lấy tất cả lớp học
-    public List<LopHoc> getAllLopHoc() throws SQLException {
+    public List<Lop> getAllLopHoc() throws SQLException {
         return tracuuLopHoc(null, null, null);
     }
 }

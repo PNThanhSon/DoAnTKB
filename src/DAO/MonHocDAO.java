@@ -1,4 +1,4 @@
-package DAO;
+package dao;
 
 import entities.MonHoc;
 import util.DatabaseConnection;

@@ -1,7 +1,7 @@
 package controllers.MonHoc;
 
-import DAO.MonHocDAO;
-import DAO.ToChuyenMonDAO;
+import dao.MonHocDAO;
+import dao.ToChuyenMonDAO;
 import entities.MonHoc;
 import entities.ToChuyenMon;
 import javafx.collections.FXCollections;

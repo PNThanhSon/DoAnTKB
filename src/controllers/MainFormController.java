@@ -2,8 +2,8 @@ package controllers;// Giả sử các file nằm trực tiếp trong thư mục
 
 import controllers.PhanHoiYKien.PhanHoiYKienController;
 import controllers.QuanLyGiaoVien.QuanLyGiaoVienController;
+import controllers.XemTKB.TimeTableController;
 import entities.GiaoVien;
-import entities.VaiTroGV;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -154,7 +154,7 @@ public class MainFormController {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TimeTableForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XemTKB/TimeTableForm.fxml"));
             Parent profileRoot = loader.load();
 
             TimeTableController TTControl = loader.getController();

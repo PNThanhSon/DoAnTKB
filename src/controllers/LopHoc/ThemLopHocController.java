@@ -1,9 +1,9 @@
 package controllers.LopHoc;
 
-import DAO.GiaoVienDAO;
-import DAO.LopHocDAO;
+import dao.GiaoVienDAO;
+import dao.LopHocDAO;
 import entities.GiaoVien;
-import entities.LopHoc;
+import entities.Lop;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -12,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
 import java.sql.SQLException;
 import java.util.List;
 
@@ -39,12 +38,13 @@ public class ThemLopHocController {
         comboKhoi.getSelectionModel().selectFirst(); // Chọn giá trị mặc định cho Khối
 
         // Custom display cho ComboBox Giáo viên
-        comboGVCN.setConverter(new StringConverter<GiaoVien>() {
+        comboGVCN.setConverter(new StringConverter<>() {
             @Override
             public String toString(GiaoVien gv) {
                 // Hiển thị "Họ Tên (Mã GV)" hoặc null nếu gv là null
                 return gv == null ? null : (gv.getHoGV() + " " + gv.getTenGV() + " (" + gv.getMaGV() + ")");
             }
+
             @Override
             public GiaoVien fromString(String string) {
                 // Không cần cho ComboBox không cho phép nhập tự do
@@ -77,16 +77,13 @@ public class ThemLopHocController {
     @FXML
     private void handleThem() {
         if (validateInputs()) { // Kiểm tra dữ liệu nhập
-            LopHoc newLopHoc = new LopHoc();
-            newLopHoc.setMaLop(txtMaLop.getText().trim().toUpperCase()); // Chuẩn hóa MaLop
-            newLopHoc.setTenLop(txtTenLop.getText().trim());
-            newLopHoc.setKhoi(comboKhoi.getValue());
+            Lop newLopHoc = new Lop(txtMaLop.getText().trim().toUpperCase(), txtTenLop.getText().trim(), comboKhoi.getValue(), null);
 
             GiaoVien selectedGVCN = comboGVCN.getValue();
             if (selectedGVCN != null) {
-                newLopHoc.setMaGVCN(selectedGVCN.getMaGV());
+                newLopHoc.setGvcn(selectedGVCN.getMaGV());
             } else {
-                newLopHoc.setMaGVCN(null); // Cho phép MaGVCN là null nếu CSDL thiết kế vậy
+                newLopHoc.setGvcn(null); // Cho phép MaGVCN là null nếu CSDL thiết kế vậy
             }
 
             try {
