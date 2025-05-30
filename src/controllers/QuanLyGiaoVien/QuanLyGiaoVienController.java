@@ -1,6 +1,6 @@
 package controllers.QuanLyGiaoVien;
 
-import DAO.GiaoVienDAO;
+import dao.GiaoVienDAO;
 import entities.GiaoVien;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

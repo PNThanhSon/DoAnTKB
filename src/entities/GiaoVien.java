@@ -56,27 +56,9 @@ public class GiaoVien {
         this.matKhau = matKhau;
         this.ghiChu = ghiChu;
     }
-    public GiaoVien(){};
+    public GiaoVien(){}
+
     //
-    public GiaoVien(String maGV, String hoGV, String tenGV, String gioiTinh,
-                    String chuyenMon, String maTCM, Integer soTietQuyDinh,
-                    Integer soTietThucHien, Integer soTietDuThieu, String email,
-                    String sdt, String matKhau, String ghiChu, VaiTroGV vaiTro) {
-        this.maGV = maGV;
-        this.hoGV = hoGV;
-        this.tenGV = tenGV;
-        this.gioiTinh = gioiTinh;
-        this.chuyenMon = chuyenMon;
-        this.maTCM = maTCM;
-        this.soTietQuyDinh = soTietQuyDinh;
-        this.soTietThucHien = soTietThucHien;
-        this.soTietDuThieu = soTietDuThieu;
-        this.email = email;
-        this.sdt = sdt;
-        this.matKhau = matKhau;
-        this.ghiChu = ghiChu;
-        this.vaiTro = vaiTro; //QUAN TRỌNG ĐỂ PHÂN QUYỀN!!!
-    }
     // Getters
     public String getMaGV() { return maGV; }
     public String getHoGV() { return hoGV; }
@@ -133,10 +115,6 @@ public class GiaoVien {
     public String toString() {
         return hoGV + " " + tenGV;
     }
-    // check log
-//    public boolean isLoggedIn() {
-//        return maGV != null && !maGV.trim().isEmpty();
-//    }
 
     public boolean isAdmin() {
         return this.getVaiTro() == VaiTroGV.ADMIN;

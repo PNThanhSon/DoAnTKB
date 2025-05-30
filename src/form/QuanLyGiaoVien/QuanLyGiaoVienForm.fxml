@@ -9,7 +9,7 @@
 <?import java.lang.String?>
 <?import javafx.scene.text.Text?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="QLGVBorderPane" prefHeight="700.0" prefWidth="850.0"
-            xmlns="http://javafx.com/javafx/23.0.1" fx:controller="controllers.QuanLyGiaoVien.QuanLyGiaoVienController">
+            xmlns="http://javafx.com/javafx/21" fx:controller="controllers.QuanLyGiaoVien.QuanLyGiaoVienController">
 
     <center>
         <VBox spacing="10.0">

@@ -8,7 +8,7 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="YKienBorderPane" prefHeight="700.0" prefWidth="850.0"
-            xmlns="http://javafx.com/javafx/17.0.12" fx:controller="controllers.PhanHoiYKien.PhanHoiYKienController">
+            xmlns="http://javafx.com/javafx/21" fx:controller="controllers.PhanHoiYKien.PhanHoiYKienController">
 
     <!-- Header -->
     <top>

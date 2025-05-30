@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns="http://javafx.com/javafx/21"
             fx:controller="controllers.PhanHoiYKien.SuaYKienController"
             prefHeight="300.0" prefWidth="500.0">
     <center>

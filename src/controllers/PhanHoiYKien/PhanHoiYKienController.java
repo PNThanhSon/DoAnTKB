@@ -1,6 +1,6 @@
 package controllers.PhanHoiYKien;
 
-import DAO.YKienDAO;
+import dao.YKienDAO;
 import entities.GiaoVien;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

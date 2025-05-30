@@ -1,6 +1,6 @@
 package controllers.PhanHoiYKien;
 
-import DAO.YKienDAO;
+import dao.YKienDAO;
 import entities.YKien;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;

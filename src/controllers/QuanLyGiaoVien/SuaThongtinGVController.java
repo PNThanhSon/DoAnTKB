@@ -1,8 +1,8 @@
 package controllers.QuanLyGiaoVien;
 
 
-import DAO.GiaoVienDAO;
-import DAO.ToChuyenMonDAO;
+import dao.GiaoVienDAO;
+import dao.ToChuyenMonDAO;
 import entities.GiaoVien;
 import entities.ToChuyenMon;
 import javafx.fxml.FXML;
