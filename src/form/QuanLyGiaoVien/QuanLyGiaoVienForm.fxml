@@ -73,7 +73,7 @@
             <padding>
                 <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
             </padding>
-            <Text fx:id="txtThongBao" text=""/>
+            <Text fx:id="txtThongBao"/>
             <Button text="Thêm" onAction="#handleThem"/>
             <Button text="Làm Mới" onAction="#handleLamMoi"/>
         </HBox>

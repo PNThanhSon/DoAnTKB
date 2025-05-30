@@ -49,6 +49,8 @@ public class PhanHoiYKienController {
     @FXML private Text txtStatusND;
     @FXML private TextField txtSearch;
     @FXML private Button btnTim;
+    @FXML private Button btnLamMoi;
+    @FXML private Button btnGuiYKien;
 
     private final ContextMenu contextMenu = new ContextMenu();
     private GiaoVien giaoviencurrent;
@@ -111,7 +113,7 @@ public class PhanHoiYKienController {
         filteredList = new FilteredList<>(listYkienCurrent, p -> true);
         // phân quyền, bảo mật về mặt backend cho chế độ xem
         if (giaoviencurrent.isAdmin()) {
-            listYkienCurrent.setAll(ykienDAO.TimKiemYKien("", giaoviencurrent));
+            listYkienCurrent.setAll(ykienDAO.TimKiemYKien(""));
         } else {
             String maGV = giaoviencurrent.getMaGV();
             listYkienCurrent.setAll(ykienDAO.TracuuYKien(maGV));
@@ -164,7 +166,7 @@ public class PhanHoiYKienController {
                     yk.getNoiDung().toUpperCase().contains(keyword);
 
             boolean matchChedo = cheDo.equals("Tất cả phản hồi") || yk.getMaGV().equals(giaoviencurrent.getMaGV());
-            boolean matchAnDanh = !keyword.equals("") && yk.getAnDanh() && !(yk.getMaGV().equals(giaoviencurrent.getMaGV()));
+            boolean matchAnDanh = !keyword.isEmpty() && yk.getAnDanh() && !(yk.getMaGV().equals(giaoviencurrent.getMaGV()));
 
             return matchSearch && matchChedo && !matchAnDanh;
         });
@@ -308,7 +310,7 @@ public class PhanHoiYKienController {
     private void showStatusNoidung(String status) {
         txtStatusND.setText(status);
         // doi mau =)
-        if (status == "Đã gửi ý kiến thành công!") {
+        if (status.equals("Đã gửi ý kiến thành công!")) {
             txtStatusND.setFill(Color.GREEN);
         }
         txtStatusND.setFill(Color.RED);

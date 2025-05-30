@@ -3,6 +3,7 @@ package controllers.PhanHoiYKien;
 import dao.YKienDAO;
 import entities.YKien;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
@@ -21,13 +22,16 @@ public class SuaYKienController {
     @FXML
     private CheckBox chkAnDanh;
 
+    @FXML
+    private Button btnLuu;
+
 
 
     private Stage dialogStage;
     private Runnable onSuccess;
     private YKien yKien;
 
-    private YKienDAO yKienDAO = new YKienDAO();
+    private final YKienDAO yKienDAO = new YKienDAO();
 
     // điền dữ liệu hiện tại vào form sửa
     public void getYKientoForm(YKien yKien) {

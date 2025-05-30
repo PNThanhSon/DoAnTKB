@@ -92,11 +92,6 @@ public class GiaoVienDAO {
 
             pstmt.setString(1, "%" + maGV + "%");
 
-            if (conn == null) {
-                System.err.println("Không thể kết nối đến cơ sở dữ liệu.");
-                return null;
-            }
-
             try (ResultSet rs = pstmt.executeQuery()) {
                 danhSachGiaoVien.clear(); // Xoá danh sách cũ nếu có
 

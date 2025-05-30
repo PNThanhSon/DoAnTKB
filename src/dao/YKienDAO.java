@@ -1,6 +1,5 @@
 package dao;
 
-import entities.GiaoVien;
 import entities.YKien;
 import util.DatabaseConnection;
 
@@ -62,7 +61,7 @@ public class YKienDAO {
         return danhSach;
     }
 
-    public List<YKien> TimKiemYKien(String keywork, GiaoVien giaoviencurrent) throws SQLException {
+    public List<YKien> TimKiemYKien(String keywork) throws SQLException {
         List<YKien> danhSach = new ArrayList<>();
         String sql = "SELECT * FROM YKien WHERE MaGV LIKE ? ORDER BY NgayGui DESC";
 

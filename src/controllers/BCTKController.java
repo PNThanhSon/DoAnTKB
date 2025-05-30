@@ -76,7 +76,7 @@ public class BCTKController implements Initializable {
         tkbComboBox.setDisable(tkbList.isEmpty());
         if (tkbList.isEmpty() && messageLabel != null) {
             messageLabel.setText("Không có Thời Khóa Biểu nào cho Học Kỳ đã chọn.");
-        } else if (messageLabel != null && !tkbList.isEmpty()) {
+        } else if (messageLabel != null) {
             messageLabel.setText("Vui lòng chọn Thời Khóa Biểu.");
         }
     }

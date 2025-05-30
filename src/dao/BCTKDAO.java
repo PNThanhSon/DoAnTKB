@@ -98,7 +98,7 @@ public class BCTKDAO {
 
             while (rsGV.next()) {
                 String maGV = rsGV.getString("MaGV");
-                Integer soTietQuyDinh = rsGV.getInt("SoTietQuyDinh");
+                int soTietQuyDinh = rsGV.getInt("SoTietQuyDinh");
                 if (rsGV.wasNull()) { // Kiểm tra nếu SoTietQuyDinh là NULL
                     soTietQuyDinh = 0; // Mặc định là 0 nếu NULL
                 }

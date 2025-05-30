@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -33,7 +32,7 @@
                 <Label text="Nội dung:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                 <TextArea fx:id="txtNoiDung" prefRowCount="3" wrapText="true" GridPane.columnIndex="1"
                           GridPane.columnSpan="2" GridPane.rowIndex="0" promptText="Mời phản hồi..."/>
-                <Text fx:id="txtStatusND" fill="#f70000" text="" textAlignment="LEFT" GridPane.columnIndex="2"
+                <Text fx:id="txtStatusND" fill="#f70000" GridPane.columnIndex="2"
                       GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.halignment="RIGHT">
                     <GridPane.margin>
                         <Insets/>
@@ -74,7 +73,7 @@
                 <!-- Đẩy thanh tìm kiếm sang phải -->
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button fx:id="btnTim" onAction="#handleTim" text="Tìm"/>
-                <TextField fx:id="txtSearch" promptText="Tìm kiếm..." text=""/>
+                <TextField fx:id="txtSearch" promptText="Tìm kiếm..."/>
             </HBox>
 
             <TableView fx:id="tableYKien" prefHeight="250">
@@ -82,9 +81,9 @@
                     <TableColumn fx:id="colMaYK" prefWidth="100" text="Mã Ý Kiến"/>
                     <TableColumn fx:id="colNoiDung" prefWidth="300" text="Nội dung"/>
                     <TableColumn fx:id="colNgayGui" prefWidth="150" text="Ngày gửi"/>
-                    <TableColumn fx:id="colAnDanh" prefWidth="80" text="Ẩn danh"/>
-                    <TableColumn fx:id="colMaGV" prefWidth="80" text="Mã GV"/>
-                    <TableColumn fx:id="colTrangthai" prefWidth="80" text="Trạng thái"/>
+                    <TableColumn fx:id="colAnDanh" text="Ẩn danh"/>
+                    <TableColumn fx:id="colMaGV" text="Mã GV"/>
+                    <TableColumn fx:id="colTrangthai" text="Trạng thái"/>
                 </columns>
             </TableView>
 

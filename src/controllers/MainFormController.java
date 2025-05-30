@@ -63,7 +63,6 @@ public class MainFormController {
         applyPermissions();
         // Khi MainForm được tải lần đầu, đảm bảo nội dung center là mặc định
         resetToDefaultCenterContent();
-        if (loggedInGiaoVien.getVaiTro() == VaiTroGV.ADMIN) {}
     }
 
     @FXML
