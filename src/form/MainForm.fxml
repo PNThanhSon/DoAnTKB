@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainFormController">
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainFormController">
     <top>
         <VBox>
             <MenuBar>
@@ -28,8 +28,8 @@
                 <Menu mnemonicParsing="false" text="Chức Năng">
                     <MenuItem fx:id="menuXemCacTKB" mnemonicParsing="false" onAction="#handleXemCacTKB" text="Xem các thời khóa biểu" />
                     <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
-               <MenuItem mnemonicParsing="false" text="Phản hồi ý kiến" />
-               <MenuItem mnemonicParsing="false" text="Báo cáo thống kê" />
+                    <MenuItem mnemonicParsing="false" text="Phản hồi ý kiến" />
+                    <MenuItem fx:id="menuBCTK" mnemonicParsing="false" onAction="#handleBCTK" text="Báo cáo thống kê" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Trợ Giúp">
                     <MenuItem mnemonicParsing="false" text="Thông tin ứng dụng" />

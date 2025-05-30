@@ -62,10 +62,6 @@ public class ThoiKhoaBieuDAO {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            if (conn == null) {
-                System.err.println("DAO: Không thể kết nối CSDL để lấy danh sách Lớp.");
-                return danhSach;
-            }
             while (rs.next()) {
                 danhSach.add(new Lop(
                         rs.getString("MaLop"),
@@ -88,10 +84,6 @@ public class ThoiKhoaBieuDAO {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            if (conn == null) {
-                System.err.println("DAO: Không thể kết nối CSDL để lấy danh sách TCM.");
-                return danhSach;
-            }
             while (rs.next()) {
                 danhSach.add(new ToChuyenMon(
                         rs.getString("MaTCM"),

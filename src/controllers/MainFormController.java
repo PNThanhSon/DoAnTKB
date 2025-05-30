@@ -45,6 +45,9 @@ public class MainFormController {
     @FXML
     private MenuItem menuTrangChu;
 
+    @FXML
+    private MenuItem menuBCTK;
+
     private GiaoVien loggedInGiaoVien;
 
     public void setLoggedInGiaoVien(GiaoVien giaoVien) {
@@ -208,6 +211,30 @@ public class MainFormController {
             showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở /form/chức năng Quản lý Giáo Viên.");
         } else {
             showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
+        }
+    }
+
+    @FXML
+    private void handleBCTK(ActionEvent event) {
+        if (loggedInGiaoVien == null) {
+            showAlert(Alert.AlertType.WARNING, "Chưa Đăng Nhập", "Không có gì để hiển thị.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/BCTKForm.fxml"));
+            Parent bctkRoot = loader.load();
+
+            //BCTKController TTControl = loader.getController();
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(bctkRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị TimeTableForm trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
         }
     }
 
