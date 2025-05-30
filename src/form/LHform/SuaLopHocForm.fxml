@@ -47,7 +47,7 @@
         <Text fx:id="tbGVCN" GridPane.columnIndex="2" GridPane.rowIndex="3" />
     </GridPane>
     <HBox alignment="CENTER_RIGHT" spacing="10.0">
-        <Button onAction="#handleLuu" text="Lưu Thay Đổi">
+        <Button onAction="#handleLuu" text="Lưu Thay Đổi" />
         <Button onAction="#handleHuy" text="Hủy" />
     </HBox>
 </VBox>
