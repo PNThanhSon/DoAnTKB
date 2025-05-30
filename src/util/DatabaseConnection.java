@@ -8,7 +8,7 @@ public class DatabaseConnection {
     // --- THÔNG SỐ KẾT NỐI CSDL ORACLE CỦA BẠN ---
     private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1"; //jdbc:oracle:thin:@//localhost:1521/XEPDB1 hoặc jdbc:oracle:thin:@localhost:1521:orcl
     private static final String DB_USER = "TKB"; // Tên người dùng DB của bạn
-    private static final String DB_PASSWORD = "pass"; // Mật khẩu DB của bạn
+    private static final String DB_PASSWORD = "kaxe28"; // Mật khẩu DB của bạn
     // --- KẾT THÚC PHẦN THÔNG SỐ ---
 
     public static Connection getConnection() {
