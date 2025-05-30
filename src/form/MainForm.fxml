@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainBorderPane" prefHeight="700.0" prefWidth="850.0"
-            xmlns="http://javafx.com/javafx/23.0.1" fx:controller="controllers.MainFormController">
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainFormController">
     <top>
         <VBox>
             <MenuBar>
@@ -28,21 +27,17 @@
                     <MenuItem mnemonicParsing="false" text="Quản lý Chức vụ"/>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Chức Năng">
-                    <MenuItem mnemonicParsing="false" text="Xem các thời khóa biểu"/>
-                    <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan"
-                              text="Xem thông tin cá nhân"/>
-                    <MenuItem fx:id="menuPhanHoiYKien" mnemonicParsing="false" text="Phản hồi ý kiến"
-                              onAction="#handlePhanHoiYKien"/>
-                    <MenuItem mnemonicParsing="false" text="Báo cáo thống kê"/>
+                    <MenuItem fx:id="menuXemCacTKB" mnemonicParsing="false" onAction="#handleXemCacTKB" text="Xem các thời khóa biểu" />
+                    <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
+                    <MenuItem fx:id="menuPhanHoiYKien" mnemonicParsing="false" text="Phản hồi ý kiến" onAction="#handlePhanHoiYKien"/>
+                    <MenuItem fx:id="menuBCTK" mnemonicParsing="false" onAction="#handleBCTK" text="Báo cáo thống kê" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Trợ Giúp">
-                    <MenuItem mnemonicParsing="false" text="Thông tin ứng dụng"/>
+                    <MenuItem mnemonicParsing="false" text="Thông tin ứng dụng" />
                 </Menu>
             </MenuBar>
-            <VBox alignment="CENTER" prefHeight="55.0" prefWidth="850.0" spacing="10"
-                  style="-fx-background-color: #e9ecef; -fx-padding: 15px; -fx-border-color: #ced4da; -fx-border-width: 0 0 1 0;">
-                <Label prefHeight="86.0" prefWidth="555.0" text="HỆ THỐNG QUẢN LÝ THỜI KHÓA BIỂU TRƯỜNG HỌC"
-                       textAlignment="CENTER">
+            <VBox alignment="CENTER" prefHeight="55.0" prefWidth="850.0" spacing="10" style="-fx-background-color: #e9ecef; -fx-padding: 15px; -fx-border-color: #ced4da; -fx-border-width: 0 0 1 0;">
+                <Label prefHeight="86.0" prefWidth="555.0" text="HỆ THỐNG QUẢN LÝ THỜI KHÓA BIỂU TRƯỜNG HỌC" textAlignment="CENTER">
                     <font>
                         <Font name="System Bold" size="22.0"/>
                     </font>

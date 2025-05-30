@@ -3,6 +3,7 @@ package controllers;// Giả sử các file nằm trực tiếp trong thư mục
 import controllers.PhanHoiYKien.PhanHoiYKienController;
 import controllers.QuanLyGiaoVien.QuanLyGiaoVienController;
 import entities.GiaoVien;
+import entities.VaiTroGV;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class MainFormController {
+    @FXML
+    public MenuItem menuDangXuat;
 
     @FXML
     private BorderPane mainBorderPane;
@@ -44,7 +47,13 @@ public class MainFormController {
 
     // THAY ĐỔI Ở ĐÂY: Khai báo MenuItem cho Trang chủ
     @FXML
+    private MenuItem menuXemCacTKB;
+
+    @FXML
     private MenuItem menuTrangChu;
+
+    @FXML
+    private MenuItem menuBCTK;
 
     private GiaoVien loggedInGiaoVien;
 
@@ -54,6 +63,7 @@ public class MainFormController {
         applyPermissions();
         // Khi MainForm được tải lần đầu, đảm bảo nội dung center là mặc định
         resetToDefaultCenterContent();
+        if (loggedInGiaoVien.getVaiTro() == VaiTroGV.ADMIN) {}
     }
 
     @FXML
@@ -69,20 +79,28 @@ public class MainFormController {
 
     private void updateWelcomeMessage() {
         if (loggedInGiaoVien != null) {
-            welcomeLabel.setText("Xin chào! Thầy/cô " +
-                    (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
-                    (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
-                    " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            if (loggedInGiaoVien.getGioiTinh().equals("Nam")) {
+                welcomeLabel.setText("Xin chào! Thầy " +
+                        (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                        (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                        " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            } else if (loggedInGiaoVien.getGioiTinh().equals("Nữ")) {
+                welcomeLabel.setText("Xin chào! Cô " +
+                        (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                        (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                        " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            } else {
+                welcomeLabel.setText("Xin chào! Giáo viên " +
+                        (loggedInGiaoVien.getHoGV() != null ? loggedInGiaoVien.getHoGV() : "") + " " +
+                        (loggedInGiaoVien.getTenGV() != null ? loggedInGiaoVien.getTenGV() : "") +
+                        " (Mã GV: " + loggedInGiaoVien.getMaGV() + ")");
+            }
         }
     }
 
     private void applyPermissions() {
         if (loggedInGiaoVien != null && menuQLGiaoVien != null) {
-            if ("ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-                menuQLGiaoVien.setVisible(true);
-            } else {
-                menuQLGiaoVien.setVisible(false);
-            }
+            menuQLGiaoVien.setVisible("ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV()));
         } else if (menuQLGiaoVien != null) {
             menuQLGiaoVien.setVisible(false);
         }
@@ -115,6 +133,31 @@ public class MainFormController {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang thông tin cá nhân.\nChi tiết: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleXemCacTKB(ActionEvent event) {
+        if (loggedInGiaoVien == null) {
+            showAlert(Alert.AlertType.WARNING, "Chưa Đăng Nhập", "Không có gì để hiển thị.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/TimeTableForm.fxml"));
+            Parent profileRoot = loader.load();
+
+            TimeTableController TTControl = loader.getController();
+            TTControl.initData(loggedInGiaoVien, mainBorderPane);
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(profileRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị TimeTableForm trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
         }
     }
 
@@ -167,7 +210,6 @@ public class MainFormController {
             showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể quay lại trang đăng nhập.");
         }
     }
-
 
     @FXML
     private void handleQuanLyGiaoVien(ActionEvent event) {
@@ -239,17 +281,34 @@ public class MainFormController {
         }
     }
 
+    @FXML
+    private void handleBCTK(ActionEvent event) {
+        if (loggedInGiaoVien == null) {
+            showAlert(Alert.AlertType.WARNING, "Chưa Đăng Nhập", "Không có gì để hiển thị.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/BCTKForm.fxml"));
+            Parent bctkRoot = loader.load();
+
+            //BCTKController TTControl = loader.getController();
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(bctkRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị TimeTableForm trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
+        }
+    }
 
     private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Parent viewRoot = loader.load();
-
-            if (loggedInGiaoVien.isAdmin()) {}
-            // Object controller = loader.getController();
-            // if (controller instanceof SomeFeatureController && loggedInGiaoVien != null) {
-            //    ((SomeFeatureController) controller).initData(loggedInGiaoVien); // Ví dụ truyền dữ liệu
-            // }
 
             if (mainBorderPane != null) {
                 mainBorderPane.setCenter(viewRoot);

@@ -118,7 +118,6 @@ public class DangNhapController {
         MainFormController mainFormController = loader.getController();
         mainFormController.setLoggedInGiaoVien(giaoVien);
 
-
         Stage mainStage = new Stage();
         mainStage.setTitle("Trang Chính - Hệ Thống Quản Lý Thời Khóa Biểu Trường Học");
         mainStage.setScene(new Scene(mainFormRoot, 800, 600));
@@ -149,11 +148,6 @@ public class DangNhapController {
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            if (conn == null) {
-                System.err.println("Controller/KiemTraDangNhapCSDL: Không thể kết nối đến cơ sở dữ liệu.");
-                return Optional.empty();
-            }
 
             pstmt.setString(1, maGV.trim());
             pstmt.setString(2, matKhau);
@@ -199,8 +193,8 @@ public class DangNhapController {
         }
 
         Connection conn = DatabaseConnection.getConnection();
-        String sqlKiemTraToTruongPho = "SELECT COUNT() AS SoLuong FROM TOCHUYENMON WHERE TOTRUONG = ? OR TOPHO = ?";
-        String sqlKiemTraGVCN = "SELECT COUNT() AS SoLuong FROM LOP WHERE GVCN = ?";
+        String sqlKiemTraToTruongPho = "SELECT COUNT(*) AS SoLuong FROM TOCHUYENMON WHERE TOTRUONG = ? OR TOPHO = ?";
+        String sqlKiemTraGVCN = "SELECT COUNT(*) AS SoLuong FROM LOP WHERE GVCN = ?";
 
         try (PreparedStatement pstmtTCM = conn.prepareStatement(sqlKiemTraToTruongPho)) {
             pstmtTCM.setString(1, maGV);
@@ -228,8 +222,4 @@ public class DangNhapController {
         }
         return VaiTroGV.GV; //Giáo viên thường
     }
-
-
-
-
 }

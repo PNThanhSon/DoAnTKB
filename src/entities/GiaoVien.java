@@ -1,6 +1,5 @@
 package entities;// Giả sử các file nằm trực tiếp trong thư mục src (default package)
 
-
 public class GiaoVien {
     private String maGV;
     private String hoGV;
@@ -17,7 +16,28 @@ public class GiaoVien {
     private String ghiChu;
     private VaiTroGV vaiTro;
 
-    // Constructor đầy đủ
+    // Constructor cho đăng nhập
+    public GiaoVien(String maGV, String hoGV, String tenGV, String gioiTinh,
+                    String chuyenMon, String maTCM, Integer soTietQuyDinh,
+                    Integer soTietThucHien, Integer soTietDuThieu, String email,
+                    String sdt, String matKhau, String ghiChu, VaiTroGV vaiTro) {
+        this.maGV = maGV;
+        this.hoGV = hoGV;
+        this.tenGV = tenGV;
+        this.gioiTinh = gioiTinh;
+        this.chuyenMon = chuyenMon;
+        this.maTCM = maTCM;
+        this.soTietQuyDinh = soTietQuyDinh;
+        this.soTietThucHien = soTietThucHien;
+        this.soTietDuThieu = soTietDuThieu;
+        this.email = email;
+        this.sdt = sdt;
+        this.matKhau = matKhau;
+        this.ghiChu = ghiChu;
+        this.vaiTro = vaiTro; //QUAN TRỌNG ĐỂ PHÂN QUYỀN!!!
+    }
+
+    // Constructor cho việc thêm mới giáo viên
     public GiaoVien(String maGV, String hoGV, String tenGV, String gioiTinh,
                     String chuyenMon, String maTCM, Integer soTietQuyDinh,
                     Integer soTietThucHien, Integer soTietDuThieu, String email,
@@ -111,11 +131,7 @@ public class GiaoVien {
 
     @Override
     public String toString() {
-        return "entities.GiaoVien{" +
-                "maGV='" + maGV + '\'' +
-                ", hoTen='" + hoGV + " " + tenGV + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return hoGV + " " + tenGV;
     }
     // check log
 //    public boolean isLoggedIn() {
