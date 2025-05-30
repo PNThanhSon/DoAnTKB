@@ -1,5 +1,5 @@
 --- cần để test code của t, chạy cái mới của thèn Sơn trc nha
-
+-- Dùng để test Phản hồi ý kiến
 CREATE SEQUENCE SEQ_YKIEN
     START WITH 1
     INCREMENT BY 1
