@@ -1,13 +1,14 @@
 package entities;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+
 public class ToChuyenMon {
     private String maTCM;
     private String tenTCM;
     private String toTruong;
     private String toPho;
 
-    // Constructor
-    public ToChuyenMon() {}
 
     public ToChuyenMon(String maTCM, String tenTCM, String toTruong, String toPho) {
         this.maTCM = maTCM;
@@ -16,7 +17,6 @@ public class ToChuyenMon {
         this.toPho = toPho;
     }
 
-    // Getters và Setters
     public String getMaTCM() {
         return maTCM;
     }
@@ -47,6 +47,15 @@ public class ToChuyenMon {
 
     public void setToPho(String toPho) {
         this.toPho = toPho;
+    }
+
+    // JavaFX properties (optional, but good practice if used directly in TableView)
+    public ObservableValue<String> maTCMProperty() {
+        return new SimpleStringProperty(maTCM);
+    }
+
+    public ObservableValue<String> tenTCMProperty() {
+        return new SimpleStringProperty(tenTCM);
     }
 
     @Override

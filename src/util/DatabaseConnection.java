@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
     // --- THÔNG SỐ KẾT NỐI CSDL ORACLE CỦA BẠN ---
-    private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1"; //jdbc:oracle:thin:@//localhost:1521/XEPDB1 hoặc jdbc:oracle:thin:@localhost:1521:orcl
-    private static final String DB_USER = "TKB"; // Tên người dùng DB của bạn
-    private static final String DB_PASSWORD = "kaxe28"; // Mật khẩu DB của bạn
+    private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:orcl21"; // URL Oracle của bạn
+    private static final String DB_USER = "C##TKB"; // Tên người dùng DB của bạn
+    private static final String DB_PASSWORD = "pass"; // Mật khẩu DB của bạn
     // --- KẾT THÚC PHẦN THÔNG SỐ ---
 
     public static Connection getConnection() {
@@ -27,7 +27,7 @@ public class DatabaseConnection {
 
         return connection;
     }
-    
+
     public static void main(String[] args) { //Có thể chạy hàm main này để kiểm tra kết nối, không liên quan code chính
         System.out.println("Đang thực hiện kiểm tra kết nối đến Oracle Database...");
         System.out.println("Thông tin kết nối sử dụng:");
