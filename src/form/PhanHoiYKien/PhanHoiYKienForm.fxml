@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="YKienBorderPane" prefHeight="700.0" prefWidth="850.0"
+            xmlns="http://javafx.com/javafx/17.0.12" fx:controller="controllers.PhanHoiYKien.PhanHoiYKienController">
+
+    <!-- Header -->
+    <top>
+        <Label alignment="CENTER" text="PHẢN HỒI Ý KIẾN" BorderPane.alignment="CENTER">
+            <font>
+                <Font name="System Bold" size="20"/>
+            </font>
+        </Label>
+    </top>
+
+    <!-- Center: Bảng xem các ý kiến -->
+    <center>
+
+        <VBox spacing="10">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15"/>
+            </padding>
+            <Label text="Gửi ý kiến mới:"/>
+            <GridPane hgap="10" vgap="10">
+
+
+                <Label text="Nội dung:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextArea fx:id="txtNoiDung" prefRowCount="3" wrapText="true" GridPane.columnIndex="1"
+                          GridPane.columnSpan="2" GridPane.rowIndex="0" promptText="Mời phản hồi..."/>
+                <Text fx:id="txtStatusND" fill="#f70000" text="" textAlignment="LEFT" GridPane.columnIndex="2"
+                      GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.halignment="RIGHT">
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </Text>
+
+                <Label text="Ẩn danh:" GridPane.rowIndex="1"/>
+                <CheckBox fx:id="chkAnDanh" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Button fx:id="btnGuiYKien" onAction="#handleGuiYKien" text="Gửi" textAlignment="CENTER"
+                        GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+
+            </GridPane>
+        </VBox>
+    </center>
+
+    <!-- Bottom: Form gửi ý kiến -->
+    <bottom>
+        <VBox spacing="10">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15"/>
+            </padding>
+            <Label text="Danh sách ý kiến đã gửi:"/>
+            <HBox spacing="10">
+                <Label text="Chế độ xem:"/>
+                <ComboBox fx:id="cbxChonCheDo" prefWidth="200">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+<!--                            <String fx:value="Tất cả phản hồi"/>-->
+<!--                            <String fx:value="Phản hồi của tôi"/>-->
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+
+                <!-- Nút Làm mới -->
+                <Button fx:id="btnLamMoi" onAction="#handleLamMoi" text="Làm mới"/>
+
+                <!-- Đẩy thanh tìm kiếm sang phải -->
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnTim" onAction="#handleTim" text="Tìm"/>
+                <TextField fx:id="txtSearch" promptText="Tìm kiếm..." text=""/>
+            </HBox>
+
+            <TableView fx:id="tableYKien" prefHeight="250">
+                <columns>
+                    <TableColumn fx:id="colMaYK" prefWidth="100" text="Mã Ý Kiến"/>
+                    <TableColumn fx:id="colNoiDung" prefWidth="300" text="Nội dung"/>
+                    <TableColumn fx:id="colNgayGui" prefWidth="150" text="Ngày gửi"/>
+                    <TableColumn fx:id="colAnDanh" prefWidth="80" text="Ẩn danh"/>
+                    <TableColumn fx:id="colMaGV" prefWidth="80" text="Mã GV"/>
+                    <TableColumn fx:id="colTrangthai" prefWidth="80" text="Trạng thái"/>
+                </columns>
+            </TableView>
+
+        </VBox>
+    </bottom>
+
+
+</BorderPane>
