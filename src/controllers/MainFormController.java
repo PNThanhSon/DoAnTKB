@@ -15,6 +15,8 @@ import javafx.scene.text.Font; // Cần import Font
 import javafx.geometry.Insets; // Cần import Insets
 import javafx.geometry.Pos;   // Cần import Pos
 import javafx.stage.Stage;
+import controllers.MonHoc.*; // Wildcard import for MonHoc controllers
+import controllers.LopHoc.*; // Wildcard import for LopHoc controllers
 
 
 import java.io.IOException;
@@ -35,6 +37,12 @@ public class MainFormController {
 
     @FXML
     private MenuItem menuXemThongTinCaNhan;
+
+    @FXML
+    private MenuItem menuQuanLyMonHoc;
+
+    @FXML
+    private MenuItem menuQuanLyLopHoc;
 
     // THAY ĐỔI Ở ĐÂY: Khai báo MenuItem cho Trang chủ
     @FXML
@@ -163,25 +171,76 @@ public class MainFormController {
     }
 
     @FXML
+    private void handleQuanLyMonHoc(ActionEvent event) {
+        // điều phối màn hình mới
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/MHform/QuanLyMonHocForm.fxml"));
+            Parent QLMonHocRoot = loader.load();
+
+            QuanLyMonHocController QLMonHocController = loader.getController(); // các bước load data đã có sẵn trong init của controller này
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(QLMonHocRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong .fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị quản lý môn học trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang quản lý môn học.\nChi tiết: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleQuanLyLopHoc(ActionEvent event) {
+        // điều phối màn hình mới
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/LHform/QuanLyLopHocForm.fxml"));
+            Parent QLLopHocRoot = loader.load(); // Sửa tên biến để tránh nhầm lẫn
+
+            // Lấy controller của màn hình quản lý lớp học nếu cần
+            QuanLyLopHocController qlLopHocController = loader.getController();
+
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(QLLopHocRoot); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong .fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị quản lý lớp học trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang quản lý lớp học.\nChi tiết: " + e.getMessage());
+        }
+    }
+    @FXML
     private void handleQuanLyGiaoVien(ActionEvent event) {
         if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-            // Ví dụ: loadViewIntoCenter("QuanLyGiaoVienForm.fxml");
-            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở /form/chức năng Quản lý Giáo Viên.");
+            // Ví dụ: loadViewIntoCenter("/form/GVform/QuanLyGiaoVienForm.fxml"); // Cần tạo form này
+            // Tạm thời hiển thị Alert
+            showAlert(Alert.AlertType.INFORMATION, "Chức Năng", "Mở chức năng Quản lý Giáo Viên.");
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/GVform/QuanLyGiaoVienForm.fxml")); // Giả sử bạn có form này
+                Parent QLGiaoVienRoot = loader.load();
+                if (mainBorderPane != null) {
+                    mainBorderPane.setCenter(QLGiaoVienRoot);
+                } else {
+                    System.err.println("Lỗi: mainBorderPane chưa được inject.");
+                    showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị quản lý giáo viên.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang quản lý giáo viên.\nChi tiết: " + e.getMessage());
+            }
         } else {
             showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
         }
     }
 
-    private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center
+    // Hàm này có thể không cần thiết nếu các handleXXX đã đủ
+    private void loadViewIntoCenter(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Parent viewRoot = loader.load();
-
-            // Object controller = loader.getController();
-            // if (controller instanceof SomeFeatureController && loggedInGiaoVien != null) {
-            //    ((SomeFeatureController) controller).initData(loggedInGiaoVien); // Ví dụ truyền dữ liệu
-            // }
-
             if (mainBorderPane != null) {
                 mainBorderPane.setCenter(viewRoot);
             } else {
