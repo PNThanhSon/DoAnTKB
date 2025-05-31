@@ -46,5 +46,11 @@ public class TietHocData {
     // Getters cho giá trị (tùy chọn)
     public String getTiet() { return tiet.get(); }
     public ChiTietTKB getThu2() { return thu2.get(); }
+
+    public ChiTietTKB getThu3() { return thu3.get(); }
+    public ChiTietTKB getThu4() { return thu4.get(); }
+    public ChiTietTKB getThu5() { return thu5.get(); }
+    public ChiTietTKB getThu6() { return thu6.get(); }
+    public ChiTietTKB getThu7() { return thu7.get(); }
     // ...
 }

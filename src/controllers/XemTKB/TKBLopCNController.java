@@ -6,15 +6,25 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+
+//Import cho Apache POI
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 public class TKBLopCNController {
 
@@ -24,6 +34,7 @@ public class TKBLopCNController {
     @FXML private ComboBox<ThoiKhoaBieu> tkbComboBox;
     @FXML private ComboBox<Lop> lopComboBox;
     @FXML private HBox hBoxLop;
+    @FXML private Button btnXuat; // Nút xuất TKB
 
     // TableView chính (thay thế cho sangTableView)
     @FXML private TableView<TietHocData> tkbTableView; // Đổi tên từ sangTableView
@@ -221,6 +232,125 @@ public class TKBLopCNController {
             }
         }
         tkbTableView.refresh(); // Refresh TableView để hiển thị dữ liệu mới
+    }
+
+    @FXML
+    private void handleXuat(ActionEvent event) {
+        // Kiểm tra điều kiện trước khi xuất
+        if (selectedTKB == null) {
+            showAlert("Chưa chọn TKB", "Vui lòng chọn một thời khóa biểu để xuất.");
+            return;
+        }
+        if (maLop == null || maLop.isEmpty()) {
+            showAlert("Chưa có thông tin giáo viên", "Không thể xác định giáo viên để xuất TKB.");
+            return;
+        }
+
+        // Tạo FileChooser để chọn vị trí lưu file
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Lưu file Excel (.xls)"); // Sửa tiêu đề
+        String defaultFileName = "TKB_" + selectedTKB.getMaTKB() + "_" + maLop + ".xls"; // Đổi đuôi file mặc định
+        defaultFileName = defaultFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
+        fileChooser.setInitialFileName(defaultFileName);
+        // Sửa ExtensionFilter
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel 97-2003 Files (*.xls)", "*.xls"));
+        File file = fileChooser.showSaveDialog(btnXuat.getScene().getWindow());
+
+        if (file != null) {
+            Workbook workbook = null; // Interface chung
+            try {
+                workbook = new HSSFWorkbook(); // Sử dụng HSSFWorkbook cho định dạng .xls
+                Sheet sheet = workbook.createSheet("ThoiKhoaBieu");
+
+                // (Phần còn lại của code tạo CellStyle, Row, Cell, ghi dữ liệu giữ nguyên)
+                // ...
+                // Style cho cell (wrap text, căn giữa)
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setWrapText(true);
+                cellStyle.setAlignment(HorizontalAlignment.CENTER);
+                cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+                // Style cho header
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                // (Bạn có thể thêm Font, Fill color,... cho headerStyle ở đây nếu muốn)
+
+                // 0. Thông tin chung của TKB
+                Row infoRow1 = sheet.createRow(0);
+                Cell infoCellLabel = infoRow1.createCell(0);
+                infoCellLabel.setCellValue(tkbLopCNLabel.getText()); // Tên TKB đang hiển thị
+
+                Row infoRow2 = sheet.createRow(1);
+                Cell infoCellBuoi = infoRow2.createCell(0);
+                infoCellBuoi.setCellValue(tkbBuoiLabel.getText()); // Buổi
+
+                // 1. Tạo hàng tiêu đề cho bảng TKB
+                Row headerRow = sheet.createRow(3); // Bắt đầu bảng TKB từ hàng thứ 4 (index 3)
+                String[] columnTitles = {"Tiết", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"};
+                for (int i = 0; i < columnTitles.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(columnTitles[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // 2. Ghi dữ liệu từ tkbDataList
+                int rowIndex = 4; // Dữ liệu bắt đầu từ hàng thứ 5 (index 4)
+                for (TietHocData rowData : tkbDataList) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.setHeightInPoints((float) (ROW_HEIGHT * 1.5)); // Tăng chiều cao dòng một chút
+
+                    Cell tietCell = row.createCell(0);
+                    tietCell.setCellValue(rowData.getTiet());
+                    tietCell.setCellStyle(cellStyle);
+
+                    // Sử dụng toString() của ChiTietTKB vì nó đã có logic hiển thị theo flag
+                    createCellWithData(row, 1, rowData.getThu2(), cellStyle);
+                    createCellWithData(row, 2, rowData.getThu3(), cellStyle);
+                    createCellWithData(row, 3, rowData.getThu4(), cellStyle);
+                    createCellWithData(row, 4, rowData.getThu5(), cellStyle);
+                    createCellWithData(row, 5, rowData.getThu6(), cellStyle);
+                    createCellWithData(row, 6, rowData.getThu7(), cellStyle);
+                }
+
+                // Tự động điều chỉnh kích thước cột
+                for (int i = 0; i < columnTitles.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+                // Đặt độ rộng cột cố định nếu muốn (ví dụ cột Tiết)
+                sheet.setColumnWidth(0, 2000); // Cột "Tiết" rộng khoảng 2000 units
+                // ...
+
+                // Lưu file
+                try (FileOutputStream fileOut = new FileOutputStream(file)) {
+                    workbook.write(fileOut);
+                }
+                showAlert("Xuất Excel (.xls) thành công!", "Đã lưu thời khóa biểu vào file:\n" + file.getAbsolutePath());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("Lỗi xuất Excel (.xls)", "Có lỗi xảy ra khi ghi file Excel: " + e.getMessage());
+            } finally {
+                if (workbook != null) {
+                    try {
+                        workbook.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void createCellWithData(Row row, int cellIndex, ChiTietTKB chiTiet, CellStyle style) {
+        Cell cell = row.createCell(cellIndex);
+        if (chiTiet != null) {
+            cell.setCellValue(chiTiet.toString()); // Sử dụng toString() để lấy định dạng hiển thị
+        } else {
+            cell.setCellValue(""); // Hoặc để trống
+        }
+        cell.setCellStyle(style);
     }
 
     private void clearAllUIData() {

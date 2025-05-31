@@ -6,15 +6,26 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+
+// Import cho Apache POI
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+
 
 public class TKBCaNhanController {
 
@@ -24,28 +35,27 @@ public class TKBCaNhanController {
     @FXML private HBox hBoxGV;
     @FXML private ComboBox<GiaoVien> GVComboBox;
     @FXML private Label mainLabel;
+    @FXML private Button btnXuat;
 
-    // TableView chính (thay thế cho sangTableView)
-    @FXML private TableView<TietHocData> tkbTableView; // Đổi tên từ sangTableView
-    @FXML private TableColumn<TietHocData, String> tietColumn; // Đổi tên từ sangTietColumn
-    @FXML private TableColumn<TietHocData, ChiTietTKB> thu2Column; // Đổi tên từ sangThu2Column
-    @FXML private TableColumn<TietHocData, ChiTietTKB> thu3Column; // Đổi tên
-    @FXML private TableColumn<TietHocData, ChiTietTKB> thu4Column; // Đổi tên
-    @FXML private TableColumn<TietHocData, ChiTietTKB> thu5Column; // Đổi tên
-    @FXML private TableColumn<TietHocData, ChiTietTKB> thu6Column; // Đổi tên
-    @FXML private TableColumn<TietHocData, ChiTietTKB> thu7Column; // Đổi tên
+    @FXML private TableView<TietHocData> tkbTableView;
+    @FXML private TableColumn<TietHocData, String> tietColumn;
+    @FXML private TableColumn<TietHocData, ChiTietTKB> thu2Column;
+    @FXML private TableColumn<TietHocData, ChiTietTKB> thu3Column;
+    @FXML private TableColumn<TietHocData, ChiTietTKB> thu4Column;
+    @FXML private TableColumn<TietHocData, ChiTietTKB> thu5Column;
+    @FXML private TableColumn<TietHocData, ChiTietTKB> thu6Column;
+    @FXML private TableColumn<TietHocData, ChiTietTKB> thu7Column;
 
     private GiaoVien currentGiaoVien;
     private ThoiKhoaBieuDAO thoiKhoaBieuDAO;
-
-    // ObservableList để chứa dữ liệu cho TableView
     private ObservableList<TietHocData> tkbDataList;
 
     private static final int SO_TIET_MOI_BUOI = 5;
-    private static final double ROW_HEIGHT = 28.0;
-    private static final double ESTIMATED_HEADER_HEIGHT = 30.0;
+    private static final double ROW_HEIGHT = 28.0; // Giả sử mỗi dòng là 28
+    private static final double ESTIMATED_HEADER_HEIGHT = 30.0; // Chiều cao ước tính của header
     String maGV = "";
     ThoiKhoaBieu selectedTKB;
+
 
     public TKBCaNhanController() {
         thoiKhoaBieuDAO = new ThoiKhoaBieuDAO();
@@ -53,38 +63,34 @@ public class TKBCaNhanController {
 
     @FXML
     public void initialize() {
-        // Thiết lập cột cho bảng
         setupTableColumns(tietColumn, thu2Column, thu3Column, thu4Column, thu5Column, thu6Column, thu7Column);
-
-        // Khởi tạo ObservableList (giờ chỉ có một)
         tkbDataList = FXCollections.observableArrayList();
-
-        // Khởi tạo các hàng rỗng ban đầu cho bảng
-        initializeTableRows(tkbDataList); // Không cần truyền buổi nữa
-
-        // Gán dữ liệu vào TableView
+        initializeTableRows(tkbDataList);
         tkbTableView.setItems(tkbDataList);
-        tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)"); // Label thông báo buổi
+        tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
 
         tkbTableView.setFixedCellSize(ROW_HEIGHT);
-        // Chiều cao = chiều cao header + (số dòng * chiều cao mỗi dòng) + một chút padding nhỏ (2px để tránh lỗi hiển thị thanh cuộn nhỏ)
-        double calculatedTableHeight = ESTIMATED_HEADER_HEIGHT + (SO_TIET_MOI_BUOI * ROW_HEIGHT) + 2.0;
-
+        double calculatedTableHeight = ESTIMATED_HEADER_HEIGHT + (SO_TIET_MOI_BUOI * ROW_HEIGHT) + 2.0; // +2 for padding
         tkbTableView.setPrefHeight(calculatedTableHeight);
-        tkbTableView.setMinHeight(calculatedTableHeight); // Ngăn không cho bảng co lại nhỏ hơn
-        tkbTableView.setMaxHeight(calculatedTableHeight); // Ngăn không cho bảng giãn ra lớn hơn
+        tkbTableView.setMinHeight(calculatedTableHeight);
+        tkbTableView.setMaxHeight(calculatedTableHeight);
 
-        // Tải danh sách học kỳ
         loadHocKyOptions();
         tkbComboBox.setDisable(true);
-        GVComboBox.setDisable(true);
+        if (GVComboBox != null) { // GVComboBox có thể không tồn tại trong mọi FXML
+            GVComboBox.setDisable(true);
+        }
     }
 
     public void initData(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;
-        maGV = giaoVien.getMaGV();
-        hBoxGV.setVisible(false);
-        hBoxGV.setManaged(false);
+        if (giaoVien != null) {
+            maGV = giaoVien.getMaGV();
+        }
+        if (hBoxGV != null) {
+            hBoxGV.setVisible(false);
+            hBoxGV.setManaged(false);
+        }
     }
 
     public void initDataAdmin() {
@@ -99,19 +105,43 @@ public class TKBCaNhanController {
                                    TableColumn<TietHocData, ChiTietTKB> colThu5,
                                    TableColumn<TietHocData, ChiTietTKB> colThu6,
                                    TableColumn<TietHocData, ChiTietTKB> colThu7) {
-        tietCol.setCellValueFactory(new PropertyValueFactory<>("tiet"));
-        colThu2.setCellValueFactory(new PropertyValueFactory<>("thu2"));
-        colThu3.setCellValueFactory(new PropertyValueFactory<>("thu3"));
-        colThu4.setCellValueFactory(new PropertyValueFactory<>("thu4"));
-        colThu5.setCellValueFactory(new PropertyValueFactory<>("thu5"));
-        colThu6.setCellValueFactory(new PropertyValueFactory<>("thu6"));
-        colThu7.setCellValueFactory(new PropertyValueFactory<>("thu7"));
+        tietCol.setCellValueFactory(new PropertyValueFactory<>("tiet")); //
+        colThu2.setCellValueFactory(new PropertyValueFactory<>("thu2")); //
+        colThu3.setCellValueFactory(new PropertyValueFactory<>("thu3")); //
+        colThu4.setCellValueFactory(new PropertyValueFactory<>("thu4")); //
+        colThu5.setCellValueFactory(new PropertyValueFactory<>("thu5")); //
+        colThu6.setCellValueFactory(new PropertyValueFactory<>("thu6")); //
+        colThu7.setCellValueFactory(new PropertyValueFactory<>("thu7")); //
+
+        // Custom cell factory để hiển thị toString() của ChiTietTKB
+        // Hoặc bạn có thể định nghĩa một cách hiển thị khác ở đây nếu cần
+        javafx.util.Callback<TableColumn<TietHocData, ChiTietTKB>, TableCell<TietHocData, ChiTietTKB>> cellFactory =
+                param -> new TableCell<>() {
+                    @Override
+                    protected void updateItem(ChiTietTKB item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setStyle("-fx-alignment: CENTER;"); // Căn giữa ô trống
+                        } else {
+                            setText(item.toString()); // Sử dụng toString() của ChiTietTKB
+                            setStyle("-fx-alignment: CENTER; -fx-wrap-text: true;"); // Căn giữa và wrap text
+                        }
+                    }
+                };
+
+        colThu2.setCellFactory(cellFactory);
+        colThu3.setCellFactory(cellFactory);
+        colThu4.setCellFactory(cellFactory);
+        colThu5.setCellFactory(cellFactory);
+        colThu6.setCellFactory(cellFactory);
+        colThu7.setCellFactory(cellFactory);
     }
 
     private void initializeTableRows(ObservableList<TietHocData> dataList) {
         dataList.clear();
         for (int i = 1; i <= SO_TIET_MOI_BUOI; i++) {
-            dataList.add(new TietHocData("Tiết " + i));
+            dataList.add(new TietHocData("Tiết " + i)); //
         }
     }
 
@@ -123,11 +153,12 @@ public class TKBCaNhanController {
         } else {
             hocKyComboBox.setPromptText("Không có học kỳ");
             tkbComboBox.setDisable(true);
-            GVComboBox.setDisable(true);
+            if (GVComboBox != null) GVComboBox.setDisable(true);
         }
     }
 
     private void loadGVOptions() {
+        if (GVComboBox == null) return; // Kiểm tra nếu GVComboBox không được inject
         List<GiaoVien> GVList = thoiKhoaBieuDAO.getDanhSachGiaoVien();
         GVComboBox.getItems().clear();
         if (GVList != null && !GVList.isEmpty()) {
@@ -139,10 +170,15 @@ public class TKBCaNhanController {
 
     @FXML
     private void handleGVSelection(ActionEvent event) {
-        GiaoVien selectedGV = GVComboBox.getSelectionModel().getSelectedItem();
-        maGV = selectedGV.getMaGV();
-        mainLabel.setText("THỜI KHÓA BIỂU CỦA " + selectedGV.getHoGV() + " " + selectedGV.getTenGV());
-        if (selectedTKB != null) loadThoiKhoaBieuData(selectedTKB, maGV);
+        if (GVComboBox == null) return;
+        GiaoVien selectedGVEntity = GVComboBox.getSelectionModel().getSelectedItem();
+        if (selectedGVEntity != null) {
+            maGV = selectedGVEntity.getMaGV();
+            mainLabel.setText("THỜI KHÓA BIỂU CỦA " + selectedGVEntity.getHoGV() + " " + selectedGVEntity.getTenGV());
+            if (selectedTKB != null) {
+                loadThoiKhoaBieuData(selectedTKB, maGV);
+            }
+        }
     }
 
     @FXML
@@ -150,7 +186,7 @@ public class TKBCaNhanController {
         HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
         tkbComboBox.getItems().clear();
         tkbComboBox.setDisable(true);
-        GVComboBox.setDisable(true);
+        if (GVComboBox != null) GVComboBox.setDisable(true);
         tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
         clearTableData();
 
@@ -159,7 +195,9 @@ public class TKBCaNhanController {
             if (tkbList != null && !tkbList.isEmpty()) {
                 tkbComboBox.setItems(FXCollections.observableArrayList(tkbList));
                 tkbComboBox.setDisable(false);
-                GVComboBox.setDisable(false);
+                if (GVComboBox != null && hBoxGV != null && hBoxGV.isVisible()) { // Chỉ bật GVComboBox nếu là admin view
+                    GVComboBox.setDisable(false);
+                }
             } else {
                 tkbComboBox.setPromptText("Không có TKB cho học kỳ này");
             }
@@ -171,39 +209,36 @@ public class TKBCaNhanController {
     @FXML
     private void handleTkbSelection(ActionEvent event) {
         selectedTKB = tkbComboBox.getSelectionModel().getSelectedItem();
-        clearTableData(); // Xóa dữ liệu bảng cũ
+        clearTableData();
 
         if (selectedTKB != null) {
-            // Cập nhật label buổi
             if (selectedTKB.getBuoi() != null && !selectedTKB.getBuoi().isEmpty()) {
                 tkbBuoiLabel.setText("Buổi: " + selectedTKB.getBuoi().toUpperCase());
             } else {
                 tkbBuoiLabel.setText("Buổi: (Không xác định)");
             }
-
-            System.out.println("Đang tải TKB: " + selectedTKB.getMaTKB() +
-                    " (Buổi: " + selectedTKB.getBuoi() +
-                    ") cho GV: " + maGV);
-            loadThoiKhoaBieuData(selectedTKB, maGV);
+            // Chỉ tải TKB nếu maGV đã được thiết lập (hoặc là admin view đang xem một GV cụ thể)
+            if (maGV != null && !maGV.isEmpty()) {
+                loadThoiKhoaBieuData(selectedTKB, maGV);
+            }
         } else {
             tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
-            if (selectedTKB == null) {
-                System.out.println("Không có TKB nào được chọn.");
-            }
         }
     }
 
-    private void loadThoiKhoaBieuData(ThoiKhoaBieu selectedTKB, String maGV) {
-        // Khởi tạo lại các hàng cho bảng (giờ chỉ có một bảng tkbDataList)
+    private void loadThoiKhoaBieuData(ThoiKhoaBieu tkb, String maGiaoVien) {
+        if (tkb == null || maGiaoVien == null || maGiaoVien.isEmpty()) {
+            System.out.println("Không thể tải TKB: selectedTKB hoặc maGV là null/rỗng.");
+            clearTableData();
+            return;
+        }
         initializeTableRows(tkbDataList);
+        List<ChiTietTKB> chiTietList = thoiKhoaBieuDAO.getChiTietTKBForGiaoVien(tkb.getMaTKB(), maGiaoVien);
 
-        List<ChiTietTKB> chiTietList = thoiKhoaBieuDAO.getChiTietTKBForGiaoVien(selectedTKB.getMaTKB(), maGV);
-
-        if (chiTietList == null || chiTietList.isEmpty()) {
-            System.out.println("Không có chi tiết TKB nào cho GV " + maGV + " với TKB " + selectedTKB.getMaTKB());
-        } else {
+        if (chiTietList != null && !chiTietList.isEmpty()) {
             for (ChiTietTKB ct : chiTietList) {
-                int tietIndex = ct.getTiet() - 1; // Giả sử tiết 1 là index 0
+                int tietDbValue = ct.getTiet(); // Giả sử tiết từ 1-5
+                int tietIndex = tietDbValue - 1; // Chuyển sang index 0-4
 
                 if (tietIndex >= 0 && tietIndex < SO_TIET_MOI_BUOI) {
                     TietHocData rowData = tkbDataList.get(tietIndex);
@@ -214,17 +249,137 @@ public class TKBCaNhanController {
                         case 5: rowData.setThu5(ct); break;
                         case 6: rowData.setThu6(ct); break;
                         case 7: rowData.setThu7(ct); break;
-                        default:
-                            System.err.println("Thứ không hợp lệ: " + ct.getThu());
-                            break;
+                        // No default needed as other 'thu' values are not expected for this table structure
                     }
                 } else {
-                    System.err.println("Tiết học không hợp lệ (ngoài khoảng 1-" + SO_TIET_MOI_BUOI + "): Tiết " + ct.getTiet());
+                    System.err.println("Tiết học không hợp lệ (ngoài khoảng 1-" + SO_TIET_MOI_BUOI + "): Tiết " + tietDbValue + " cho TKB " + tkb.getMaTKB());
+                }
+            }
+        } else {
+            System.out.println("Không có chi tiết TKB nào cho GV " + maGiaoVien + " với TKB " + tkb.getMaTKB());
+        }
+        tkbTableView.refresh();
+    }
+
+    @FXML
+    private void handleXuat(ActionEvent event) {
+        // Kiểm tra điều kiện trước khi xuất
+        if (selectedTKB == null) {
+            showAlert("Chưa chọn TKB", "Vui lòng chọn một thời khóa biểu để xuất.");
+            return;
+        }
+        if (maGV == null || maGV.isEmpty()) {
+            showAlert("Chưa có thông tin giáo viên", "Không thể xác định giáo viên để xuất TKB.");
+            return;
+        }
+
+        // Tạo FileChooser để chọn vị trí lưu file
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Lưu file Excel (.xls)"); // Sửa tiêu đề
+        String defaultFileName = "TKB_" + selectedTKB.getMaTKB() + "_" + maGV + ".xls"; // Đổi đuôi file mặc định
+        defaultFileName = defaultFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
+        fileChooser.setInitialFileName(defaultFileName);
+        // Sửa ExtensionFilter
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel 97-2003 Files (*.xls)", "*.xls"));
+        File file = fileChooser.showSaveDialog(btnXuat.getScene().getWindow());
+
+        if (file != null) {
+            Workbook workbook = null; // Interface chung
+            try {
+                workbook = new HSSFWorkbook(); // Sử dụng HSSFWorkbook cho định dạng .xls
+                Sheet sheet = workbook.createSheet("ThoiKhoaBieu");
+
+                // (Phần còn lại của code tạo CellStyle, Row, Cell, ghi dữ liệu giữ nguyên)
+                // ...
+                // Style cho cell (wrap text, căn giữa)
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setWrapText(true);
+                cellStyle.setAlignment(HorizontalAlignment.CENTER);
+                cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+                // Style cho header
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                // (Bạn có thể thêm Font, Fill color,... cho headerStyle ở đây nếu muốn)
+
+                // 0. Thông tin chung của TKB
+                Row infoRow1 = sheet.createRow(0);
+                Cell infoCellLabel = infoRow1.createCell(0);
+                infoCellLabel.setCellValue(mainLabel.getText()); // Tên TKB đang hiển thị
+
+                Row infoRow2 = sheet.createRow(1);
+                Cell infoCellBuoi = infoRow2.createCell(0);
+                infoCellBuoi.setCellValue(tkbBuoiLabel.getText()); // Buổi
+
+                // 1. Tạo hàng tiêu đề cho bảng TKB
+                Row headerRow = sheet.createRow(3); // Bắt đầu bảng TKB từ hàng thứ 4 (index 3)
+                String[] columnTitles = {"Tiết", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"};
+                for (int i = 0; i < columnTitles.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(columnTitles[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // 2. Ghi dữ liệu từ tkbDataList
+                int rowIndex = 4; // Dữ liệu bắt đầu từ hàng thứ 5 (index 4)
+                for (TietHocData rowData : tkbDataList) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.setHeightInPoints((float) (ROW_HEIGHT * 1.5)); // Tăng chiều cao dòng một chút
+
+                    Cell tietCell = row.createCell(0);
+                    tietCell.setCellValue(rowData.getTiet());
+                    tietCell.setCellStyle(cellStyle);
+
+                    // Sử dụng toString() của ChiTietTKB vì nó đã có logic hiển thị theo flag
+                    createCellWithData(row, 1, rowData.getThu2(), cellStyle);
+                    createCellWithData(row, 2, rowData.getThu3(), cellStyle);
+                    createCellWithData(row, 3, rowData.getThu4(), cellStyle);
+                    createCellWithData(row, 4, rowData.getThu5(), cellStyle);
+                    createCellWithData(row, 5, rowData.getThu6(), cellStyle);
+                    createCellWithData(row, 6, rowData.getThu7(), cellStyle);
+                }
+
+                // Tự động điều chỉnh kích thước cột
+                for (int i = 0; i < columnTitles.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+                // Đặt độ rộng cột cố định nếu muốn (ví dụ cột Tiết)
+                sheet.setColumnWidth(0, 2000); // Cột "Tiết" rộng khoảng 2000 units
+                // ...
+
+                // Lưu file
+                try (FileOutputStream fileOut = new FileOutputStream(file)) {
+                    workbook.write(fileOut);
+                }
+                showInfo("Xuất Excel (.xls) thành công!", "Đã lưu thời khóa biểu vào file:\n" + file.getAbsolutePath());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                showError("Lỗi xuất Excel (.xls)", "Có lỗi xảy ra khi ghi file Excel: " + e.getMessage());
+            } finally {
+                if (workbook != null) {
+                    try {
+                        workbook.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
-        tkbTableView.refresh(); // Refresh TableView để hiển thị dữ liệu mới
     }
+
+    private void createCellWithData(Row row, int cellIndex, ChiTietTKB chiTiet, CellStyle style) {
+        Cell cell = row.createCell(cellIndex);
+        if (chiTiet != null) {
+            cell.setCellValue(chiTiet.toString()); // Sử dụng toString() để lấy định dạng hiển thị
+        } else {
+            cell.setCellValue(""); // Hoặc để trống
+        }
+        cell.setCellStyle(style);
+    }
+
 
     private void clearAllUIData() {
         hocKyComboBox.getItems().clear();
@@ -232,18 +387,39 @@ public class TKBCaNhanController {
         tkbComboBox.getItems().clear();
         tkbComboBox.setPromptText("Chọn TKB để xem");
         tkbComboBox.setDisable(true);
-        GVComboBox.setDisable(true);
+        if (GVComboBox != null) {
+            GVComboBox.getItems().clear();
+            GVComboBox.setPromptText("Chọn giáo viên");
+            GVComboBox.setDisable(true);
+        }
         tkbBuoiLabel.setText("Buổi: (chưa chọn TKB)");
         clearTableData();
     }
 
     private void clearTableData() {
-        initializeTableRows(tkbDataList); // Chỉ cần khởi tạo lại một danh sách
-        tkbTableView.refresh(); // Chỉ cần refresh một bảng
+        initializeTableRows(tkbDataList);
+        if (tkbTableView != null) {
+            tkbTableView.refresh();
+        }
+    }
+
+    private void showInfo(String title, String message) { // Đảm bảo hàm này tồn tại và đúng
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    private void showError(String title, String message) { // Đảm bảo hàm này tồn tại và đúng
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
