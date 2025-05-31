@@ -2,6 +2,7 @@ package controllers;// Giả sử các file nằm trực tiếp trong thư mục
 
 import controllers.PhanHoiYKien.PhanHoiYKienController;
 import controllers.QuanLyGiaoVien.QuanLyGiaoVienController;
+import controllers.QuanLyTCM.QuanLyTCMController;
 import controllers.XemTKB.TimeTableController;
 import entities.GiaoVien;
 import javafx.event.ActionEvent;
@@ -397,5 +398,26 @@ public class MainFormController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    public void handleQuanLyTCM() {
+        if (loggedInGiaoVien == null) {
+            showAlert(Alert.AlertType.WARNING, "Chưa Đăng Nhập", "Không có gì để hiển thị.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/ToChuyenMon/QLTCMForm.fxml"));
+            Parent Root = loader.load();
+
+            QuanLyTCMController qltcmControl = loader.getController();
+            if (mainBorderPane != null) {
+                mainBorderPane.setCenter(Root); // Đặt nội dung mới vào vùng center
+            } else {
+                System.err.println("Lỗi: mainBorderPane chưa được inject. Kiểm tra fx:id trong MainForm.fxml.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi Giao Diện", "Không thể hiển thị TimeTableForm trong trang chính.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
+        }
     }
 }

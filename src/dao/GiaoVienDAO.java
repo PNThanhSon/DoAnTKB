@@ -26,9 +26,12 @@ public class GiaoVienDAO {
             stmt.setString(3, gv.getGioiTinh());
             stmt.setString(4, gv.getChuyenMon());
             stmt.setString(5, gv.getMaTCM());
-            stmt.setInt(6, gv.getSoTietQuyDinh());
-            stmt.setInt(7, gv.getSoTietThucHien());
-            stmt.setInt(8, gv.getSoTietDuThieu());
+            if (gv.getSoTietQuyDinh() != null) stmt.setInt(6, gv.getSoTietQuyDinh());
+            else stmt.setNull(6, java.sql.Types.INTEGER);
+            if (gv.getSoTietThucHien() != null) stmt.setInt(7, gv.getSoTietThucHien());
+            else stmt.setNull(7, java.sql.Types.INTEGER);
+            if (gv.getSoTietDuThieu() != null) stmt.setInt(8, gv.getSoTietDuThieu());
+            else stmt.setNull(8, java.sql.Types.INTEGER);
             stmt.setString(9, gv.getEmail());
             stmt.setString(10, gv.getSdt());
             stmt.setString(11, gv.getMatKhau());
@@ -53,9 +56,12 @@ public class GiaoVienDAO {
             stmt.setString(3, gv.getGioiTinh());
             stmt.setString(4, gv.getChuyenMon());
             stmt.setString(5, gv.getMaTCM());
-            stmt.setInt(6, gv.getSoTietQuyDinh());
-            stmt.setInt(7, gv.getSoTietThucHien());
-            stmt.setInt(8, gv.getSoTietDuThieu());
+            if (gv.getSoTietQuyDinh() != null) stmt.setInt(6, gv.getSoTietQuyDinh());
+            else stmt.setNull(6, java.sql.Types.INTEGER);
+            if (gv.getSoTietThucHien() != null) stmt.setInt(7, gv.getSoTietThucHien());
+            else stmt.setNull(7, java.sql.Types.INTEGER);
+            if (gv.getSoTietDuThieu() != null) stmt.setInt(8, gv.getSoTietDuThieu());
+            else stmt.setNull(8, java.sql.Types.INTEGER);
             stmt.setString(9, gv.getEmail());
             stmt.setString(10, gv.getSdt());
             stmt.setString(11, gv.getMatKhau());
@@ -127,6 +133,19 @@ public class GiaoVienDAO {
     }
 
 
+    public void capNhatTCM(GiaoVien gv) throws SQLException {
+        String sql = "UPDATE GIAOVIEN SET MaTCM = ? " +
+                "WHERE MaGV = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, gv.getMaTCM());
+            stmt.setString(2, gv.getMaGV());
+
+            stmt.executeUpdate();
+        }
+    }
 
 
 

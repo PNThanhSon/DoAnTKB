@@ -8,6 +8,7 @@ public class ToChuyenMon {
     private String tenTCM;
     private String toTruong;
     private String toPho;
+    private Integer slGV;
 
 
     public ToChuyenMon(String maTCM, String tenTCM, String toTruong, String toPho) {
@@ -15,6 +16,13 @@ public class ToChuyenMon {
         this.tenTCM = tenTCM;
         this.toTruong = toTruong;
         this.toPho = toPho;
+    }
+    public ToChuyenMon(String maTCM, String tenTCM, String toTruong, String toPho, Integer slGV) {
+        this.maTCM = maTCM;
+        this.tenTCM = tenTCM;
+        this.toTruong = toTruong;
+        this.toPho = toPho;
+        this.slGV = slGV;
     }
 
     public String getMaTCM() {
@@ -47,6 +55,13 @@ public class ToChuyenMon {
 
     public void setToPho(String toPho) {
         this.toPho = toPho;
+    }
+
+    public Integer getSlGV() {
+        return slGV;
+    }
+    public void setSlGV(Integer slGV) {
+        this.slGV = slGV;
     }
 
     // JavaFX properties (optional, but good practice if used directly in TableView)

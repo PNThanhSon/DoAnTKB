@@ -1,0 +1,69 @@
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5px;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+
+.titled-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+}
+
+.titled-pane > .title {
+    -fx-background-color: transparent;
+    -fx-text-fill: black; /* Giữ lại màu chữ, có thể chỉnh nếu muốn */
+    -fx-font-weight: bold;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 18px;
+}
+
+.titled-pane > .content {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0 0 8 8;
+    -fx-padding: 10;
+    -fx-font-weight: normal;
+    -fx-font-size: 12px;
+}
+.titled-pane, .titled-pane:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+}
+.text-field {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-text-fill: -fx-text-inner-color;
+    -fx-border-color: -fx-box-border;
+    -fx-background-radius: 3 3 3 3;
+    -fx-border-radius: 3 3 3 3;
+}
