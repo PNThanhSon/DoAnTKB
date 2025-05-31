@@ -23,6 +23,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// Import cho Apache POI (nếu chưa có hoặc cần bổ sung)
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.BorderStyle; // Import BorderStyle
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;    // Import RegionUtil để sửa viền ô gộp
+
+// Import cho FileChooser và File I/O (đảm bảo đã có)
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class TKBTCMController {
 
     @FXML private Label tkbBuoiLabel;
@@ -195,7 +214,7 @@ public class TKBTCMController {
         danhSachLichDayGV.clear();
         List<String> cacMaMHCuaNhom = selectedNhomMonHoc.getDanhSachMaMH();
         if (cacMaMHCuaNhom.isEmpty()) {
-            showAlert("Lỗi", "Nhóm môn học không chứa mã môn cụ thể.");
+            showAlert("Lỗi", "Nhóm môn học không chứa mã môn cụ thể.", Alert.AlertType.ERROR);
             buildTKBGrid(new ArrayList<>());
             return;
         }
@@ -207,7 +226,7 @@ public class TKBTCMController {
         );
 
         if (tatCaChiTiet.isEmpty()) {
-            showAlert("Thông báo", "Không có lịch dạy cho môn '" + selectedNhomMonHoc.getTenMonHocChung() + "' trong TKB này cho tổ chuyên môn.");
+            showAlert("Thông báo", "Không có lịch dạy cho môn '" + selectedNhomMonHoc.getTenMonHocChung() + "' trong TKB này cho tổ chuyên môn.", Alert.AlertType.INFORMATION);
             buildTKBGrid(new ArrayList<>());
             return;
         }
@@ -343,8 +362,224 @@ public class TKBTCMController {
         danhSachLichDayGV.clear();
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    // ======================= PHẦN CODE MỚI CHO EXCEL EXPORT =========================
+
+    /**
+     * Hàm tiện ích để tạo CellStyle chung.
+     * Bạn có thể tùy chỉnh thêm các thuộc tính khác cho style nếu muốn.
+     */
+    private CellStyle createCellStyle(Workbook workbook, org.apache.poi.ss.usermodel.Font font,
+                                      HorizontalAlignment halign, VerticalAlignment valign,
+                                      boolean wrapText, boolean bordered) {
+        CellStyle style = workbook.createCellStyle();
+        if (font != null) {
+            style.setFont(font);
+        }
+        style.setAlignment(halign);
+        style.setVerticalAlignment(valign);
+        style.setWrapText(wrapText);
+        if (bordered) {
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+        }
+        return style;
+    }
+
+    private void createCellWithFormattedData(Row row, int cellIndex, String text, CellStyle style) {
+        Cell cell = row.createCell(cellIndex);
+        cell.setCellValue(text);
+        if (style != null) {
+            cell.setCellStyle(style);
+        }
+    }
+
+    private void createMergedInfoCell(Sheet sheet, Row row, int cellIndex, String text, CellStyle style,
+                                      int firstColMerge, int lastColMerge) {
+        Cell cell = row.createCell(cellIndex);
+        cell.setCellValue(text);
+        if (style != null) {
+            cell.setCellStyle(style);
+        }
+        if (lastColMerge > firstColMerge) {
+            CellRangeAddress mergedRegion = new CellRangeAddress(row.getRowNum(), row.getRowNum(), firstColMerge, lastColMerge);
+            sheet.addMergedRegion(mergedRegion);
+            // Áp dụng viền cho vùng gộp nếu style có viền (hoặc có thể bỏ qua nếu style đã định nghĩa)
+            // Để đảm bảo viền đẹp cho các ô thông tin này, ta có thể không cần RegionUtil ở đây nếu CellStyle đã có border.
+            // Nếu muốn viền chỉ bao quanh vùng gộp, thì dùng RegionUtil như các header Thứ.
+        }
+    }
+
+    private void applyBordersToMergedRegion(CellRangeAddress region, Sheet sheet) {
+        RegionUtil.setBorderTop(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
+    }
+
+    @FXML
+    private void handleXuat(ActionEvent event) {
+        ThoiKhoaBieu selectedTKBValue = tkbComboBox.getSelectionModel().getSelectedItem();
+        NhomMonHocDisplay selectedNhomMonHocValue = monHocComboBox.getSelectionModel().getSelectedItem();
+
+        if (selectedTKBValue == null) {
+            showAlert("Chưa chọn TKB", "Vui lòng chọn một thời khóa biểu để xuất.", Alert.AlertType.WARNING);
+            return;
+        }
+        if (maTCM == null || maTCM.isEmpty()) {
+            showAlert("Chưa có thông tin Tổ Chuyên Môn", "Vui lòng chọn Tổ Chuyên Môn để xuất TKB.", Alert.AlertType.WARNING);
+            return;
+        }
+        if (selectedNhomMonHocValue == null) {
+            showAlert("Chưa chọn Nhóm Môn học", "Vui lòng chọn một nhóm môn học để xuất TKB.", Alert.AlertType.WARNING);
+            return;
+        }
+        if (danhSachLichDayGV.isEmpty()) {
+            showAlert("Không có dữ liệu", "Không có dữ liệu thời khóa biểu của tổ chuyên môn cho môn học này để xuất.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Lưu file Excel TKB Tổ Chuyên Môn (.xls)");
+        // Tên file theo dạng TKB_MaTKB_MaTCM.xls
+        String defaultFileName = "TKB_" + selectedTKBValue.getMaTKB() + "_" + maTCM + ".xls";
+        defaultFileName = defaultFileName.replaceAll("[^a-zA-Z0-9._-]", "_").replaceAll("_+", "_");
+        fileChooser.setInitialFileName(defaultFileName);
+
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel 97-2003 Files (*.xls)", "*.xls"));
+        File file = fileChooser.showSaveDialog(tkbScrollPane.getScene().getWindow()); // Sử dụng tkbScrollPane hoặc một Node khác để lấy Window
+
+        if (file != null) {
+            Workbook workbook = null;
+            try {
+                workbook = new HSSFWorkbook(); // Tạo workbook cho file .xls
+                Sheet sheet = workbook.createSheet("TKB_TCM");
+
+                // --- Định nghĩa Fonts ---
+                org.apache.poi.ss.usermodel.Font timesNewRomanFont = workbook.createFont();
+                timesNewRomanFont.setFontName("Times New Roman");
+                timesNewRomanFont.setFontHeightInPoints((short) 11);
+
+                org.apache.poi.ss.usermodel.Font timesNewRomanBoldFont = workbook.createFont();
+                timesNewRomanBoldFont.setFontName("Times New Roman");
+                timesNewRomanBoldFont.setFontHeightInPoints((short) 12); // Size lớn hơn cho tiêu đề chính
+                timesNewRomanBoldFont.setBold(true);
+
+                org.apache.poi.ss.usermodel.Font timesNewRomanHeaderFont = workbook.createFont(); // Font cho header bảng
+                timesNewRomanHeaderFont.setFontName("Times New Roman");
+                timesNewRomanHeaderFont.setFontHeightInPoints((short) 10);
+                timesNewRomanHeaderFont.setBold(true);
+
+
+                // --- Định nghĩa CellStyles ---
+                // Style cho các label thông tin chung (Tổ, Môn, Buổi) - BOLD
+                CellStyle infoLabelStyle = createCellStyle(workbook, timesNewRomanBoldFont, HorizontalAlignment.LEFT, VerticalAlignment.CENTER, false, false); // Không viền, căn trái
+
+                // Style cho header của bảng (Giáo viên, Thứ, Tiết) - BOLD, có viền
+                CellStyle mainHeaderStyle = createCellStyle(workbook, timesNewRomanHeaderFont, HorizontalAlignment.CENTER, VerticalAlignment.CENTER, true, true);
+
+                // Style cho ô dữ liệu (Mã Lớp) - REGULAR, có viền
+                CellStyle dataCellStyle = createCellStyle(workbook, timesNewRomanFont, HorizontalAlignment.CENTER, VerticalAlignment.CENTER, true, true);
+
+                // Style cho tên giáo viên trong bảng - REGULAR, có viền, căn trái
+                CellStyle gvNameStyle = createCellStyle(workbook, timesNewRomanFont, HorizontalAlignment.LEFT, VerticalAlignment.CENTER, true, true);
+                gvNameStyle.setIndention((short)1); // Thụt lề một chút cho tên GV
+
+
+                // --- Ghi thông tin chung ---
+                int currentRowIndex = 0;
+                int lastColIndexForInfoMerge = THU_TRONG_TUAN_LABEL.length * SO_TIET_MOI_BUOI; // Cột cuối cùng của bảng TKB
+
+                createMergedInfoCell(sheet, sheet.createRow(currentRowIndex++), 0, tkbTCMLabel.getText(), infoLabelStyle, 0, lastColIndexForInfoMerge);
+                createMergedInfoCell(sheet, sheet.createRow(currentRowIndex++), 0, "Môn học: " + selectedNhomMonHocValue.getTenMonHocChung(), infoLabelStyle, 0, lastColIndexForInfoMerge);
+                createMergedInfoCell(sheet, sheet.createRow(currentRowIndex++), 0, tkbBuoiLabel.getText(), infoLabelStyle, 0, lastColIndexForInfoMerge);
+
+                currentRowIndex++; // Dòng trống
+
+                // --- Tạo hàng tiêu đề cho bảng TKB (Thứ và Tiết) - 2 dòng ---
+                Row thuHeaderRow = sheet.createRow(currentRowIndex++);
+                Row tietHeaderRow = sheet.createRow(currentRowIndex++);
+                thuHeaderRow.setHeightInPoints(20f);
+                tietHeaderRow.setHeightInPoints(20f);
+
+                // Ô "Giáo viên" (gộp 2 dòng)
+                CellRangeAddress mergedGvHeaderRegion = new CellRangeAddress(thuHeaderRow.getRowNum(), tietHeaderRow.getRowNum(), 0, 0);
+                createCellWithFormattedData(thuHeaderRow, 0, "Giáo viên", mainHeaderStyle); // Cell được tạo ở thuHeaderRow
+                // Cell ở tietHeaderRow tại cột 0 sẽ được ngầm hiểu là một phần của vùng merge, POI sẽ tự xử lý
+                // hoặc bạn có thể tạo một cell rỗng với style nếu muốn kiểm soát hoàn toàn
+                Cell emptyCellForGvMerge = tietHeaderRow.createCell(0);
+                emptyCellForGvMerge.setCellStyle(mainHeaderStyle); // Áp style để có viền
+                sheet.addMergedRegion(mergedGvHeaderRegion);
+                applyBordersToMergedRegion(mergedGvHeaderRegion, sheet); // Áp dụng viền cho vùng gộp
+
+                // Các ô "Thứ X" (gộp SO_TIET_MOI_BUOI cột) và "Tiết Y"
+                int currentCellIndexInExcel = 1;
+                for (String thu : THU_TRONG_TUAN_LABEL) {
+                    CellRangeAddress mergedThuHeaderRegion = new CellRangeAddress(thuHeaderRow.getRowNum(), thuHeaderRow.getRowNum(), currentCellIndexInExcel, currentCellIndexInExcel + SO_TIET_MOI_BUOI - 1);
+                    createCellWithFormattedData(thuHeaderRow, currentCellIndexInExcel, thu, mainHeaderStyle);
+                    // Tạo các cell trống bên dưới cho vùng merge để đảm bảo style và viền được áp dụng
+                    for(int k=0; k < SO_TIET_MOI_BUOI; ++k) {
+                        if (k==0) continue; // Ô đầu tiên đã được tạo
+                        Cell emptyCellInThuMerge = thuHeaderRow.createCell(currentCellIndexInExcel + k);
+                        emptyCellInThuMerge.setCellStyle(mainHeaderStyle);
+                    }
+                    sheet.addMergedRegion(mergedThuHeaderRegion);
+                    applyBordersToMergedRegion(mergedThuHeaderRegion, sheet);
+
+                    for (int tiet = 1; tiet <= SO_TIET_MOI_BUOI; tiet++) {
+                        createCellWithFormattedData(tietHeaderRow, currentCellIndexInExcel + tiet - 1, "Tiết " + tiet, mainHeaderStyle);
+                    }
+                    currentCellIndexInExcel += SO_TIET_MOI_BUOI;
+                }
+
+                // --- Ghi dữ liệu TKB ---
+                for (GiaoVienLichDayData gvData : danhSachLichDayGV) {
+                    Row dataRow = sheet.createRow(currentRowIndex++);
+                    dataRow.setHeightInPoints((short) (3 * sheet.getDefaultRowHeightInPoints() / 2)); // Tăng chiều cao dòng một chút
+
+                    createCellWithFormattedData(dataRow, 0, gvData.getHoTenGV(), gvNameStyle);
+
+                    currentCellIndexInExcel = 1;
+                    for (int thuDbVal : THU_TRONG_TUAN_DBVAL) {
+                        for (int tiet = 1; tiet <= SO_TIET_MOI_BUOI; tiet++) {
+                            ChiTietTKB chiTiet = gvData.getChiTiet(thuDbVal, tiet);
+                            String cellText = (chiTiet != null) ? chiTiet.toString() : ""; // flag = 1 cho TKBTCM sẽ là MaLop
+                            createCellWithFormattedData(dataRow, currentCellIndexInExcel++, cellText, dataCellStyle);
+                        }
+                    }
+                }
+
+                // --- Điều chỉnh độ rộng cột ---
+                sheet.setColumnWidth(0, 22 * 256); // Cột tên GV (khoảng 22 ký tự)
+                for (int i = 1; i <= THU_TRONG_TUAN_LABEL.length * SO_TIET_MOI_BUOI; i++) {
+                    sheet.setColumnWidth(i, 9 * 256); // Các cột tiết (khoảng 9 ký tự)
+                }
+
+                // Lưu file
+                try (FileOutputStream fileOut = new FileOutputStream(file)) {
+                    workbook.write(fileOut);
+                }
+                showAlert("Thành công", "Đã xuất TKB Tổ Chuyên Môn ra file Excel thành công!\n" + file.getAbsolutePath(), Alert.AlertType.INFORMATION);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("Lỗi xuất Excel", "Có lỗi xảy ra khi ghi file Excel: " + e.getMessage(), Alert.AlertType.ERROR);
+            } finally {
+                if (workbook != null) {
+                    try {
+                        workbook.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
