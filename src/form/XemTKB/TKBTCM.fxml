@@ -75,5 +75,5 @@
 
     <ScrollPane fx:id="tkbScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
     </ScrollPane>
-    <Button mnemonicParsing="false" onAction="#handleXuat" text="Xuất Excel" />
+    <Button fx:id="btnXuat" mnemonicParsing="false" onAction="#handleXuat" text="Xuất Excel" />
 </VBox>

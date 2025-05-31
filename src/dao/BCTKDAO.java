@@ -1,5 +1,6 @@
 package dao; // Hoặc package DAO bạn đang dùng
 
+import entities.GiaoVien;
 import entities.HocKy;
 import entities.ThoiKhoaBieu;
 import util.DatabaseConnection; // Sử dụng class DatabaseConnection bạn cung cấp
@@ -90,7 +91,7 @@ public class BCTKDAO {
         stats.put("DuNhieu", 0);    // >= 3 tiết
 
         // Câu SQL để lấy MaGV và SoTietQuyDinh từ bảng GIAOVIEN
-        String sqlGiaoVien = "SELECT MaGV, SoTietQuyDinh FROM GIAOVIEN";
+        String sqlGiaoVien = "SELECT MaGV, SoTietQuyDinh FROM GIAOVIEN WHERE MaGV <> 'ADMIN'";
 
         try (Connection conn = DatabaseConnection.getConnection(); // Sử dụng class của bạn
              PreparedStatement pstmtGV = conn.prepareStatement(sqlGiaoVien);
@@ -152,5 +153,98 @@ public class BCTKDAO {
             e.printStackTrace();
         }
         return stats;
+    }
+
+    // Bên trong class BCTKDAO
+
+    /**
+     * Lấy danh sách giáo viên cùng với thông tin chi tiết về số tiết quy định,
+     * thực hiện và dư thiếu cho một Học Kỳ và Thời Khóa Biểu cụ thể.
+     *
+     * @param selectedMaHK Mã Học Kỳ.
+     * @param selectedMaTKB Mã Thời Khóa Biểu.
+     * @return Danh sách các đối tượng GiaoVien đã được cập nhật thông tin số tiết.
+     */
+    public List<GiaoVien> getDanhSachGiaoVienVoiSoTietChiTiet(String selectedMaHK, String selectedMaTKB) {
+        List<GiaoVien> danhSachGiaoVienDayDu = new ArrayList<>();
+        // Câu SQL để lấy thông tin cơ bản của giáo viên, loại trừ 'ADMIN'
+        String sqlGiaoVienInfo = "SELECT MaGV, HoGV, TenGV, GioiTinh, ChuyenMon, MaTCM, SoTietQuyDinh, Email, SDT, GhiChu " +
+                "FROM GIAOVIEN WHERE MaGV <> 'ADMIN' ORDER BY MaGV"; // Lấy các trường cần thiết
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmtGVInfo = conn.prepareStatement(sqlGiaoVienInfo);
+             ResultSet rsGVInfo = pstmtGVInfo.executeQuery()) {
+
+            while (rsGVInfo.next()) {
+                String maGV = rsGVInfo.getString("MaGV");
+                String hoGV = rsGVInfo.getString("HoGV");
+                String tenGV = rsGVInfo.getString("TenGV");
+                int soTietQuyDinh = rsGVInfo.getInt("SoTietQuyDinh");
+                if (rsGVInfo.wasNull()) {
+                    soTietQuyDinh = 0;
+                }
+
+                // 1. Đếm số tiết giáo viên đó dạy trong Thời Khóa Biểu cụ thể (CHITIETTKB)
+                int soTietDayTKB = 0;
+                String sqlChiTietTKB = "SELECT COUNT(*) AS TongSoTietDay FROM CHITIETTKB WHERE MaGV = ? AND MaTKB = ?";
+                try (PreparedStatement pstmtChiTiet = conn.prepareStatement(sqlChiTietTKB)) {
+                    pstmtChiTiet.setString(1, maGV);
+                    pstmtChiTiet.setString(2, selectedMaTKB);
+                    try (ResultSet rsChiTiet = pstmtChiTiet.executeQuery()) {
+                        if (rsChiTiet.next()) {
+                            soTietDayTKB = rsChiTiet.getInt("TongSoTietDay");
+                        }
+                    }
+                }
+
+                // 2. Tính tổng số tiết của giáo viên đó trong bảng GIAOVIEN_CHUCVU theo Học Kỳ đã chọn
+                int soTietChucVu = 0;
+                String sqlGVChucVu = "SELECT SUM(SoTiet) AS TongSoTietChucVu FROM GIAOVIEN_CHUCVU WHERE MaGV = ? AND MaHK = ?";
+                try (PreparedStatement pstmtChucVu = conn.prepareStatement(sqlGVChucVu)) {
+                    pstmtChucVu.setString(1, maGV);
+                    pstmtChucVu.setString(2, selectedMaHK);
+                    try (ResultSet rsChucVu = pstmtChucVu.executeQuery()) {
+                        if (rsChucVu.next()) {
+                            soTietChucVu = rsChucVu.getInt("TongSoTietChucVu");
+                        }
+                    }
+                }
+
+                int soTietThucHien = soTietDayTKB + soTietChucVu;
+                int soTietDuThieu = soTietThucHien - soTietQuyDinh;
+
+                // Tạo đối tượng GiaoVien và set các giá trị đã tính toán
+                // Sử dụng constructor phù hợp hoặc tạo một constructor mới nếu cần
+                // Ở đây tôi dùng constructor không có MatKhau và VaiTro để đơn giản cho báo cáo
+                GiaoVien gv = new GiaoVien(
+                        maGV,
+                        hoGV,
+                        tenGV,
+                        rsGVInfo.getString("GioiTinh"),
+                        rsGVInfo.getString("ChuyenMon"),
+                        rsGVInfo.getString("MaTCM"),
+                        soTietQuyDinh,       // Set giá trị đã lấy
+                        soTietThucHien,      // Set giá trị đã tính
+                        soTietDuThieu,       // Set giá trị đã tính
+                        rsGVInfo.getString("Email"),
+                        rsGVInfo.getString("SDT"),
+                        null, // MatKhau không cần cho báo cáo này
+                        rsGVInfo.getString("GhiChu")
+                        // Nếu entity GiaoVien của bạn không có constructor này,
+                        // bạn có thể tạo mới hoặc dùng constructor mặc định và các setter
+                );
+                // Hoặc nếu bạn đã có đối tượng GiaoVien từ một nguồn khác và muốn cập nhật:
+                // gv.setSoTietQuyDinh(soTietQuyDinh); // Đảm bảo GiaoVien.java có setter này
+                // gv.setSoTietThucHien(soTietThucHien); // Đảm bảo GiaoVien.java có setter này
+                // gv.setSoTietDuThieu(soTietDuThieu); // Đảm bảo GiaoVien.java có setter này
+
+                danhSachGiaoVienDayDu.add(gv);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy danh sách giáo viên với số tiết chi tiết: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return danhSachGiaoVienDayDu;
     }
 }

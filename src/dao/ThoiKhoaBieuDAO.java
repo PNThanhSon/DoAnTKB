@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ public class ThoiKhoaBieuDAO {
         List<GiaoVien> danhSach = new ArrayList<>();
         String sql = "SELECT MaGV, HoGV, TenGV, GioiTinh, ChuyenMon, MaTCM, SoTietQuyDinh, " +
                 "SoTietThucHien, SoTietDuThieu, Email, SDT, MatKhau, GhiChu " +
-                "FROM GIAOVIEN ORDER BY MaGV";
+                "FROM GIAOVIEN WHERE MaGV <> 'ADMIN' ORDER BY MaGV";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -247,14 +248,16 @@ public class ThoiKhoaBieuDAO {
 
     // Hàm này dùng cho TKB của Lớp chủ nhiệm
     public List<ChiTietTKB> getChiTietTKBForLopCN(String maTKB, String maLop) {
-        List<ChiTietTKB> chiTietList = new ArrayList<>();
+        List<ChiTietTKB> aggregatedChiTietList = new ArrayList<>();
+        // This temporary map will hold: Key = "Thu-Tiet-MaMH", Value = ChiTietTKB (with aggregated teacher info)
+        Map<String, ChiTietTKB> tempMap = new HashMap<>();
 
-        String sql = "SELECT ct.Thu, ct.Tiet, mh.TenMH, ct.MaLop, gv.MaGV, gv.HoGV || ' ' || gv.TenGV AS HoTenGV " +
+        String sql = "SELECT ct.Thu, ct.Tiet, mh.TenMH, ct.MaMH, ct.MaLop, gv.MaGV, gv.HoGV || ' ' || gv.TenGV AS HoTenGV " +
                 "FROM CHITIETTKB ct " +
                 "JOIN MONHOC mh ON ct.MaMH = mh.MaMH " +
                 "JOIN GIAOVIEN gv ON ct.MaGV = gv.MaGV " +
                 "WHERE ct.MaTKB = ? AND ct.MaLop = ? " +
-                "ORDER BY ct.Thu, ct.Tiet";
+                "ORDER BY ct.Thu, ct.Tiet, HoTenGV"; // Order by HoTenGV to ensure consistent teacher order
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -263,21 +266,44 @@ public class ThoiKhoaBieuDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    chiTietList.add(ChiTietTKB.taoChoTKBLopCN(
-                            rs.getInt("Thu"),
-                            rs.getInt("Tiet"),
-                            rs.getString("TenMH"),
-                            rs.getString("HoTenGV"),
-                            rs.getString("MaGV"),
-                            3
-                    ));
+                    int thu = rs.getInt("Thu");
+                    int tiet = rs.getInt("Tiet");
+                    String tenMH = rs.getString("TenMH");
+                    String maMH = rs.getString("MaMH"); // Assuming MaMH is also in CHITIETTKB or joined
+                    String currentMaLop = rs.getString("MaLop");
+                    String currentMaGV = rs.getString("MaGV");
+                    String currentHoTenGV = rs.getString("HoTenGV");
+
+                    // Create a unique key for grouping by period and subject
+                    String mapKey = thu + "-" + tiet + "-" + maMH;
+
+                    if (tempMap.containsKey(mapKey)) {
+                        // If period already exists, append the new teacher's name
+                        ChiTietTKB existingCt = tempMap.get(mapKey);
+                        String updatedHoTenGV = existingCt.getHoTenGV() + ", " + currentHoTenGV;
+                        tempMap.put(mapKey, ChiTietTKB.taoChoTKBLopCN(thu, tiet, tenMH, updatedHoTenGV,
+                                existingCt.getMaGV() + "," + currentMaGV, 3));
+                        // Storing combined MaGV might be useful or just store the first one
+                    } else {
+                        // First teacher for this period and subject
+                        tempMap.put(mapKey, ChiTietTKB.taoChoTKBLopCN(thu, tiet, tenMH, currentHoTenGV, currentMaGV, 3));
+                    }
                 }
             }
+            aggregatedChiTietList.addAll(tempMap.values());
+            // Sort the final list if necessary (e.g., by Thu then Tiet)
+            aggregatedChiTietList.sort((ct1, ct2) -> {
+                if (ct1.getThu() != ct2.getThu()) {
+                    return Integer.compare(ct1.getThu(), ct2.getThu());
+                }
+                return Integer.compare(ct1.getTiet(), ct2.getTiet());
+            });
+
         } catch (SQLException e) {
-            System.err.println("Lỗi SQL khi lấy chi tiết TKB cho Lớp Chủ Nhiệm, TKB " + maTKB + ": " + e.getMessage());
+            System.err.println("Lỗi SQL khi lấy chi tiết TKB cho Lớp Chủ Nhiệm (có gộp GV), TKB " + maTKB + ": " + e.getMessage());
             e.printStackTrace();
         }
-        return chiTietList;
+        return aggregatedChiTietList;
     }
 
 

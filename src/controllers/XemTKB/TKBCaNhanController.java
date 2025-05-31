@@ -22,7 +22,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Font; // Import Font
@@ -280,20 +280,20 @@ public class TKBCaNhanController {
         }
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu TKB Cá Nhân (.xls)");
+        fileChooser.setTitle("Lưu TKB Cá Nhân (.xlsx)");
         // Tên file theo dạng TKB_MaTKB_MaGV.xls
-        String defaultFileName = "TKB_" + selectedTKB.getMaTKB() + "_" + maGV + ".xls";
+        String defaultFileName = "TKB_" + selectedTKB.getMaTKB() + "_" + maGV + ".xlsx";
         defaultFileName = defaultFileName.replaceAll("[^a-zA-Z0-9._-]", "_").replaceAll("_+", "_");
         fileChooser.setInitialFileName(defaultFileName);
 
         fileChooser.getExtensionFilters().clear();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel 97-2003 Files (*.xls)", "*.xls"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files (*.xlsx)", "*.xlsx"));
         File file = fileChooser.showSaveDialog(btnXuat.getScene().getWindow());
 
         if (file != null) {
             Workbook workbook = null;
             try {
-                workbook = new HSSFWorkbook(); // Tạo workbook cho file .xls
+                workbook = new XSSFWorkbook(); // Tạo workbook cho file .xls
                 Sheet sheet = workbook.createSheet("TKB_CaNhan");
 
                 // --- Định nghĩa Fonts ---

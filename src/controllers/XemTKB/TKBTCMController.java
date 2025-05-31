@@ -9,10 +9,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane; // Thêm ScrollPane
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -24,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 // Import cho Apache POI (nếu chưa có hoặc cần bổ sung)
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -52,6 +49,7 @@ public class TKBTCMController {
     @FXML private ScrollPane tkbScrollPane; // Để chứa GridPane
     @FXML private HBox hBoxTo;
     @FXML private ComboBox<ToChuyenMon> toComboBox;
+    @FXML private Button btnXuat; // Nút xuất Excel
     private GridPane tkbGridPane;
 
     private GiaoVien currentGiaoVien;
@@ -441,20 +439,20 @@ public class TKBTCMController {
         }
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu file Excel TKB Tổ Chuyên Môn (.xls)");
+        fileChooser.setTitle("Lưu file Excel TKB Tổ Chuyên Môn (.xlsx)");
         // Tên file theo dạng TKB_MaTKB_MaTCM.xls
-        String defaultFileName = "TKB_" + selectedTKBValue.getMaTKB() + "_" + maTCM + ".xls";
+        String defaultFileName = "TKB_" + selectedTKBValue.getMaTKB() + "_" + maTCM + ".xlsx";
         defaultFileName = defaultFileName.replaceAll("[^a-zA-Z0-9._-]", "_").replaceAll("_+", "_");
         fileChooser.setInitialFileName(defaultFileName);
 
         fileChooser.getExtensionFilters().clear();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel 97-2003 Files (*.xls)", "*.xls"));
-        File file = fileChooser.showSaveDialog(tkbScrollPane.getScene().getWindow()); // Sử dụng tkbScrollPane hoặc một Node khác để lấy Window
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files (*.xlsx)", "*.xlsx"));
+        File file = fileChooser.showSaveDialog(btnXuat.getScene().getWindow()); // Sử dụng tkbScrollPane hoặc một Node khác để lấy Window
 
         if (file != null) {
             Workbook workbook = null;
             try {
-                workbook = new HSSFWorkbook(); // Tạo workbook cho file .xls
+                workbook = new XSSFWorkbook(); // Tạo workbook cho file .xls
                 Sheet sheet = workbook.createSheet("TKB_TCM");
 
                 // --- Định nghĩa Fonts ---
