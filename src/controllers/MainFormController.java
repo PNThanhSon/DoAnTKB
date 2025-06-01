@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -418,6 +419,37 @@ public class MainFormController {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", "Không thể tải trang TimeTableForm.\nChi tiết: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleXepTKB(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XepTKBTuDong/ChuanBiForm.fxml"));
+            Parent mainFormRoot = loader.load();
+
+            // Tạo và cấu hình stage mới
+            Stage mainStage = new Stage();
+            mainStage.setTitle("Xếp TKB tự động - Chuẩn bị");
+            mainStage.setScene(new Scene(mainFormRoot, 800, 600));
+            mainStage.setMinWidth(700);
+            mainStage.setMinHeight(700);
+
+            // Thiết lập các thuộc tính bổ sung cho stage
+            mainStage.setResizable(true);
+            // Hiển thị stage
+            mainStage.show();
+            // Đưa window lên foreground
+            mainStage.toFront();
+
+        } catch (IOException e) {
+            // Xử lý lỗi khi load FXML
+            System.err.println("Lỗi khi load FXML file: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở cửa sổ xếp thời khóa biểu" + e.getMessage());
+        } catch (Exception e) {
+            // Xử lý các lỗi khác
+            System.err.println("Lỗi không xác định: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Đã xảy ra lỗi không xác định" + e.getMessage());
         }
     }
 }

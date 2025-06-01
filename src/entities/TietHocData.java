@@ -53,4 +53,12 @@ public class TietHocData {
     public ChiTietTKB getThu6() { return thu6.get(); }
     public ChiTietTKB getThu7() { return thu7.get(); }
     // ...
+    public void clearDayData() {
+        setThu2(null);
+        setThu3(null);
+        setThu4(null);
+        setThu5(null);
+        setThu6(null);
+        setThu7(null);
+    }
 }

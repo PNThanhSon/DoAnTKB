@@ -6,16 +6,18 @@ public class ChiTietTKB {
     private final int thu;
     private final int tiet;
     private final String tenMonHoc; // Tên môn học thực tế được dạy trong TKB
+    private String maMH;
     private final String maLop;
     private final String hoTenGV;   // Họ tên GV dạy tiết này
     private final String maGV;      // Mã GV dạy tiết này
     private final int flag;
 
     // Constructor private, sử dụng static factory methods
-    private ChiTietTKB(int thu, int tiet, String tenMonHoc, String maLop, String hoTenGV, String maGV, int flag) {
+    private ChiTietTKB(int thu, int tiet, String tenMonHoc, String maMH, String maLop, String hoTenGV, String maGV, int flag) {
         this.thu = thu;
         this.tiet = tiet;
         this.tenMonHoc = tenMonHoc; // Tên môn từ TKB (có thể khác tên nhóm môn)
+        this.maMH = maMH;
         this.maLop = maLop;
         this.hoTenGV = hoTenGV;
         this.maGV = maGV;
@@ -26,21 +28,29 @@ public class ChiTietTKB {
      * Factory method để tạo ChiTietTKB với đầy đủ thông tin cần thiết cho TKB Tổ Chuyên Môn.
      */
     public static ChiTietTKB taoChoTKBTCM(int thu, int tiet, String tenMonHocThucTe, String maLop, String hoTenGV, String maGV, int flag) {
-        return new ChiTietTKB(thu, tiet, tenMonHocThucTe, maLop, hoTenGV, maGV, flag);
+        return new ChiTietTKB(thu, tiet, tenMonHocThucTe, null, maLop, hoTenGV, maGV, flag);
     }
 
     /**
      * Factory method dùng cho TKB Cá Nhân (chỉ cần MaLop).
      */
     public static ChiTietTKB taoChoTKBCaNhan(int thu, int tiet, String tenMonHoc, String maLop, int flag) {
-        return new ChiTietTKB(thu, tiet, tenMonHoc, maLop, null, null, flag);
+        return new ChiTietTKB(thu, tiet, tenMonHoc, null, maLop, null, null, flag);
     }
 
     /**
      * Factory method dùng cho TKB Lớp Chủ Nhiệm (cần HoTenGV dạy).
      */
     public static ChiTietTKB taoChoTKBLopCN(int thu, int tiet, String tenMonHoc, String hoTenGV, String maGV, int flag) {
-        return new ChiTietTKB(thu, tiet, tenMonHoc, null, hoTenGV, maGV, flag);
+        return new ChiTietTKB(thu, tiet, tenMonHoc, null, null, hoTenGV, maGV, flag);
+    }
+
+    /**
+     * Factory method dùng riêng cho việc xếp thời khóa biểu tự động,
+     * bao gồm cả mã môn học.
+     */
+    public static ChiTietTKB taoChoXepLichTuDong(int thu, int tiet, String tenMonHoc, String maLop, String hoTenGV, String maGV, String maMH, int flag) {
+        return new ChiTietTKB(thu, tiet, tenMonHoc, maMH, maLop, hoTenGV, maGV, flag);
     }
 
 
@@ -51,7 +61,9 @@ public class ChiTietTKB {
     public String getMaLop() { return maLop; }
     public String getHoTenGV() { return hoTenGV; }
     public String getMaGV() { return maGV; }
-
+    public String getMaMH() {
+        return maMH;
+    }
 
     /**
      * Đối với TKB Tổ Chuyên Môn, chúng ta muốn hiển thị MaLop trong ô của bảng.
