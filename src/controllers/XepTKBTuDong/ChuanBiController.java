@@ -12,11 +12,15 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -27,13 +31,12 @@ public class ChuanBiController {
 
     @FXML private ComboBox<HocKy> hocKyComboBox;
     @FXML private ComboBox<ThoiKhoaBieu> tkbCoSoComboBox;
-    // @FXML private Label tkbCoSoBuoiLabel; // Đã xóa khỏi FXML
 
-    @FXML private TitledPane giaoVienLoaiTruPane; // Đảm bảo có fx:id này trong FXML
+    @FXML private TitledPane giaoVienCustomSettingsPane;
     @FXML private TextField searchGiaoVienTextField;
-    @FXML private ListView<GiaoVien> giaoVienExcludeListView;
+    @FXML private ListView<GiaoVien> giaoVienListView;
 
-    @FXML private Button btnTiepTuc; // Đảm bảo có fx:id này trong FXML
+    @FXML private Button btnTiepTuc;
 
     @FXML private Spinner<Integer> thu2Spinner;
     @FXML private Spinner<Integer> thu3Spinner;
@@ -54,19 +57,20 @@ public class ChuanBiController {
     private XepTKBDAO xepTKBDAO;
 
     private ObservableList<GiaoVien> allGiaoVienList;
-    private ObservableList<GiaoVien> excludedGiaoVienList;
-    private final List<String> MA_MON_HOC_PREFIX_LINH_HOAT = Arrays.asList("TIN", "GDTC");
-    private Map<String, Map<String, String>> preAssignedTeachersForFlexibleSubjects;
+    private Map<String, TeacherCustomSettings> teacherCustomSettingsMap;
 
+    private Map<String, Map<String, String>> preAssignedTeachersForFlexibleSubjects;
     private Map<String, Map<Integer, Integer>> soTietMoiThuTheoKhoi;
     private final List<String> KHOI_LIST = Arrays.asList("10", "11", "12");
+    // THÊM LẠI HẰNG SỐ BỊ THIẾU
+    private final List<String> MA_MON_HOC_PREFIX_LINH_HOAT = Arrays.asList("TIN", "GDTC");
 
 
     public ChuanBiController() {
         thoiKhoaBieuDAO = new ThoiKhoaBieuDAO();
         xepTKBDAO = new XepTKBDAO();
         allGiaoVienList = FXCollections.observableArrayList();
-        excludedGiaoVienList = FXCollections.observableArrayList();
+        teacherCustomSettingsMap = new HashMap<>();
         preAssignedTeachersForFlexibleSubjects = new HashMap<>();
 
         soTietMoiThuTheoKhoi = new HashMap<>();
@@ -85,8 +89,8 @@ public class ChuanBiController {
         setupHocKyComboBox();
         setupTkbCoSoComboBox();
         loadAllGiaoVienList();
-        setupGiaoVienExcludeListView(); // Cần được gọi sau loadAllGiaoVienList
-        setupSearchGiaoVienTextField(); // Cần được gọi sau setupGiaoVienExcludeListView
+        setupGiaoVienCustomSettingsListView();
+        setupSearchGiaoVienTextField();
 
         setupKhoiComboBoxSoTiet();
         setupDayPeriodSpinnersForKhoi();
@@ -102,9 +106,8 @@ public class ChuanBiController {
         }
 
         tkbCoSoComboBox.setDisable(true);
-        // tkbCoSoBuoiLabel.setText("Buổi: --"); // Đã xóa
         flexibleSubjectsPane.setExpanded(false);
-        giaoVienLoaiTruPane.setExpanded(false); // Có thể đặt mặc định đóng
+        giaoVienCustomSettingsPane.setExpanded(false);
         soTietTheoKhoiPane.setExpanded(true);
     }
 
@@ -113,7 +116,7 @@ public class ChuanBiController {
         if (gvList != null) {
             allGiaoVienList.setAll(gvList);
         } else {
-            allGiaoVienList.clear(); // Đảm bảo rỗng nếu DAO trả về null
+            allGiaoVienList.clear();
         }
     }
 
@@ -127,6 +130,10 @@ public class ChuanBiController {
                     return hocKyComboBox.getItems().stream().filter(hk -> hk.toString().equals(string)).findFirst().orElse(null);
                 }
             });
+            if (!hocKyList.isEmpty()) {
+                hocKyComboBox.getSelectionModel().selectFirst();
+                handleHocKySelection(null);
+            }
         } else {
             hocKyComboBox.setPromptText("Không có học kỳ");
         }
@@ -140,47 +147,115 @@ public class ChuanBiController {
                 return tkbCoSoComboBox.getItems().stream().filter(tkb -> tkb != null && tkb.toString().equals(string)).findFirst().orElse(null);
             }
         });
-        tkbCoSoComboBox.getItems().add(null); // Luôn có lựa chọn "Không chọn"
-        tkbCoSoComboBox.getSelectionModel().selectFirst(); // Chọn mặc định
+        tkbCoSoComboBox.getItems().add(null);
+        tkbCoSoComboBox.getSelectionModel().selectFirst();
     }
 
-    private void setupGiaoVienExcludeListView() {
-        // Đảm bảo allGiaoVienList đã được tải
-        if (allGiaoVienList.isEmpty() && giaoVienExcludeListView.getItems() != null) {
-            // Nếu allGiaoVienList rỗng nhưng ListView có item (từ lần chạy trước), thì clear nó
-            if (giaoVienExcludeListView.getItems() instanceof FilteredList) {
-                ((FilteredList<GiaoVien>)giaoVienExcludeListView.getItems()).getSource().clear();
+    private void setupGiaoVienCustomSettingsListView() {
+        if (allGiaoVienList.isEmpty() && giaoVienListView.getItems() != null) {
+            if (giaoVienListView.getItems() instanceof FilteredList) {
+                ((FilteredList<GiaoVien>)giaoVienListView.getItems()).getSource().clear();
             } else {
-                giaoVienExcludeListView.getItems().clear();
+                giaoVienListView.getItems().clear();
             }
         }
-        FilteredList<GiaoVien> filteredData = new FilteredList<>(allGiaoVienList, p -> true);
-        giaoVienExcludeListView.setItems(filteredData);
+        ObservableList<GiaoVien> displayableGiaoVienList = allGiaoVienList.stream()
+                .filter(gv -> !"ADMIN".equalsIgnoreCase(gv.getMaGV()))
+                .collect(FXCollections::observableArrayList, ObservableList::add, ObservableList::addAll);
 
-        giaoVienExcludeListView.setCellFactory(lv -> new ListCell<>() {
+        FilteredList<GiaoVien> filteredData = new FilteredList<>(displayableGiaoVienList, p -> true);
+        giaoVienListView.setItems(filteredData);
+
+        giaoVienListView.setCellFactory(lv -> new ListCell<>() {
+            private final HBox hbox = new HBox(10);
+            private final Label lblName = new Label();
+            private final Button btnConfigure = new Button("Cài đặt");
+            private final Region spacer = new Region();
+
+            {
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                hbox.getChildren().addAll(lblName, spacer, btnConfigure);
+                hbox.setAlignment(Pos.CENTER_LEFT);
+
+                btnConfigure.setOnAction(event -> {
+                    GiaoVien gv = getItem();
+                    if (gv != null) {
+                        openGiaoVienSettingsWindow(gv);
+                    }
+                });
+            }
+
             @Override
             protected void updateItem(GiaoVien gv, boolean empty) {
                 super.updateItem(gv, empty);
                 if (empty || gv == null) {
-                    setText(null); setGraphic(null);
+                    setText(null);
+                    setGraphic(null);
                 } else {
-                    CheckBox checkBox = new CheckBox(gv.getHoGV() + " " + gv.getTenGV() + " (" + gv.getMaGV() + ")");
-                    checkBox.setSelected(excludedGiaoVienList.contains(gv));
-                    checkBox.setOnAction(event -> {
-                        if (checkBox.isSelected()) {
-                            if (!excludedGiaoVienList.contains(gv)) excludedGiaoVienList.add(gv);
-                        } else {
-                            excludedGiaoVienList.remove(gv);
-                        }
-                    });
-                    setGraphic(checkBox);
+                    lblName.setText(gv.getHoGV() + " " + gv.getTenGV() + " (" + gv.getMaGV() + ")");
+                    TeacherCustomSettings settings = teacherCustomSettingsMap.get(gv.getMaGV());
+                    if (settings != null && !settings.isParticipateInScheduling()) {
+                        lblName.setStyle("-fx-strikethrough: true; -fx-opacity: 0.7;");
+                    } else {
+                        lblName.setStyle("");
+                    }
+                    setGraphic(hbox);
                 }
             }
         });
     }
 
+    private void openGiaoVienSettingsWindow(GiaoVien gv) {
+        HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
+        if (selectedHocKy == null) {
+            showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng chọn Học Kỳ trước khi cài đặt cho giáo viên.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XepTKBTuDong/CaiDatGV.fxml"));
+            Parent root = loader.load();
+
+            CaiDatGVController controller = loader.getController();
+            controller.initData(gv, selectedHocKy, teacherCustomSettingsMap, xepTKBDAO);
+
+            Stage stage = new Stage();
+            stage.setTitle("Cài đặt cho GV: " + gv.getTenGV());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(giaoVienListView.getScene().getWindow());
+
+            stage.showAndWait();
+            giaoVienListView.refresh();
+            // Sau khi cửa sổ cài đặt đóng, cập nhật lại danh sách GV cho môn linh hoạt
+            // vì cài đặt của GV có thể đã thay đổi việc họ có dạy môn nào đó không
+            populateFlexibleSubjectTeacherSelectionUI(selectedHocKy);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Mở Cửa Sổ", "Không thể mở cửa sổ cài đặt giáo viên.\n" + e.getMessage());
+        }
+    }
+
+
     private void setupSearchGiaoVienTextField() {
-        searchGiaoVienTextField.textProperty().addListener((obs, oldV, newV) -> filterGiaoVienList(newV));
+        searchGiaoVienTextField.textProperty().addListener((obs, oldV, newV) -> {
+            if (giaoVienListView.getItems() instanceof FilteredList) {
+                FilteredList<GiaoVien> filteredData = (FilteredList<GiaoVien>) giaoVienListView.getItems();
+                if (newV == null || newV.isEmpty()) {
+                    filteredData.setPredicate(s -> true);
+                } else {
+                    String lowerCaseFilter = newV.toLowerCase();
+                    filteredData.setPredicate(gv ->
+                            (gv.getTenGV() != null && gv.getTenGV().toLowerCase().contains(lowerCaseFilter)) ||
+                                    (gv.getHoGV() != null && gv.getHoGV().toLowerCase().contains(lowerCaseFilter)) ||
+                                    (gv.getMaGV() != null && gv.getMaGV().toLowerCase().contains(lowerCaseFilter))
+                    );
+                }
+            }
+            giaoVienListView.refresh();
+        });
     }
 
     private void setupKhoiComboBoxSoTiet() {
@@ -189,7 +264,7 @@ public class ChuanBiController {
 
     private void setupDayPeriodSpinnersForKhoi() {
         int minPeriods = 0;
-        int maxPeriods = 5;
+        int maxPeriods = 7;
 
         configureSpinner(thu2Spinner, minPeriods, maxPeriods);
         configureSpinner(thu3Spinner, minPeriods, maxPeriods);
@@ -204,10 +279,9 @@ public class ChuanBiController {
             spinners[i].valueProperty().addListener((obs, oldValue, newValue) -> {
                 String selectedKhoi = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
                 if (selectedKhoi != null && newValue instanceof Integer) {
-                    // Đảm bảo map cho khối tồn tại
                     soTietMoiThuTheoKhoi.computeIfAbsent(selectedKhoi, k -> {
                         Map<Integer, Integer> newMap = new HashMap<>();
-                        for(int day=2; day<=7; day++) newMap.put(day, 0); // Khởi tạo với 0 nếu chưa có
+                        for(int day=2; day<=7; day++) newMap.put(day, 0);
                         return newMap;
                     });
                     soTietMoiThuTheoKhoi.get(selectedKhoi).put(dayOfWeek, (Integer) newValue);
@@ -236,14 +310,12 @@ public class ChuanBiController {
             tongSoTietTuanLabel.setText("Tổng số tiết theo cài đặt: Chọn khối");
             return;
         }
-        // Đảm bảo map cho khối tồn tại và có giá trị mặc định nếu chưa có
         Map<Integer, Integer> settingsForKhoi = soTietMoiThuTheoKhoi.computeIfAbsent(khoi, k -> {
             Map<Integer, Integer> newMap = new HashMap<>();
-            int defaultPeriods = 5; // Hoặc giá trị mặc định bạn muốn
+            int defaultPeriods = 5;
             for(int day=2; day<=7; day++) newMap.put(day, defaultPeriods);
             return newMap;
         });
-
 
         thu2Spinner.getValueFactory().setValue(settingsForKhoi.getOrDefault(2, 0));
         thu3Spinner.getValueFactory().setValue(settingsForKhoi.getOrDefault(3, 0));
@@ -261,7 +333,7 @@ public class ChuanBiController {
                 }
                 @Override
                 protected void succeeded() {
-                    Platform.runLater(() -> phanPhoiTietLabel.setText("Phân phối tiết (CSDL): " + getValue() + " tiết"));
+                    Platform.runLater(() -> phanPhoiTietLabel.setText("Phân phối tiết (CSDL): " + getValue() + " tiết/lớp/tuần (TB)"));
                 }
                 @Override
                 protected void failed() {
@@ -286,24 +358,8 @@ public class ChuanBiController {
         tongSoTietTuanLabel.setText("Tổng số tiết theo cài đặt: " + tongTietCaiDat + " tiết/tuần");
     }
 
-    private void filterGiaoVienList(String searchText) {
-        // ... (giữ nguyên)
-        FilteredList<GiaoVien> filteredData = (FilteredList<GiaoVien>) giaoVienExcludeListView.getItems();
-        if (searchText == null || searchText.isEmpty()) {
-            filteredData.setPredicate(s -> true);
-        } else {
-            String lowerCaseFilter = searchText.toLowerCase();
-            filteredData.setPredicate(gv ->
-                    (gv.getTenGV() != null && gv.getTenGV().toLowerCase().contains(lowerCaseFilter)) ||
-                            (gv.getHoGV() != null && gv.getHoGV().toLowerCase().contains(lowerCaseFilter)) ||
-                            (gv.getMaGV() != null && gv.getMaGV().toLowerCase().contains(lowerCaseFilter))
-            );
-        }
-        giaoVienExcludeListView.refresh();
-    }
 
     private void populateFlexibleSubjectTeacherSelectionUI(HocKy selectedHocKy) {
-        // ... (giữ nguyên)
         flexibleSubjectTeacherSelectionVBox.getChildren().clear();
         preAssignedTeachersForFlexibleSubjects.clear();
 
@@ -326,7 +382,7 @@ public class ChuanBiController {
             if (monHocCuaLop == null) continue;
 
             for (MonHocHoc mhh : monHocCuaLop) {
-                boolean isFlexible = MA_MON_HOC_PREFIX_LINH_HOAT.stream()
+                boolean isFlexible = MA_MON_HOC_PREFIX_LINH_HOAT.stream() // SỬ DỤNG HẰNG SỐ Ở ĐÂY
                         .anyMatch(prefix -> mhh.getMaMH().toUpperCase().startsWith(prefix.toUpperCase()));
 
                 if (isFlexible) {
@@ -336,12 +392,22 @@ public class ChuanBiController {
                     gvComboBox.setPrefWidth(300);
 
                     List<GiaoVien> qualifiedTeachers = allGiaoVienList.stream()
-                            .filter(gv -> !excludedGiaoVienList.contains(gv))
+                            .filter(gv -> {
+                                if ("ADMIN".equalsIgnoreCase(gv.getMaGV())) return false;
+                                TeacherCustomSettings settings = teacherCustomSettingsMap.get(gv.getMaGV());
+                                boolean participates = (settings == null) || settings.isParticipateInScheduling();
+                                boolean teachesThisSubject = (settings == null) || settings.getTeachingPreferenceForSubject(mhh.getMaMH());
+                                return participates && teachesThisSubject;
+                            })
                             .filter(gv -> gv.getMaTCM() != null && gv.getMaTCM().equals(mhh.getMaTCM()))
                             .toList();
 
+
                     ObservableList<GiaoVien> gvOptions = FXCollections.observableArrayList();
-                    GiaoVien autoSelectOption = new GiaoVien(null, "Để thuật toán", "tự chọn", null, null, null, null, null, null, null, null, null, null);
+                    GiaoVien autoSelectOption = new GiaoVien();
+                    autoSelectOption.setHoGV("Để thuật toán");
+                    autoSelectOption.setTenGV("tự chọn");
+
                     gvOptions.add(autoSelectOption);
                     gvOptions.addAll(qualifiedTeachers);
                     gvComboBox.setItems(gvOptions);
@@ -368,13 +434,13 @@ public class ChuanBiController {
                     });
 
                     HBox hbox = new HBox(10, lbl, gvComboBox);
-                    hbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                    hbox.setAlignment(Pos.CENTER_LEFT);
                     flexibleSubjectTeacherSelectionVBox.getChildren().add(hbox);
                 }
             }
         }
         if (!foundFlexible) {
-            flexibleSubjectTeacherSelectionVBox.getChildren().add(new Label("Không có môn học linh hoạt (Tin, GDTC,...) trong học kỳ này."));
+            flexibleSubjectTeacherSelectionVBox.getChildren().add(new Label("Không có môn học linh hoạt (Tin, GDTC,...) trong học kỳ này hoặc không có GV phù hợp sau khi áp dụng cài đặt."));
         }
     }
 
@@ -383,7 +449,6 @@ public class ChuanBiController {
         HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
         tkbCoSoComboBox.getItems().clear();
         tkbCoSoComboBox.getItems().add(null);
-        // tkbCoSoBuoiLabel.setText("Buổi: --"); // Đã xóa
 
         if (selectedHocKy != null) {
             tkbCoSoComboBox.setDisable(false);
@@ -397,13 +462,10 @@ public class ChuanBiController {
             if (currentSelectedKhoi == null && !KHOI_LIST.isEmpty()) {
                 currentSelectedKhoi = KHOI_LIST.getFirst();
                 khoiComboBoxSoTiet.getSelectionModel().select(currentSelectedKhoi);
-            } else if (currentSelectedKhoi != null) { // Nếu đã có khối được chọn, cập nhật lại label cho nó
+            } else if (currentSelectedKhoi != null) {
                 updateSpinnersAndLabelsForSelectedKhoi(currentSelectedKhoi);
             }
-
-
             populateFlexibleSubjectTeacherSelectionUI(selectedHocKy);
-
         } else {
             tkbCoSoComboBox.setDisable(true);
             tkbCoSoComboBox.setPromptText("Chọn TKB cơ sở (nếu có)");
@@ -418,8 +480,7 @@ public class ChuanBiController {
 
     @FXML
     void handleTkbCoSoSelection(ActionEvent event) {
-        // ThoiKhoaBieu selectedTKB = tkbCoSoComboBox.getSelectionModel().getSelectedItem();
-        // tkbCoSoBuoiLabel.setText((selectedTKB != null && selectedTKB.getBuoi() != null) ? "Buổi: " + selectedTKB.getBuoi().toUpperCase() : "Buổi: --"); // Đã xóa
+        // Method body
     }
 
 
@@ -433,15 +494,12 @@ public class ChuanBiController {
             return;
         }
 
-        // soTietMoiThuTheoKhoi đã được cập nhật tự động bởi listeners của Spinners
-        List<GiaoVien> finalExcludedGiaoVienList = new ArrayList<>(excludedGiaoVienList);
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XepTKBTuDong/XepTKBTuDong.fxml"));
             Parent root = loader.load();
 
             XepTKBTuDongController controller = loader.getController();
-            controller.initData(selectedHocKy, selectedTkbCoSo, finalExcludedGiaoVienList, soTietMoiThuTheoKhoi, preAssignedTeachersForFlexibleSubjects);
+            controller.initData(selectedHocKy, selectedTkbCoSo, teacherCustomSettingsMap, soTietMoiThuTheoKhoi, preAssignedTeachersForFlexibleSubjects);
 
             Stage stage = new Stage();
             stage.setTitle("Kết Quả Xếp Thời Khóa Biểu Tự Động");

@@ -167,10 +167,17 @@ public class QuanLyTKBController {
             PreparedStatement ps = c.prepareStatement(sql);
             ResultSet rs = ps.executeQuery()){
             while(rs.next()){
+                // Lấy java.sql.Date và kiểm tra null trước khi gọi toLocalDate()
+                java.sql.Date sqlNgayLap = rs.getDate("NgayLap");
+                LocalDate ngayLap = (sqlNgayLap != null) ? sqlNgayLap.toLocalDate() : null;
+
+                java.sql.Date sqlNgayApDung = rs.getDate("NgayApDung");
+                LocalDate ngayApDung = (sqlNgayApDung != null) ? sqlNgayApDung.toLocalDate() : null;
+
                 data.add(new ThoiKhoaBieu(
                         rs.getString("MaTKB"),
-                        rs.getDate("NgayLap").toLocalDate(),
-                        rs.getDate("NgayApDung").toLocalDate(),
+                        ngayLap,           // Sử dụng biến đã kiểm tra null
+                        ngayApDung,        // Sử dụng biến đã kiểm tra null
                         rs.getString("Buoi"),
                         rs.getString("NguoiTao"),
                         rs.getString("MaHK")));
@@ -260,17 +267,25 @@ public class QuanLyTKBController {
         if (key.isEmpty()) { loadData(); return; }
 
         data.clear();
-        String sql = "SELECT * FROM THOIKHOABIEU WHERE MaTKB LIKE ?";
+        // Nên chọn cụ thể các cột thay vì dùng SELECT *
+        String sql = "SELECT MaTKB, NgayLap, NgayApDung, Buoi, NguoiTao, MaHK FROM THOIKHOABIEU WHERE MaTKB LIKE ?";
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, "%" + key + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                // Lấy java.sql.Date và kiểm tra null trước khi gọi toLocalDate()
+                java.sql.Date sqlNgayLap = rs.getDate("NgayLap");
+                LocalDate ngayLap = (sqlNgayLap != null) ? sqlNgayLap.toLocalDate() : null;
+
+                java.sql.Date sqlNgayApDung = rs.getDate("NgayApDung");
+                LocalDate ngayApDung = (sqlNgayApDung != null) ? sqlNgayApDung.toLocalDate() : null;
+
                 data.add(new ThoiKhoaBieu(
                         rs.getString("MaTKB"),
-                        rs.getDate("NgayLap").toLocalDate(),
-                        rs.getDate("NgayApDung").toLocalDate(),
+                        ngayLap,           // Sử dụng biến đã kiểm tra null
+                        ngayApDung,        // Sử dụng biến đã kiểm tra null
                         rs.getString("Buoi"),
                         rs.getString("NguoiTao"),
                         rs.getString("MaHK")));

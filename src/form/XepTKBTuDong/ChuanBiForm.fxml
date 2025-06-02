@@ -141,8 +141,8 @@
             </AnchorPane>
         </TitledPane>
 
-        <TitledPane fx:id="giaoVienLoaiTruPane"
-                    text="Giáo viên không tham gia xếp TKB" VBox.vgrow="NEVER" expanded="false">
+        <TitledPane fx:id="giaoVienCustomSettingsPane"
+                    text="Cài Đặt Chi Tiết Cho Từng Giáo Viên" VBox.vgrow="NEVER" expanded="false">
             <font>
                 <Font name="System Bold" size="14.0"/>
             </font>
@@ -159,7 +159,7 @@
                         </font>
                     </TextField>
                     <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
-                        <ListView fx:id="giaoVienExcludeListView" prefHeight="150.0"/>
+                        <ListView fx:id="giaoVienListView" prefHeight="150.0"/>
                     </ScrollPane>
                 </VBox>
             </AnchorPane>
