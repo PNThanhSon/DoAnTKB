@@ -17,6 +17,8 @@ public class HocKy {
         return maHK;
     }
 
+    public String getHocKy()  { return tenHocKy; }
+
     public String getTenHocKy() {
         return tenHocKy;
     }

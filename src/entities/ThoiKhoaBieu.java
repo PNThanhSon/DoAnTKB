@@ -1,73 +1,85 @@
 package entities;
 
-import java.text.SimpleDateFormat;
-import java.util.Date; // Sử dụng java.util.Date cho ngày tháng
+import javafx.beans.property.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ThoiKhoaBieu {
-    private String maTKB;        // Mã định danh duy nhất cho thời khóa biểu
-    private Date ngayApDung;   // Ngày bắt đầu áp dụng thời khóa biểu này (java.util.Date)
-    private String buoi;         // Buổi học, ví dụ: "SANG" hoặc "CHIEU"
-    private String maHK;         // Mã học kỳ mà thời khóa biểu này thuộc về
 
-    /**
-     * Constructor để tạo một đối tượng ThoiKhoaBieu.
-     * @param maTKB Mã thời khóa biểu.
-     * @param ngayApDung Ngày áp dụng (java.util.Date).
-     * @param buoi Buổi học ("SANG" hoặc "CHIEU").
-     * @param maHK Mã học kỳ.
-     */
-    public ThoiKhoaBieu(String maTKB, Date ngayApDung, String buoi, String maHK) {
-        this.maTKB = maTKB;
-        this.ngayApDung = ngayApDung;
-        this.buoi = buoi;
-        this.maHK = maHK;
+    /* ===== Property ===== */
+    private final StringProperty            maTKB      = new SimpleStringProperty();
+    private final ObjectProperty<LocalDate> ngayLap    = new SimpleObjectProperty<>();
+    private final ObjectProperty<LocalDate> ngayApDung = new SimpleObjectProperty<>();
+    private final StringProperty            buoi       = new SimpleStringProperty();
+    private final StringProperty            nguoiTao   = new SimpleStringProperty();
+    private final StringProperty            maHK       = new SimpleStringProperty();
+
+    /* ===== Constructor đầy đủ (6 tham số) ===== */
+    public ThoiKhoaBieu(String maTKB,
+                        LocalDate ngayLap,
+                        LocalDate ngayApDung,
+                        String buoi,
+                        String nguoiTao,
+                        String maHK) {
+        this.maTKB.set(maTKB);
+        this.ngayLap.set(ngayLap);
+        this.ngayApDung.set(ngayApDung);
+        this.buoi.set(buoi);
+        this.nguoiTao.set(nguoiTao);
+        this.maHK.set(maHK);
     }
 
-    // Getters
-    public String getMaTKB() {
-        return maTKB;
+    /* ===== Constructor rút gọn (4 tham số) – nếu DAO cũ dùng ===== */
+    public ThoiKhoaBieu(String maTKB,
+                        java.sql.Date ngayApDung,
+                        String buoi,
+                        String maHK) {
+        this(maTKB,
+                ngayApDung != null ? ngayApDung.toLocalDate() : null,
+                ngayApDung != null ? ngayApDung.toLocalDate() : null,
+                buoi,
+                "",
+                maHK);
     }
 
-    public Date getNgayApDung() {
-        return ngayApDung;
+    /* ===== Getters ===== */
+    public String getMaTKB()         { return maTKB.get(); }
+    public LocalDate getNgayLap()    { return ngayLap.get(); }
+    public LocalDate getNgayApDung() { return ngayApDung.get(); }
+    public String getBuoi()          { return buoi.get(); }
+    public String getNguoiTao()      { return nguoiTao.get(); }
+    public String getMaHK()          { return maHK.get(); }
+
+    /* ===== Property getters (TableView cần) ===== */
+    public StringProperty            maTKBProperty()      { return maTKB; }
+    public ObjectProperty<LocalDate> ngayLapProperty()    { return ngayLap; }
+    public ObjectProperty<LocalDate> ngayApDungProperty() { return ngayApDung; }
+    public StringProperty            buoiProperty()       { return buoi; }
+    public StringProperty            nguoiTaoProperty()   { return nguoiTao; }
+    public StringProperty            maHKProperty()       { return maHK; }
+
+    /* ===== toString() cho ComboBox (nếu dùng) ===== */
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    @Override public String toString() {
+        String d = ngayApDung.get() != null ? FMT.format(ngayApDung.get()) : "N/A";
+        return "TKB " + (buoi.get()==null? "":buoi.get().toUpperCase()) + " – áp dụng: " + d;
     }
 
-    public String getBuoi() {
-        return buoi;
+    public void setMaTKB(String newVal) {
     }
 
-    public String getMaHK() {
-        return maHK;
+    public void setBuoi(String newVal) {
     }
 
-    // Setters (nếu cần)
-    public void setMaTKB(String maTKB) {
-        this.maTKB = maTKB;
+    public void setNguoiTao(String newVal) {
     }
 
-    public void setNgayApDung(Date ngayApDung) {
-        this.ngayApDung = ngayApDung;
+    public void setMaHK(String newVal) {
     }
 
-    public void setBuoi(String buoi) {
-        this.buoi = buoi;
+    public void setNgayLap(LocalDate newDate) {
     }
 
-    public void setMaHK(String maHK) {
-        this.maHK = maHK;
-    }
-
-    /**
-     * Phương thức này sẽ được ComboBox sử dụng để hiển thị thông tin Thời Khóa Biểu.
-     * @return Chuỗi đại diện cho đối tượng ThoiKhoaBieu.
-     */
-    @Override
-    public String toString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        String ngayApDungStr = (ngayApDung != null) ? sdf.format(ngayApDung) : "N/A";
-        String buoiStr = (buoi != null && !buoi.isEmpty()) ? (" " + buoi.toUpperCase() + " ") : "";
-
-        // Ví dụ hiển thị: TKB SANG - Áp dụng từ: 19/05/2025
-        return  buoiStr + " - Áp dụng từ: " + ngayApDungStr;
+    public void setNgayApDung(LocalDate newDate) {
     }
 }

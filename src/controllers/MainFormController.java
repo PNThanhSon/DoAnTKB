@@ -376,15 +376,6 @@ public class MainFormController {
             showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
         }
     }
-    @FXML
-    private void handleQuanLyTKB(ActionEvent event) {
-        if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-            loadViewIntoCenter("/form/QuanLyTKBForm.fxml");
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
-        }
-    }
-
 
     private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center
         try {
