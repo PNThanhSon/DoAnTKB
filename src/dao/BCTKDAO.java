@@ -62,7 +62,7 @@ public class BCTKDAO {
                     Date ngayApDung = rs.getDate("NgayApDung"); // java.sql.Date
                     String buoi = rs.getString("Buoi");
                     String maHKResult = rs.getString("MaHK");
-                    tkbList.add(new ThoiKhoaBieu(maTKB, ngayApDung, buoi, maHKResult));
+                    tkbList.add(new ThoiKhoaBieu(maTKB, (java.sql.Date) ngayApDung, buoi, maHKResult));
                 }
             }
         } catch (SQLException e) {
