@@ -99,6 +99,72 @@ public class XepTKBDAO {
         return phanCong;
     }
 
+    public int getTongPhanPhoiTietTheoKhoi(String khoi, String maHK) {
+        int tongSoTietPhanPhoiTrongKhoi = 0;
+        int soLuongLopTrongKhoi = 0;
+
+        // Bước 1: Tính tổng số tiết phân phối cho tất cả các lớp trong khối đó, trong học kỳ đó.
+        // Giả định HOC.PhanPhoiTiet là số tiết/tuần của môn đó cho lớp đó.
+        String sqlSumTiet = "SELECT SUM(h.PhanPhoiTiet) AS TongTiet " +
+                "FROM HOC h " +
+                "JOIN LOP l ON h.MaLop = l.MaLop " +
+                "WHERE l.Khoi = ? AND h.MaHK = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmtSumTiet = conn.prepareStatement(sqlSumTiet)) {
+            pstmtSumTiet.setString(1, khoi);
+            pstmtSumTiet.setString(2, maHK);
+            try (ResultSet rsSumTiet = pstmtSumTiet.executeQuery()) {
+                if (rsSumTiet.next()) {
+                    tongSoTietPhanPhoiTrongKhoi = rsSumTiet.getInt("TongTiet");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi tính tổng phân phối tiết cho khối " + khoi + ", học kỳ " + maHK + ": " + e.getMessage());
+            return 0; // Trả về 0 nếu có lỗi
+        }
+
+        // Nếu không có tiết nào được phân phối, không cần đếm số lớp nữa
+        if (tongSoTietPhanPhoiTrongKhoi == 0) {
+            return 0;
+        }
+
+        // Bước 2: Đếm tổng số lớp thuộc khối đó (chỉ những lớp có phân phối tiết trong học kỳ đó)
+        // Hoặc bạn có thể đếm tất cả các lớp thuộc khối đó từ bảng LOP nếu muốn tính trung bình trên tất cả các lớp của khối
+        // Ở đây, chúng ta sẽ đếm số lớp có tham gia học trong học kỳ đó và thuộc khối đó
+        String sqlCountLop = "SELECT COUNT(DISTINCT l.MaLop) AS SoLuongLop " +
+                "FROM LOP l " +
+                "JOIN HOC h ON l.MaLop = h.MaLop " + // Đảm bảo lớp có trong bảng HOC cho học kỳ này
+                "WHERE l.Khoi = ? AND h.MaHK = ?";
+        // Nếu muốn tính trên tổng số lớp của khối bất kể có học gì không:
+        // String sqlCountLop = "SELECT COUNT(DISTINCT MaLop) AS SoLuongLop FROM LOP WHERE Khoi = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmtCountLop = conn.prepareStatement(sqlCountLop)) {
+            pstmtCountLop.setString(1, khoi);
+            pstmtCountLop.setString(2, maHK); // Thêm tham số này nếu dùng câu lệnh SQL join với HOC
+            // Nếu dùng câu lệnh chỉ từ bảng LOP thì không cần tham số thứ 2 này.
+            // Ví dụ: nếu câu lệnh là "SELECT COUNT(*) FROM LOP WHERE Khoi = ?", thì chỉ cần pstmtCountLop.setString(1, khoi);
+
+            try (ResultSet rsCountLop = pstmtCountLop.executeQuery()) {
+                if (rsCountLop.next()) {
+                    soLuongLopTrongKhoi = rsCountLop.getInt("SoLuongLop");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi đếm số lượng lớp cho khối " + khoi + ": " + e.getMessage());
+            return 0; // Trả về 0 nếu có lỗi
+        }
+
+        // Bước 3: Tính trung bình và trả về
+        if (soLuongLopTrongKhoi > 0) {
+            return tongSoTietPhanPhoiTrongKhoi / soLuongLopTrongKhoi; // Phép chia số nguyên, sẽ làm tròn xuống
+            // Nếu muốn kết quả chính xác hơn (số thực), bạn có thể đổi kiểu trả về của hàm thành double
+            // và ép kiểu: (double) tongSoTietPhanPhoiTrongKhoi / soLuongLopTrongKhoi;
+        } else {
+            return 0; // Tránh lỗi chia cho 0
+        }
+    }
+
     public List<GiaoVien> getDanhSachGiaoVienDayDu() {
         List<GiaoVien> danhSach = new ArrayList<>();
         String sql = "SELECT g.MaGV, g.HoGV, g.TenGV, g.GioiTinh, g.ChuyenMon, g.MaTCM, " +
