@@ -96,9 +96,43 @@ public class QuanLyChucVuController {
     }
 
     /* ===== load / add / delete (giữ nguyên) ===== */
-    private void loadData(){ /* ... */ }
-    @FXML private void handleThemChucVu(){ /* ... */ }
-    private void handleXoaChucVu(){ /* ... */ }
+    private void loadData(){
+        dsChucVu.clear();
+        String sql="SELECT MaCV,TenCV FROM CHUCVU ORDER BY MaCV";
+        try(Connection c=DatabaseConnection.getConnection();
+            Statement st=c.createStatement(); ResultSet r=st.executeQuery(sql)){
+            while(r.next()) dsChucVu.add(
+                    new ChucVu(r.getString(1),r.getString(2)));
+        }catch(SQLException e){ error(e);}
+    }
+
+    @FXML private void handleThemChucVu(){
+        String ma=txtMaCV.getText().trim();
+        String ten=txtTenCV.getText().trim();
+        if(ma.isEmpty()||ten.isEmpty()){ warn("Nhập đủ Mã & Tên"); return;}
+        String sql="INSERT INTO CHUCVU(MaCV,TenCV) VALUES(?,?)";
+        try(Connection c=DatabaseConnection.getConnection();
+            PreparedStatement ps=c.prepareStatement(sql)){
+            ps.setString(1,ma); ps.setString(2,ten); ps.executeUpdate();
+            dsChucVu.add(new ChucVu(ma,ten));
+            txtMaCV.clear(); txtTenCV.clear();
+        }catch(SQLIntegrityConstraintViolationException d){ warn("Mã đã tồn tại!"); }
+        catch(SQLException e){ error(e);}
+    }
+    private void handleXoaChucVu(){
+        ChucVu sel=tableChucVu.getSelectionModel().getSelectedItem();
+        if(sel==null){ warn("Chọn 1 hàng để xoá"); return;}
+        if(!confirm("Xoá?","Chắc xoá \""+sel.getMaCV()+"\"?")) return;
+        try(Connection c=DatabaseConnection.getConnection();
+            PreparedStatement ps=c.prepareStatement("DELETE FROM CHUCVU WHERE MaCV=?")){
+            ps.setString(1,sel.getMaCV()); ps.executeUpdate();
+            dsChucVu.remove(sel);
+        }catch(SQLException e){
+            if("23503".equals(e.getSQLState()))
+                warn("Không thể xoá: Đang được tham chiếu!");
+            else error(e);
+        }
+    }
 
     /* ===== alert helpers (giữ nguyên) ===== */
     private void warn(String m){ alert(Alert.AlertType.WARNING,"Cảnh báo",m);}

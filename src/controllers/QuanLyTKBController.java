@@ -154,13 +154,147 @@ public class QuanLyTKBController {
     }
 
     /* === CRUD / search / alert giữ nguyên như phiên bản compile-được gần nhất === */
-    @FXML public void loadData(){ /* ... */ }
-    @FXML private void handleAdd(){ /* ... */ }
-    private void handleDelete(){ /* ... */ }
-    @FXML private void handleSearch(){ /* ... */ }
-    @FXML private void clearForm(){ /* ... */ }
-    private boolean confirm(String m){ Alert a=new Alert(Alert.AlertType.CONFIRMATION,m,ButtonType.OK,ButtonType.CANCEL);
-        a.setHeaderText(null); return a.showAndWait().filter(b->b==ButtonType.OK).isPresent();}
-    private void showInfo(String m){ new Alert(Alert.AlertType.INFORMATION,m).show();}
-    private void showError(String m,Exception e){ new Alert(Alert.AlertType.ERROR,m+"\n"+e.getMessage()).show(); e.printStackTrace();}
+    /** nạp dữ liệu */
+    @FXML
+    public void loadData() {
+        data.clear();
+        String sql = """
+                     SELECT MaTKB, NgayLap, NgayApDung, Buoi, NguoiTao, MaHK
+                     FROM THOIKHOABIEU
+                     ORDER BY NgayLap DESC
+                     """;
+        try(Connection c = DatabaseConnection.getConnection();
+            PreparedStatement ps = c.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+                data.add(new ThoiKhoaBieu(
+                        rs.getString("MaTKB"),
+                        rs.getDate("NgayLap").toLocalDate(),
+                        rs.getDate("NgayApDung").toLocalDate(),
+                        rs.getString("Buoi"),
+                        rs.getString("NguoiTao"),
+                        rs.getString("MaHK")));
+            }
+        }catch(SQLException ex){ showError("Lỗi tải dữ liệu",ex);}
+    }
+    /** Thêm mới */
+    @FXML
+    private void handleAdd() {
+        HocKy hk = cbMaHK.getValue();
+        if (hk == null) { showInfo("Chọn học kỳ!"); return; }
+        if (!confirm("Thêm TKB mới?")) return;
+
+        String sql = """
+                     INSERT INTO THOIKHOABIEU
+                     (MaTKB, NgayLap, NgayApDung, Buoi, NguoiTao, MaHK)
+                     VALUES (?,?,?,?,?,?)
+                     """;
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, txtMaTKB.getText().trim());
+            ps.setDate  (2, Date.valueOf(dpNgayLap.getValue()));
+            ps.setDate  (3, Date.valueOf(LocalDate.parse(txtNgayAD.getText().trim(), FMT)));
+            ps.setString(4, txtBuoi.getText().trim());
+            ps.setString(5, txtNguoiTao.getText().trim());
+            ps.setString(6, hk.getMaHK());
+
+            ps.executeUpdate();
+            loadData(); clearForm(); showInfo("Đã thêm!");
+        } catch (Exception ex) {
+            showError("Không thể thêm!", ex);
+        }
+    }
+
+    /** Cập nhật */
+    private void handleUpdate() {
+        ThoiKhoaBieu sel = tableTKB.getSelectionModel().getSelectedItem();
+        if (sel == null) { showInfo("Chọn bản ghi!"); return; }
+        HocKy hk = cbMaHK.getValue();
+        if (hk == null) { showInfo("Chọn học kỳ!"); return; }
+        if (!confirm("Cập nhật bản ghi?")) return;
+
+        String sql = """
+                     UPDATE THOIKHOABIEU
+                     SET NgayLap=?, NgayApDung=?, Buoi=?, NguoiTao=?, MaHK=?
+                     WHERE MaTKB=?
+                     """;
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setDate  (1, Date.valueOf(dpNgayLap.getValue()));
+            ps.setDate  (2, Date.valueOf(LocalDate.parse(txtNgayAD.getText().trim(), FMT)));
+            ps.setString(3, txtBuoi.getText().trim());
+            ps.setString(4, txtNguoiTao.getText().trim());
+            ps.setString(5, hk.getMaHK());
+            ps.setString(6, sel.getMaTKB());
+
+            ps.executeUpdate();
+            loadData(); showInfo("Đã cập nhật!");
+        } catch (Exception ex) {
+            showError("Không thể cập nhật!", ex);
+        }
+    }
+
+    /** Xoá */
+    private void handleDelete() {
+        ThoiKhoaBieu sel = tableTKB.getSelectionModel().getSelectedItem();
+        if (sel == null) { showInfo("Chọn bản ghi!"); return; }
+        if (!confirm("Xoá TKB '" + sel.getMaTKB() + "' ?")) return;
+
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement("DELETE FROM THOIKHOABIEU WHERE MaTKB=?")) {
+
+            ps.setString(1, sel.getMaTKB());
+            ps.executeUpdate();
+            loadData(); clearForm(); showInfo("Đã xoá!");
+        } catch (Exception ex) {
+            showError("Không thể xoá!", ex);
+        }
+    }
+
+    /* ====================== Search ====================== */
+    @FXML
+    private void handleSearch() {
+        String key = txtSearch.getText().trim();
+        if (key.isEmpty()) { loadData(); return; }
+
+        data.clear();
+        String sql = "SELECT * FROM THOIKHOABIEU WHERE MaTKB LIKE ?";
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, "%" + key + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                data.add(new ThoiKhoaBieu(
+                        rs.getString("MaTKB"),
+                        rs.getDate("NgayLap").toLocalDate(),
+                        rs.getDate("NgayApDung").toLocalDate(),
+                        rs.getString("Buoi"),
+                        rs.getString("NguoiTao"),
+                        rs.getString("MaHK")));
+            }
+        } catch (Exception ex) { showError("Lỗi tìm kiếm!", ex); }
+    }
+
+    /* ====================== Helpers ====================== */
+    @FXML
+    private void clearForm() {
+        txtMaTKB.clear(); txtBuoi.clear(); txtNguoiTao.clear();
+        txtNgayAD.clear(); dpNgayLap.setValue(LocalDate.now());
+        cbMaHK.getSelectionModel().clearSelection();
+        tableTKB.getSelectionModel().clearSelection();
+    }
+
+    private boolean confirm(String msg) {
+        Alert a = new Alert(Alert.AlertType.CONFIRMATION, msg, ButtonType.OK, ButtonType.CANCEL);
+        a.setHeaderText(null);
+        return a.showAndWait().filter(b -> b == ButtonType.OK).isPresent();
+    }
+    private void showInfo(String msg) { new Alert(Alert.AlertType.INFORMATION, msg).show(); }
+    private void showError(String msg, Exception ex) {
+        new Alert(Alert.AlertType.ERROR, msg + "\n" + ex.getMessage()).show();
+        ex.printStackTrace();
+    }
 }
