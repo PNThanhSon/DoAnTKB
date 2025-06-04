@@ -16,11 +16,33 @@ public class XepTKBDAO {
 
     // ... (Các phương thức khác giữ nguyên) ...
 
+    public List<MonHoc> getAllMonHoc() {
+        List<MonHoc> monHocList = new ArrayList<>();
+        String sql = "SELECT MaMH, TenMH, Khoi, MaTCM FROM MONHOC ORDER BY TenMH, Khoi"; // Lấy tất cả
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                monHocList.add(new MonHoc(
+                        rs.getString("MaMH"),
+                        rs.getString("TenMH"),
+                        rs.getString("Khoi"),
+                        rs.getString("MaTCM")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi lấy tất cả Môn Học: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return monHocList;
+    }
     /**
      * Lấy danh sách các môn học thuộc một Tổ Chuyên Môn (TCM).
      * @param maTCM Mã Tổ Chuyên Môn.
      * @return Danh sách các đối tượng MonHoc.
      */
+
+
     public List<MonHoc> getMonHocByTCM(String maTCM) {
         List<MonHoc> monHocList = new ArrayList<>();
         String sql = "SELECT MaMH, TenMH, Khoi, MaTCM FROM MONHOC WHERE MaTCM = ? ORDER BY TenMH, Khoi";

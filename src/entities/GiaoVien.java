@@ -81,7 +81,7 @@ public class GiaoVien {
     public void setGioiTinh(String gioiTinh) {
         this.gioiTinh = gioiTinh;
     }
-
+    public void setMaGV(String maGV) { this.maGV = maGV; }
     public void setHoGV(String hoGV) { this.hoGV = hoGV; }
     public void setTenGV(String tenGV) { this.tenGV = tenGV; }
 

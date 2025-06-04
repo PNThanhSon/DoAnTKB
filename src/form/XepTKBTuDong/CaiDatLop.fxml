@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.XepTKBTuDong.CaiDatLopController">
+    <children>
+        <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <Label fx:id="titleLabel" text="Cài Đặt Phân Công Giáo Viên cho Lớp: [Tên Lớp]">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="searchMonHocTextField" promptText="Tìm kiếm môn học..." />
+                <ScrollPane fx:id="subjectsScrollPane" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="subjectAssignmentsVBox" spacing="15.0">
+                            <padding>
+                                <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                            </padding>
+                            <!-- Các cài đặt môn học sẽ được thêm vào đây bằng code -->
+                        </VBox>
+                    </content>
+                </ScrollPane>
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <Button fx:id="btnSaveSettings" mnemonicParsing="false" onAction="#handleSaveSettings" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-weight: bold;" text="Lưu Cài Đặt">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                            </padding>
+                        </Button>
+                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#handleCancel" text="Hủy Bỏ">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                            </padding>
+                        </Button>
+                    </children>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
+    
