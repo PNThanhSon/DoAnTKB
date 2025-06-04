@@ -64,6 +64,7 @@ public class ChiTietTKB {
     public String getMaMH() {
         return maMH;
     }
+    public int getFlag() { return flag; }
 
     /**
      * Đối với TKB Tổ Chuyên Môn, chúng ta muốn hiển thị MaLop trong ô của bảng.
@@ -111,4 +112,6 @@ public class ChiTietTKB {
     public int hashCode() {
         return Objects.hash(thu, tiet, tenMonHoc, maLop, maGV);
     }
+
+
 }

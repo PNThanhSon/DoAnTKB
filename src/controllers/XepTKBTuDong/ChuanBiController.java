@@ -1,7 +1,6 @@
 package controllers.XepTKBTuDong;
 
-// Bỏ import của Jackson
-import controllers.XepTKBTuDong.helpers.ChuanBiSettings; // Đảm bảo đường dẫn này đúng
+import controllers.XepTKBTuDong.helpers.ChuanBiSettings;
 import dao.ThoiKhoaBieuDAO;
 import dao.XepTKBDAO;
 import entities.*;
@@ -75,12 +74,10 @@ public class ChuanBiController {
     private final List<String> KHOI_LIST = Arrays.asList("10", "11", "12");
     private Map<String, List<MonHocHoc>> phanCongMonHocChoTatCaLopTrongHK;
 
-    // Đường dẫn file cài đặt
     private final String SETTINGS_DIR_PATH = System.getProperty("user.home") + File.separator + ".tkb_scheduler_settings";
     private final String SETTINGS_FILE_NAME = "chuan_bi_settings.txt";
     private final String SETTINGS_FILE_PATH = SETTINGS_DIR_PATH + File.separator + SETTINGS_FILE_NAME;
 
-    // Định nghĩa các tiền tố cho file TXT
     private static final String PREFIX_HOC_KY = "HOC_KY=";
     private static final String PREFIX_TKB_CO_SO = "TKB_CO_SO=";
     private static final String PREFIX_KHOI_TIET = "KHOI_TIET;";
@@ -98,12 +95,11 @@ public class ChuanBiController {
         phanCongMonHocChoTatCaLopTrongHK = new HashMap<>();
         soTietMoiThuTheoKhoi = new HashMap<>();
 
-        // Khởi tạo giá trị mặc định cho soTietMoiThuTheoKhoi
-        // Sẽ bị ghi đè nếu có file settings
-        int defaultPeriods = 5;
+        // Khởi tạo giá trị mặc định ban đầu cho soTietMoiThuTheoKhoi
+        int defaultPeriods = 5; // Hoặc một giá trị mặc định khác bạn muốn
         for (String khoi : KHOI_LIST) {
             Map<Integer, Integer> defaultSettingsForKhoi = new HashMap<>();
-            for (int i = 2; i <= 7; i++) {
+            for (int i = 2; i <= 7; i++) { // Thứ 2 đến Thứ 7
                 defaultSettingsForKhoi.put(i, defaultPeriods);
             }
             soTietMoiThuTheoKhoi.put(khoi, defaultSettingsForKhoi);
@@ -117,61 +113,78 @@ public class ChuanBiController {
 
         Optional<ChuanBiSettings> loadedSettingsOpt = loadSettingsFromFile();
         String savedMaHK = null;
-        // String savedMaTkbCoSo = null; // Sẽ được xử lý trong handleHocKySelection
+        String savedMaTkbCoSo = null; // Thêm biến để lưu mã TKB cơ sở đã tải
 
         if (loadedSettingsOpt.isPresent()) {
             ChuanBiSettings settings = loadedSettingsOpt.get();
             savedMaHK = settings.getSelectedMaHK();
-            // savedMaTkbCoSo = settings.getSelectedMaTkbCoSo(); // Sẽ được dùng sau
+            savedMaTkbCoSo = settings.getSelectedMaTkbCoSo(); // Lấy mã TKB cơ sở
 
             if (settings.getSoTietMoiThuTheoKhoi() != null && !settings.getSoTietMoiThuTheoKhoi().isEmpty()) {
+                this.soTietMoiThuTheoKhoi.clear(); // Xóa cài đặt cũ trong bộ nhớ
                 this.soTietMoiThuTheoKhoi.putAll(settings.getSoTietMoiThuTheoKhoi());
+                System.out.println("[ChuanBiController.initialize] Loaded soTietMoiThuTheoKhoi from file: " + this.soTietMoiThuTheoKhoi);
+            } else {
+                System.out.println("[ChuanBiController.initialize] No soTietMoiThuTheoKhoi found in file, using defaults or existing.");
             }
+
             if (settings.getTeacherCustomSettingsMap() != null) {
+                this.teacherCustomSettingsMap.clear(); // Xóa cài đặt cũ
                 this.teacherCustomSettingsMap.putAll(settings.getTeacherCustomSettingsMap());
+                System.out.println("[ChuanBiController.initialize] Loaded teacherCustomSettingsMap from file. Size: " + this.teacherCustomSettingsMap.size());
             }
+
             if (settings.getClassTeacherAssignmentsMap() != null) {
+                this.classTeacherAssignmentsMap.clear(); // Xóa cài đặt cũ
                 this.classTeacherAssignmentsMap.putAll(settings.getClassTeacherAssignmentsMap());
+                System.out.println("[ChuanBiController.initialize] Loaded classTeacherAssignmentsMap from file: " + this.classTeacherAssignmentsMap);
+            } else {
+                System.out.println("[ChuanBiController.initialize] No classTeacherAssignmentsMap found in file.");
             }
             System.out.println("Đã tải cài đặt từ file: " + SETTINGS_FILE_PATH);
         } else {
-            System.out.println("Không tìm thấy file cài đặt hoặc có lỗi khi tải. Sử dụng cài đặt mặc định.");
+            System.out.println("Không tìm thấy file cài đặt hoặc có lỗi khi tải. Sử dụng cài đặt mặc định đã khởi tạo.");
         }
 
-        setupHocKyComboBox(savedMaHK); // Truyền MaHK đã lưu
-        setupTkbCoSoComboBox(); // Chỉ thiết lập converter, giá trị sẽ được set trong handleHocKySelection
+        setupHocKyComboBox(savedMaHK);
+        // Gọi setupTkbCoSoComboBox sau khi setupHocKyComboBox và có thể đã chọn một học kỳ
+        // Truyền savedMaTkbCoSo vào đây
+        setupTkbCoSoComboBox(savedMaTkbCoSo);
+
 
         setupGiaoVienCustomSettingsListView();
         setupSearchGiaoVienTextField();
         setupLopCustomSettingsListView();
         setupSearchLopTextField();
         setupKhoiComboBoxSoTiet();
-        setupDayPeriodSpinnersForKhoi();
+        setupDayPeriodSpinnersForKhoi(); // Gọi sau setupKhoiComboBoxSoTiet
 
-        // Nếu có học kỳ được chọn (từ file), kích hoạt handleHocKySelection
-        // để tải TKB cơ sở và các thông tin liên quan.
-        // Nếu không, UI sẽ chờ người dùng chọn.
+        // Xử lý hiển thị ban đầu cho ComboBox Khối và Spinners
+        String initialKhoiForSpinners = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
+        if (initialKhoiForSpinners == null && !KHOI_LIST.isEmpty()) {
+            khoiComboBoxSoTiet.getSelectionModel().selectFirst(); // Chọn khối đầu tiên nếu chưa có gì được chọn
+            initialKhoiForSpinners = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
+        }
+        if (initialKhoiForSpinners != null) {
+            updateSpinnersAndLabelsForSelectedKhoi(initialKhoiForSpinners);
+        } else {
+            // Nếu vẫn null (KHOI_LIST rỗng), đặt giá trị mặc định cho spinner hoặc thông báo
+            System.out.println("[ChuanBiController.initialize] KHOI_LIST is empty or no khoi selected for spinners.");
+        }
+
+
+        // Gọi handleHocKySelection nếu có học kỳ được chọn sẵn để tải TKB cơ sở tương ứng
         if (hocKyComboBox.getValue() != null) {
-            handleHocKySelection(null);
+            handleHocKySelection(null); // Điều này cũng sẽ gọi updateSpinnersAndLabelsForSelectedKhoi
         } else {
             tkbCoSoComboBox.setDisable(true);
             tkbCoSoComboBox.setPromptText("Chọn học kỳ trước");
             phanPhoiTietLabel.setText("Phân phối tiết (CSDL): Chọn học kỳ");
             tongSoTietTuanLabel.setText("Tổng số tiết theo cài đặt: Chọn học kỳ");
         }
-
-        // Cập nhật spinners cho khối được chọn (hoặc khối đầu tiên)
-        String initialKhoiForSpinners = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
-        if (initialKhoiForSpinners == null && !KHOI_LIST.isEmpty()) {
-            khoiComboBoxSoTiet.getSelectionModel().selectFirst();
-            initialKhoiForSpinners = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
-        }
-        if (initialKhoiForSpinners != null) {
-            updateSpinnersAndLabelsForSelectedKhoi(initialKhoiForSpinners);
-        }
-
         soTietTheoKhoiPane.setExpanded(true);
     }
+
 
     private void setupHocKyComboBox(String savedMaHK) {
         List<HocKy> hocKyList = thoiKhoaBieuDAO.getDanhSachHocKy();
@@ -190,15 +203,56 @@ public class ChuanBiController {
                         .findFirst()
                         .ifPresent(hocKyComboBox::setValue);
             }
-            // Nếu không có savedMaHK hoặc không tìm thấy, không chọn gì cả, để prompt text hiển thị
-            if (hocKyComboBox.getValue() == null) {
+            if (hocKyComboBox.getValue() == null && !hocKyList.isEmpty()) {
+                // hocKyComboBox.getSelectionModel().selectFirst(); // Tự động chọn học kỳ đầu tiên nếu không có gì được lưu
                 hocKyComboBox.setPromptText("Chọn học kỳ");
+            } else if (hocKyComboBox.getValue() == null) {
+                hocKyComboBox.setPromptText("Không có học kỳ nào");
             }
         } else {
             hocKyComboBox.setPromptText("Không có học kỳ");
             hocKyComboBox.setDisable(true);
         }
     }
+
+    // Thay đổi: Thêm tham số savedMaTkbCoSo
+    private void setupTkbCoSoComboBox(String savedMaTkbCoSo) {
+        tkbCoSoComboBox.setConverter(new StringConverter<>() {
+            @Override public String toString(ThoiKhoaBieu tkb) { return tkb == null || tkb.getMaTKB() == null ? "Không chọn TKB cơ sở" : tkb.toString(); }
+            @Override public ThoiKhoaBieu fromString(String string) {
+                if ("Không chọn TKB cơ sở".equals(string)) return null;
+                return tkbCoSoComboBox.getItems().stream().filter(tkb -> tkb != null && tkb.toString().equals(string)).findFirst().orElse(null);
+            }
+        });
+        tkbCoSoComboBox.getItems().add(null); // Luôn có lựa chọn "Không chọn"
+
+        HocKy selectedHocKy = hocKyComboBox.getValue();
+        if (selectedHocKy != null) {
+            List<ThoiKhoaBieu> tkbList = thoiKhoaBieuDAO.getDanhSachThoiKhoaBieuTheoHocKy(selectedHocKy.getMaHK());
+            if (tkbList != null && !tkbList.isEmpty()) {
+                tkbCoSoComboBox.getItems().addAll(tkbList);
+                if (savedMaTkbCoSo != null) {
+                    tkbList.stream()
+                            .filter(tkb -> tkb.getMaTKB().equals(savedMaTkbCoSo))
+                            .findFirst()
+                            .ifPresentOrElse(
+                                    tkbCoSoComboBox::setValue,
+                                    () -> tkbCoSoComboBox.getSelectionModel().selectFirst() // Chọn "Không chọn" nếu mã đã lưu không tìm thấy
+                            );
+                } else {
+                    tkbCoSoComboBox.getSelectionModel().selectFirst(); // Chọn "Không chọn"
+                }
+            } else {
+                tkbCoSoComboBox.getSelectionModel().selectFirst(); // Chọn "Không chọn"
+            }
+            tkbCoSoComboBox.setDisable(false);
+        } else {
+            tkbCoSoComboBox.setDisable(true);
+            tkbCoSoComboBox.setPromptText("Chọn học kỳ trước");
+            tkbCoSoComboBox.getSelectionModel().selectFirst(); // Chọn "Không chọn"
+        }
+    }
+
 
     @FXML
     void handleTiepTuc(ActionEvent event) {
@@ -207,13 +261,18 @@ public class ChuanBiController {
             showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng chọn Học Kỳ.");
             return;
         }
-        saveSettingsToFile(); // Lưu cài đặt hiện tại
+        saveSettingsToFile(); // Lưu tất cả cài đặt hiện tại trước khi tiếp tục
 
         ThoiKhoaBieu selectedTkbCoSo = tkbCoSoComboBox.getSelectionModel().getSelectedItem();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/XepTKBTuDong/XepTKBTuDong.fxml"));
             Parent root = loader.load();
             XepTKBTuDongController controller = loader.getController();
+
+            System.out.println("[ChuanBiController.handleTiepTuc] Passing teacherCustomSettingsMap to XepTKB: " + teacherCustomSettingsMap);
+            System.out.println("[ChuanBiController.handleTiepTuc] Passing soTietMoiThuTheoKhoi to XepTKB: " + soTietMoiThuTheoKhoi);
+            System.out.println("[ChuanBiController.handleTiepTuc] Passing classTeacherAssignmentsMap to XepTKB: " + classTeacherAssignmentsMap);
+
             controller.initData(selectedHocKy, selectedTkbCoSo, teacherCustomSettingsMap, soTietMoiThuTheoKhoi, classTeacherAssignmentsMap);
             Stage stage = new Stage();
             stage.setTitle("Kết Quả Xếp Thời Khóa Biểu Tự Động");
@@ -227,6 +286,7 @@ public class ChuanBiController {
     }
 
     private void saveSettingsToFile() {
+        // Đảm bảo cài đặt từ spinner của khối hiện tại được cập nhật vào map
         String currentSelectedKhoiInSpinner = khoiComboBoxSoTiet.getValue();
         if (currentSelectedKhoiInSpinner != null) {
             updateSettingsFromSpinners(currentSelectedKhoiInSpinner);
@@ -241,6 +301,11 @@ public class ChuanBiController {
             }
         }
 
+        System.out.println("[ChuanBiController.saveSettingsToFile] Saving soTietMoiThuTheoKhoi: " + this.soTietMoiThuTheoKhoi);
+        System.out.println("[ChuanBiController.saveSettingsToFile] Saving classTeacherAssignmentsMap: " + this.classTeacherAssignmentsMap);
+        System.out.println("[ChuanBiController.saveSettingsToFile] Saving teacherCustomSettingsMap size: " + this.teacherCustomSettingsMap.size());
+
+
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(SETTINGS_FILE_PATH), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write("# ChuanBiController Settings File");
             writer.newLine();
@@ -252,7 +317,7 @@ public class ChuanBiController {
             }
 
             ThoiKhoaBieu selectedTkbCoSo = tkbCoSoComboBox.getValue();
-            if (selectedTkbCoSo != null && selectedTkbCoSo.getMaTKB() != null) { // Chỉ lưu nếu có TKB cơ sở thực sự được chọn
+            if (selectedTkbCoSo != null && selectedTkbCoSo.getMaTKB() != null) {
                 writer.write(PREFIX_TKB_CO_SO + selectedTkbCoSo.getMaTKB());
                 writer.newLine();
             }
@@ -280,10 +345,10 @@ public class ChuanBiController {
                 String maLop = entryLop.getKey();
                 Map<String, List<String>> assignments = entryLop.getValue();
                 String assignmentsStr = assignments.entrySet().stream()
-                        .filter(e -> e.getValue() != null && !e.getValue().isEmpty()) // Chỉ lưu nếu có GV được gán
-                        .map(e -> e.getKey() + "=" + String.join("~", e.getValue())) // Dùng dấu ~ để nối các MaGV
+                        .filter(e -> e.getValue() != null && !e.getValue().isEmpty())
+                        .map(e -> e.getKey() + "=" + String.join("~", e.getValue()))
                         .collect(Collectors.joining("|"));
-                if (!assignmentsStr.isEmpty()) { // Chỉ ghi nếu có assignment thực sự
+                if (!assignmentsStr.isEmpty()) {
                     writer.write(PREFIX_LOP_ASSIGN + maLop + ";" + assignmentsStr);
                     writer.newLine();
                 }
@@ -299,9 +364,10 @@ public class ChuanBiController {
     private Optional<ChuanBiSettings> loadSettingsFromFile() {
         File settingsFile = new File(SETTINGS_FILE_PATH);
         if (!settingsFile.exists()) {
+            System.out.println("[ChuanBiController.loadSettingsFromFile] File cài đặt không tồn tại: " + SETTINGS_FILE_PATH);
             return Optional.empty();
         }
-
+        System.out.println("[ChuanBiController.loadSettingsFromFile] Loading settings from: " + SETTINGS_FILE_PATH);
         ChuanBiSettings settings = new ChuanBiSettings();
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(SETTINGS_FILE_PATH), StandardCharsets.UTF_8)) {
             String line;
@@ -317,17 +383,21 @@ public class ChuanBiController {
                     String[] parts = line.substring(PREFIX_KHOI_TIET.length()).split(";", 2);
                     if (parts.length == 2) {
                         String khoi = parts[0];
-                        Map<Integer, Integer> tietTheoThu = new HashMap<>();
+                        Map<Integer, Integer> tietSettings = new HashMap<>();
                         if (!parts[1].isEmpty()) {
                             for (String partTiet : parts[1].split(",")) {
                                 String[] kv = partTiet.split("=");
                                 if (kv.length == 2) {
-                                    try { tietTheoThu.put(Integer.parseInt(kv[0]), Integer.parseInt(kv[1])); }
-                                    catch (NumberFormatException e) { System.err.println("Lỗi parse số tiết khi tải: " + partTiet + " cho dòng: " + line); }
+                                    try {
+                                        tietSettings.put(Integer.parseInt(kv[0]), Integer.parseInt(kv[1]));
+                                    } catch (NumberFormatException e) {
+                                        System.err.println("Lỗi parse số khi tải cài đặt tiết cho khối: " + khoi + " - " + partTiet + ". Lỗi: " + e.getMessage());
+                                    }
                                 }
                             }
                         }
-                        settings.getSoTietMoiThuTheoKhoi().put(khoi, tietTheoThu);
+                        settings.getSoTietMoiThuTheoKhoi().put(khoi, tietSettings);
+                        System.out.println("[ChuanBiController.loadSettingsFromFile] Parsed KHOI_TIET for " + khoi + ": " + tietSettings);
                     }
                 } else if (line.startsWith(PREFIX_GV_SETTING)) {
                     String[] parts = line.substring(PREFIX_GV_SETTING.length()).split(";", 3);
@@ -352,16 +422,17 @@ public class ChuanBiController {
                         String maLop = parts[0];
                         Map<String, List<String>> assignments = new HashMap<>();
                         if (!parts[1].isEmpty()) {
-                            for (String partAssign : parts[1].split("\\|")) {
+                            for (String partAssign : parts[1].split("\\|")) { // Cần escape ký tự |
                                 String[] kv = partAssign.split("=", 2);
-                                if (kv.length == 2 && !kv[1].isEmpty()) { // Đảm bảo có MaGV
-                                    assignments.put(kv[0], Arrays.asList(kv[1].split("~")));
+                                if (kv.length == 2) {
+                                    String maMH = kv[0];
+                                    List<String> gvList = new ArrayList<>(Arrays.asList(kv[1].split("~")));
+                                    assignments.put(maMH, gvList);
                                 }
                             }
                         }
-                        if (!assignments.isEmpty()) {
-                            settings.getClassTeacherAssignmentsMap().put(maLop, assignments);
-                        }
+                        settings.getClassTeacherAssignmentsMap().put(maLop, assignments);
+                        System.out.println("[ChuanBiController.loadSettingsFromFile] Parsed LOP_ASSIGN for " + maLop + ": " + assignments);
                     }
                 }
             }
@@ -373,6 +444,7 @@ public class ChuanBiController {
         return Optional.empty();
     }
 
+
     private void updateSettingsFromSpinners(String khoi) {
         if (khoi == null) return;
         Map<Integer, Integer> settingsForKhoi = soTietMoiThuTheoKhoi.computeIfAbsent(khoi, k -> new HashMap<>());
@@ -382,62 +454,46 @@ public class ChuanBiController {
         settingsForKhoi.put(5, thu5Spinner.getValue());
         settingsForKhoi.put(6, thu6Spinner.getValue());
         settingsForKhoi.put(7, thu7Spinner.getValue());
+        // Log giá trị sau khi cập nhật từ spinner
+        System.out.println("[ChuanBiController.updateSettingsFromSpinners] Updated soTietMoiThuTheoKhoi for " + khoi + ": " + settingsForKhoi);
     }
 
     @FXML
     void handleHocKySelection(ActionEvent event) {
         HocKy selectedHocKy = hocKyComboBox.getSelectionModel().getSelectedItem();
         tkbCoSoComboBox.getItems().clear();
-        tkbCoSoComboBox.getItems().add(null); // "Không chọn"
+        tkbCoSoComboBox.getItems().add(null); // Add "Không chọn" option
 
         String savedMaTkbCoSo = null;
-        Optional<ChuanBiSettings> loadedSettingsOpt = loadSettingsFromFile();
-        if(loadedSettingsOpt.isPresent() && selectedHocKy != null &&
-                selectedHocKy.getMaHK().equals(loadedSettingsOpt.get().getSelectedMaHK())) {
-            savedMaTkbCoSo = loadedSettingsOpt.get().getSelectedMaTkbCoSo();
-        }
+        // Không nên load lại toàn bộ settings từ file ở đây nữa vì sẽ ghi đè thay đổi chưa lưu.
+        // Chỉ cần lấy mã TKB cơ sở đã lưu (nếu có) từ lần load ban đầu.
+        // Tuy nhiên, nếu logic là mỗi lần đổi học kỳ thì phải load lại TKB cơ sở tương ứng,
+        // thì việc lấy savedMaTkbCoSo từ file (chỉ cho TKB cơ sở) có thể chấp nhận được.
+        // Hiện tại, để đơn giản, ta sẽ không load lại savedMaTkbCoSo từ file ở đây.
+        // Ta sẽ dựa vào việc setupTkbCoSoComboBox được gọi lại.
 
         if (selectedHocKy != null) {
             phanCongMonHocChoTatCaLopTrongHK = xepTKBDAO.getPhanCongMonHocChoTatCaLop(selectedHocKy.getMaHK());
-            tkbCoSoComboBox.setDisable(false);
-            List<ThoiKhoaBieu> tkbList = thoiKhoaBieuDAO.getDanhSachThoiKhoaBieuTheoHocKy(selectedHocKy.getMaHK());
-            if (tkbList != null && !tkbList.isEmpty()) {
-                tkbCoSoComboBox.getItems().addAll(tkbList);
-                final String finalSavedMaTkbCoSo = savedMaTkbCoSo;
-                if (finalSavedMaTkbCoSo != null) {
-                    tkbList.stream()
-                            .filter(tkb -> tkb.getMaTKB().equals(finalSavedMaTkbCoSo))
-                            .findFirst()
-                            .ifPresentOrElse(
-                                    tkbCoSoComboBox::setValue,
-                                    () -> tkbCoSoComboBox.getSelectionModel().selectFirst()
-                            );
-                } else {
-                    tkbCoSoComboBox.getSelectionModel().selectFirst(); // Chọn "Không chọn"
-                }
-            } else {
-                tkbCoSoComboBox.setPromptText("Không có TKB cho học kỳ này");
-                tkbCoSoComboBox.getSelectionModel().selectFirst();
-            }
-
+            setupTkbCoSoComboBox(null); // Gọi lại để load TKB cho học kỳ mới, không truyền mã đã lưu
+            // Cập nhật label phân phối tiết
             String currentSelectedKhoi = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
-            if (currentSelectedKhoi == null && !KHOI_LIST.isEmpty()) {
-                currentSelectedKhoi = KHOI_LIST.get(0); // Hoặc KHOI_LIST.getFirst() nếu dùng Java 21+
-                khoiComboBoxSoTiet.getSelectionModel().select(currentSelectedKhoi);
-            } else if (currentSelectedKhoi != null) {
+            if (currentSelectedKhoi != null) {
                 updateSpinnersAndLabelsForSelectedKhoi(currentSelectedKhoi);
+            } else if (!KHOI_LIST.isEmpty()) {
+                khoiComboBoxSoTiet.getSelectionModel().selectFirst();
+                updateSpinnersAndLabelsForSelectedKhoi(KHOI_LIST.get(0));
             }
         } else {
             phanCongMonHocChoTatCaLopTrongHK.clear();
             tkbCoSoComboBox.setDisable(true);
             tkbCoSoComboBox.setPromptText("Chọn TKB cơ sở (nếu có)");
-            tkbCoSoComboBox.getSelectionModel().selectFirst();
+            tkbCoSoComboBox.getSelectionModel().selectFirst(); // Chọn "Không chọn"
             phanPhoiTietLabel.setText("Phân phối tiết (CSDL): Chọn học kỳ");
             tongSoTietTuanLabel.setText("Tổng số tiết theo cài đặt: Chọn học kỳ");
         }
     }
 
-    // Các phương thức còn lại giữ nguyên
+
     private void loadAllLopList() {
         List<Lop> lopListDB = xepTKBDAO.getDanhSachLop();
         if (lopListDB != null) {
@@ -454,16 +510,6 @@ public class ChuanBiController {
         } else {
             allGiaoVienList.clear();
         }
-    }
-
-    private void setupTkbCoSoComboBox() {
-        tkbCoSoComboBox.setConverter(new StringConverter<>() {
-            @Override public String toString(ThoiKhoaBieu tkb) { return tkb == null || tkb.getMaTKB() == null ? "Không chọn TKB cơ sở" : tkb.toString(); }
-            @Override public ThoiKhoaBieu fromString(String string) {
-                if ("Không chọn TKB cơ sở".equals(string)) return null;
-                return tkbCoSoComboBox.getItems().stream().filter(tkb -> tkb != null && tkb.toString().equals(string)).findFirst().orElse(null);
-            }
-        });
     }
 
     private void setupGiaoVienCustomSettingsListView() {
@@ -524,6 +570,11 @@ public class ChuanBiController {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(giaoVienListView.getScene().getWindow());
             stage.showAndWait();
+
+            TeacherCustomSettings settingsAfterEdit = teacherCustomSettingsMap.get(gv.getMaGV());
+            if (settingsAfterEdit != null) {
+                System.out.println("[ChuanBiController.openGiaoVienSettingsWindow] After edit for GV " + gv.getMaGV() + ": Preferences in map: " + settingsAfterEdit.getSubjectTeachingPreference());
+            }
             giaoVienListView.refresh();
             lopListView.refresh();
         } catch (IOException e) {
@@ -615,7 +666,7 @@ public class ChuanBiController {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(lopListView.getScene().getWindow());
             stage.showAndWait();
-            lopListView.refresh();
+            lopListView.refresh(); // Không cần thiết nếu không có gì thay đổi hiển thị trực tiếp trên cell của lopListView
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi Mở Cửa Sổ", "Không thể mở cửa sổ cài đặt lớp.\n" + e.getMessage());
@@ -637,10 +688,11 @@ public class ChuanBiController {
 
     private void setupKhoiComboBoxSoTiet() {
         khoiComboBoxSoTiet.setItems(FXCollections.observableArrayList(KHOI_LIST));
+        // Không chọn mặc định ở đây, để initialize xử lý dựa trên file đã lưu hoặc chọn cái đầu tiên
     }
 
     private void setupDayPeriodSpinnersForKhoi() {
-        int minPeriods = 0; int maxPeriods = 7; // Cho phép spinner chọn tới 7, logic giới hạn 5 sẽ ở chỗ khác nếu cần
+        int minPeriods = 0; int maxPeriods = 7; // Giả sử tối đa 7 tiết/ngày
         configureSpinner(thu2Spinner, minPeriods, maxPeriods);
         configureSpinner(thu3Spinner, minPeriods, maxPeriods);
         configureSpinner(thu4Spinner, minPeriods, maxPeriods);
@@ -650,16 +702,18 @@ public class ChuanBiController {
 
         Spinner<?>[] spinners = {thu2Spinner, thu3Spinner, thu4Spinner, thu5Spinner, thu6Spinner, thu7Spinner};
         for (int i = 0; i < spinners.length; i++) {
-            final int dayOfWeek = i + 2;
+            final int dayOfWeek = i + 2; // Thứ 2 là 2, Thứ 3 là 3,...
             spinners[i].valueProperty().addListener((obs, oldValue, newValue) -> {
                 String selectedKhoi = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
                 if (selectedKhoi != null && newValue instanceof Integer) {
-                    soTietMoiThuTheoKhoi.computeIfAbsent(selectedKhoi, k -> {
+                    // Lấy map của khối, nếu chưa có thì tạo mới và điền giá trị mặc định (ví dụ 0)
+                    Map<Integer, Integer> settingsForKhoi = soTietMoiThuTheoKhoi.computeIfAbsent(selectedKhoi, k -> {
                         Map<Integer, Integer> newMap = new HashMap<>();
-                        for(int day=2; day<=7; day++) newMap.put(day, 0);
+                        for(int day=2; day<=7; day++) newMap.put(day, 0); // Mặc định là 0 nếu chưa có
                         return newMap;
                     });
-                    soTietMoiThuTheoKhoi.get(selectedKhoi).put(dayOfWeek, (Integer) newValue);
+                    settingsForKhoi.put(dayOfWeek, (Integer) newValue);
+                    System.out.println("[SpinnerListener] Updated soTietMoiThuTheoKhoi for " + selectedKhoi + ", Day " + dayOfWeek + ": " + newValue);
                     updateTongSoTietTuanLabel(selectedKhoi);
                 }
             });
@@ -667,6 +721,7 @@ public class ChuanBiController {
     }
 
     private void configureSpinner(Spinner<Integer> spinner, int min, int max) {
+        // Đặt giá trị mặc định là min khi khởi tạo factory
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, min);
         spinner.setValueFactory(valueFactory);
     }
@@ -675,6 +730,9 @@ public class ChuanBiController {
     void handleKhoiSoTietSelection(ActionEvent event) {
         String selectedKhoi = khoiComboBoxSoTiet.getSelectionModel().getSelectedItem();
         if (selectedKhoi != null) {
+            // Trước khi cập nhật spinner, lưu lại giá trị hiện tại của spinner cho khối cũ (nếu có)
+            // Tuy nhiên, việc này đã được xử lý bởi listener của spinner.
+            // Chỉ cần cập nhật UI cho khối mới.
             updateSpinnersAndLabelsForSelectedKhoi(selectedKhoi);
         }
     }
@@ -683,15 +741,27 @@ public class ChuanBiController {
         if (khoi == null) {
             phanPhoiTietLabel.setText("Phân phối tiết (CSDL): Chọn khối");
             tongSoTietTuanLabel.setText("Tổng số tiết theo cài đặt: Chọn khối");
+            // Reset spinners to a default state if needed, e.g., 0 or a common default
+            int defaultSpinnerVal = 0;
+            thu2Spinner.getValueFactory().setValue(defaultSpinnerVal);
+            thu3Spinner.getValueFactory().setValue(defaultSpinnerVal);
+            thu4Spinner.getValueFactory().setValue(defaultSpinnerVal);
+            thu5Spinner.getValueFactory().setValue(defaultSpinnerVal);
+            thu6Spinner.getValueFactory().setValue(defaultSpinnerVal);
+            thu7Spinner.getValueFactory().setValue(defaultSpinnerVal);
             return;
         }
+        System.out.println("[ChuanBiController.updateSpinnersAndLabels] Updating for Khoi: " + khoi);
         Map<Integer, Integer> settingsForKhoi = soTietMoiThuTheoKhoi.get(khoi);
-        if (settingsForKhoi == null) { // Nếu chưa có trong map (ví dụ, sau khi load file mà khoi này mới)
+        if (settingsForKhoi == null) {
+            System.out.println("[ChuanBiController.updateSpinnersAndLabels] No settings found for Khoi " + khoi + ", creating default.");
             settingsForKhoi = new HashMap<>();
-            int defaultPeriods = 5;
+            int defaultPeriods = 5; // Hoặc giá trị mặc định bạn muốn cho khối mới
             for(int day=2; day<=7; day++) settingsForKhoi.put(day, defaultPeriods);
             soTietMoiThuTheoKhoi.put(khoi, settingsForKhoi);
         }
+        System.out.println("[ChuanBiController.updateSpinnersAndLabels] Settings for Khoi " + khoi + ": " + settingsForKhoi);
+
 
         thu2Spinner.getValueFactory().setValue(settingsForKhoi.getOrDefault(2, 0));
         thu3Spinner.getValueFactory().setValue(settingsForKhoi.getOrDefault(3, 0));

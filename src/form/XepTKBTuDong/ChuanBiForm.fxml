@@ -17,191 +17,195 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="900.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.XepTKBTuDong.ChuanBiController">
-    <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-          AnchorPane.topAnchor="0.0">
-        <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-        </padding>
-        <Label text="CHUẨN BỊ ĐIỀU KIỆN XẾP THỜI KHÓA BIỂU TỰ ĐỘNG">
-            <font>
-                <Font name="System Bold" size="20.0"/>
-            </font>
-            <VBox.margin>
-                <Insets bottom="10.0"/>
-            </VBox.margin>
-        </Label>
-
-        <GridPane hgap="10.0" vgap="10.0">
-            <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="150.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="280.0"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-            </rowConstraints>
-            <VBox.margin>
-                <Insets bottom="5.0" top="5.0"/>
-            </VBox.margin>
-            <Label text="Chọn Học Kỳ:" GridPane.columnIndex="0" GridPane.rowIndex="0">
+<!-- Đặt ScrollPane làm phần tử gốc -->
+<!-- Bỏ fitToHeight="true" để ScrollPane tôn trọng chiều cao của content hơn -->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.XepTKBTuDong.ChuanBiController"
+            fitToWidth="true" prefHeight="700.0" prefWidth="800.0">
+    <!-- AnchorPane chứa nội dung, bây giờ nằm trong ScrollPane -->
+    <AnchorPane> <!-- AnchorPane này sẽ tự động điều chỉnh kích thước theo VBox bên trong -->
+        <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+            <Label text="CHUẨN BỊ ĐIỀU KIỆN XẾP THỜI KHÓA BIỂU TỰ ĐỘNG">
                 <font>
-                    <Font size="14.0"/>
+                    <Font name="System Bold" size="20.0"/>
                 </font>
-            </Label>
-            <ComboBox fx:id="hocKyComboBox" onAction="#handleHocKySelection" prefWidth="280.0"
-                      GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-
-            <Label text="Chọn TKB cơ sở (nếu có):" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-            </Label>
-            <ComboBox fx:id="tkbCoSoComboBox" onAction="#handleTkbCoSoSelection" prefWidth="280.0"
-                      GridPane.columnIndex="1" GridPane.rowIndex="1" disable="true"/>
-        </GridPane>
-
-        <TitledPane fx:id="soTietTheoKhoiPane"
-                    text="Cài Đặt Số Tiết Học Mỗi Thứ Theo Khối" VBox.vgrow="NEVER">
-            <font>
-                <Font name="System Bold" size="14.0"/>
-            </font>
-            <VBox.margin>
-                <Insets top="10.0"/>
-            </VBox.margin>
-            <AnchorPane minHeight="0.0" minWidth="0.0">
-                <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <padding>
-                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
-                    </padding>
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label text="Chọn Khối:">
-                            <font>
-                                <Font size="13.0"/>
-                            </font>
-                        </Label>
-                        <ComboBox fx:id="khoiComboBoxSoTiet" onAction="#handleKhoiSoTietSelection"
-                                  prefWidth="150.0"/>
-                    </HBox>
-                    <GridPane hgap="10.0" vgap="5.0">
-                        <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                        </columnConstraints>
-                        <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                        </rowConstraints>
-                        <Label text="Thứ 2" GridPane.halignment="CENTER"/>
-                        <Label text="Thứ 3" GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
-                        <Label text="Thứ 4" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
-                        <Label text="Thứ 5" GridPane.columnIndex="3" GridPane.halignment="CENTER"/>
-                        <Label text="Thứ 6" GridPane.columnIndex="4" GridPane.halignment="CENTER"/>
-                        <Label text="Thứ 7" GridPane.columnIndex="5" GridPane.halignment="CENTER"/>
-                        <Spinner fx:id="thu2Spinner" editable="true" prefWidth="150.0"
-                                 GridPane.halignment="CENTER" GridPane.rowIndex="1"/>
-                        <Spinner fx:id="thu3Spinner" editable="true" prefWidth="150.0"
-                                 GridPane.columnIndex="1" GridPane.halignment="CENTER"
-                                 GridPane.rowIndex="1"/>
-                        <Spinner fx:id="thu4Spinner" editable="true" prefWidth="150.0"
-                                 GridPane.columnIndex="2" GridPane.halignment="CENTER"
-                                 GridPane.rowIndex="1"/>
-                        <Spinner fx:id="thu5Spinner" editable="true" prefWidth="150.0"
-                                 GridPane.columnIndex="3" GridPane.halignment="CENTER"
-                                 GridPane.rowIndex="1"/>
-                        <Spinner fx:id="thu6Spinner" editable="true" prefWidth="150.0"
-                                 GridPane.columnIndex="4" GridPane.halignment="CENTER"
-                                 GridPane.rowIndex="1"/>
-                        <Spinner fx:id="thu7Spinner" editable="true" prefWidth="150.0"
-                                 GridPane.columnIndex="5" GridPane.halignment="CENTER"
-                                 GridPane.rowIndex="1"/>
-                    </GridPane>
-                    <HBox alignment="CENTER_LEFT" spacing="20.0">
-                        <VBox.margin>
-                            <Insets top="10.0"/>
-                        </VBox.margin>
-                        <Label fx:id="phanPhoiTietLabel" text="Phân phối tiết (CSDL): --">
-                            <font>
-                                <Font size="13.0"/>
-                            </font>
-                        </Label>
-                        <Label fx:id="tongSoTietTuanLabel" text="Tổng số tiết theo cài đặt: --">
-                            <font>
-                                <Font size="13.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                </VBox>
-            </AnchorPane>
-        </TitledPane>
-
-        <TitledPane fx:id="giaoVienCustomSettingsPane"
-                    text="Cài Đặt Chi Tiết Cho Từng Giáo Viên" VBox.vgrow="NEVER" expanded="false">
-            <font>
-                <Font name="System Bold" size="14.0"/>
-            </font>
-            <AnchorPane minHeight="0.0" minWidth="0.0">
-                <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <padding>
-                        <Insets bottom="5.0" top="5.0"/>
-                    </padding>
-                    <TextField fx:id="searchGiaoVienTextField"
-                               promptText="Tìm kiếm giáo viên theo Tên hoặc Mã GV...">
-                        <font>
-                            <Font size="13.0"/>
-                        </font>
-                    </TextField>
-                    <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
-                        <ListView fx:id="giaoVienListView" prefHeight="150.0"/>
-                    </ScrollPane>
-                </VBox>
-            </AnchorPane>
-        </TitledPane>
-
-        <!-- THAY THẾ PANE CŨ BẰNG PANE MỚI -->
-        <TitledPane fx:id="classCustomSettingsPane" text="Cài Đặt Phân Công Giáo Viên Cho Từng Lớp" VBox.vgrow="SOMETIMES" expanded="false">
-            <font>
-                <Font name="System Bold" size="14.0" />
-            </font>
-            <AnchorPane minHeight="0.0" minWidth="0.0">
-                <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <padding>
-                        <Insets bottom="5.0" top="5.0" />
-                    </padding>
-                    <TextField fx:id="searchLopTextField" promptText="Tìm kiếm lớp học...">
-                        <font>
-                            <Font size="13.0" />
-                        </font>
-                    </TextField>
-                    <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
-                        <ListView fx:id="lopListView" prefHeight="200.0" />
-                    </ScrollPane>
-                </VBox>
-            </AnchorPane>
-        </TitledPane>
-
-
-        <VBox alignment="CENTER_RIGHT">
-            <Button fx:id="btnTiepTuc" mnemonicParsing="false" onAction="#handleTiepTuc"
-                    style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-weight: bold;"
-                    text="Lưu Điều Kiện &amp; Tiếp Tục">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-                <padding>
-                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
-                </padding>
                 <VBox.margin>
-                    <Insets top="15.0"/>
+                    <Insets bottom="10.0"/>
                 </VBox.margin>
-            </Button>
+            </Label>
+
+            <GridPane hgap="10.0" vgap="10.0">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="150.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="280.0"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <VBox.margin>
+                    <Insets bottom="5.0" top="5.0"/>
+                </VBox.margin>
+                <Label text="Chọn Học Kỳ:" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Label>
+                <ComboBox fx:id="hocKyComboBox" onAction="#handleHocKySelection" prefWidth="280.0"
+                          GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Chọn TKB cơ sở (nếu có):" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Label>
+                <ComboBox fx:id="tkbCoSoComboBox" onAction="#handleTkbCoSoSelection" prefWidth="280.0"
+                          GridPane.columnIndex="1" GridPane.rowIndex="1" disable="true"/>
+            </GridPane>
+
+            <TitledPane fx:id="soTietTheoKhoiPane"
+                        text="Cài Đặt Số Tiết Học Mỗi Thứ Theo Khối" VBox.vgrow="NEVER" expanded="true"> <!-- expanded="true" để dễ thấy khi test -->
+                <font>
+                    <Font name="System Bold" size="14.0"/>
+                </font>
+                <VBox.margin>
+                    <Insets top="10.0"/>
+                </VBox.margin>
+                <AnchorPane minHeight="0.0" minWidth="0.0">
+                    <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <padding>
+                            <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <Label text="Chọn Khối:">
+                                <font>
+                                    <Font size="13.0"/>
+                                </font>
+                            </Label>
+                            <ComboBox fx:id="khoiComboBoxSoTiet" onAction="#handleKhoiSoTietSelection"
+                                      prefWidth="150.0"/>
+                        </HBox>
+                        <GridPane hgap="10.0" vgap="5.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                            </rowConstraints>
+                            <Label text="Thứ 2" GridPane.halignment="CENTER"/>
+                            <Label text="Thứ 3" GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
+                            <Label text="Thứ 4" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
+                            <Label text="Thứ 5" GridPane.columnIndex="3" GridPane.halignment="CENTER"/>
+                            <Label text="Thứ 6" GridPane.columnIndex="4" GridPane.halignment="CENTER"/>
+                            <Label text="Thứ 7" GridPane.columnIndex="5" GridPane.halignment="CENTER"/>
+                            <Spinner fx:id="thu2Spinner" editable="true" prefWidth="150.0"
+                                     GridPane.halignment="CENTER" GridPane.rowIndex="1"/>
+                            <Spinner fx:id="thu3Spinner" editable="true" prefWidth="150.0"
+                                     GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                                     GridPane.rowIndex="1"/>
+                            <Spinner fx:id="thu4Spinner" editable="true" prefWidth="150.0"
+                                     GridPane.columnIndex="2" GridPane.halignment="CENTER"
+                                     GridPane.rowIndex="1"/>
+                            <Spinner fx:id="thu5Spinner" editable="true" prefWidth="150.0"
+                                     GridPane.columnIndex="3" GridPane.halignment="CENTER"
+                                     GridPane.rowIndex="1"/>
+                            <Spinner fx:id="thu6Spinner" editable="true" prefWidth="150.0"
+                                     GridPane.columnIndex="4" GridPane.halignment="CENTER"
+                                     GridPane.rowIndex="1"/>
+                            <Spinner fx:id="thu7Spinner" editable="true" prefWidth="150.0"
+                                     GridPane.columnIndex="5" GridPane.halignment="CENTER"
+                                     GridPane.rowIndex="1"/>
+                        </GridPane>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                            <VBox.margin>
+                                <Insets top="10.0"/>
+                            </VBox.margin>
+                            <Label fx:id="phanPhoiTietLabel" text="Phân phối tiết (CSDL): --">
+                                <font>
+                                    <Font size="13.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="tongSoTietTuanLabel" text="Tổng số tiết theo cài đặt: --">
+                                <font>
+                                    <Font size="13.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
+                    </VBox>
+                </AnchorPane>
+            </TitledPane>
+
+            <TitledPane fx:id="giaoVienCustomSettingsPane"
+                        text="Cài Đặt Chi Tiết Cho Từng Giáo Viên" VBox.vgrow="NEVER" expanded="false">
+                <font>
+                    <Font name="System Bold" size="14.0"/>
+                </font>
+                <AnchorPane minHeight="0.0" minWidth="0.0">
+                    <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <padding>
+                            <Insets bottom="5.0" top="5.0"/>
+                        </padding>
+                        <TextField fx:id="searchGiaoVienTextField"
+                                   promptText="Tìm kiếm giáo viên theo Tên hoặc Mã GV...">
+                            <font>
+                                <Font size="13.0"/>
+                            </font>
+                        </TextField>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS" prefViewportHeight="150">
+                            <ListView fx:id="giaoVienListView"/>
+                        </ScrollPane>
+                    </VBox>
+                </AnchorPane>
+            </TitledPane>
+
+            <TitledPane fx:id="classCustomSettingsPane" text="Cài Đặt Phân Công Giáo Viên Cho Từng Lớp" VBox.vgrow="NEVER" expanded="false">
+                <font>
+                    <Font name="System Bold" size="14.0" />
+                </font>
+                <AnchorPane minHeight="0.0" minWidth="0.0">
+                    <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <padding>
+                            <Insets bottom="5.0" top="5.0" />
+                        </padding>
+                        <TextField fx:id="searchLopTextField" promptText="Tìm kiếm lớp học...">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                        </TextField>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS" prefViewportHeight="200">
+                            <ListView fx:id="lopListView" />
+                        </ScrollPane>
+                    </VBox>
+                </AnchorPane>
+            </TitledPane>
+
+            <VBox alignment="CENTER_RIGHT">
+                <Button fx:id="btnTiepTuc" mnemonicParsing="false" onAction="#handleTiepTuc"
+                        style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-weight: bold;"
+                        text="Lưu Điều Kiện &amp; Tiếp Tục">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0"/>
+                    </padding>
+                    <VBox.margin>
+                        <Insets top="15.0"/>
+                    </VBox.margin>
+                </Button>
+            </VBox>
         </VBox>
-    </VBox>
-</AnchorPane>
+    </AnchorPane>
+</ScrollPane>
