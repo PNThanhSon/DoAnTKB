@@ -11,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -433,7 +432,7 @@ public class MainFormController {
             mainStage.setTitle("Xếp TKB tự động - Chuẩn bị");
             mainStage.setScene(new Scene(mainFormRoot, 800, 600));
             mainStage.setMinWidth(700);
-            mainStage.setMinHeight(700);
+            mainStage.setMinHeight(800);
 
             // Thiết lập các thuộc tính bổ sung cho stage
             mainStage.setResizable(true);

@@ -68,7 +68,7 @@
             </GridPane>
 
             <TitledPane fx:id="soTietTheoKhoiPane"
-                        text="Cài Đặt Số Tiết Học Mỗi Thứ Theo Khối" VBox.vgrow="NEVER" expanded="true"> <!-- expanded="true" để dễ thấy khi test -->
+                        text="Cài Đặt Số Tiết Học Mỗi Thứ Theo Khối" VBox.vgrow="NEVER"> <!-- expanded="true" để dễ thấy khi test -->
                 <font>
                     <Font name="System Bold" size="14.0"/>
                 </font>

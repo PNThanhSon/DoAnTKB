@@ -96,7 +96,7 @@ public class XepTKBTuDongController {
         System.out.println("--------------------------------------------------");
 
         if (this.selectedHocKy != null) {
-            infoLabel.setText("Đang chuẩn bị dữ liệu cho Học Kỳ: " + this.selectedHocKy.toString() + "..."); // Sử dụng toString()
+            infoLabel.setText("Đang chuẩn bị dữ liệu cho Học Kỳ: " + this.selectedHocKy + "..."); // Sử dụng toString()
             runSchedulingTask();
         } else {
             infoLabel.setText("Lỗi: Học kỳ không được chọn.");
@@ -349,7 +349,7 @@ public class XepTKBTuDongController {
             }
         }
 
-        if (removedCount < periodsToUndo && periodsToUndo > 0){
+        if (removedCount < periodsToUndo){
             System.out.println("    CẢNH BÁO GỠ TIẾT: Chỉ tìm thấy " + removedCount + "/" + periodsToUndo + " tiết (flag=0) để gỡ cho " + mhh.getMaMH() + " lớp " + lop.getMaLop() + " với đội GV " + teamToUndo.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
         }
 
@@ -387,9 +387,10 @@ public class XepTKBTuDongController {
         }
 
         List<GiaoVien> determinedTeam = new ArrayList<>();
-        List<String> finalExcludedMaGVs = excludedTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.toList());
+        List<String> finalExcludedMaGVs = excludedTeachers.stream().map(GiaoVien::getMaGV).toList();
 
         if (isPriorityRule || isInitialAttemptForThisClassSubject) {
+            // 1. Ưu tiên cài đặt của người dùng
             if (classTeacherAssignmentsInput != null && classTeacherAssignmentsInput.containsKey(lop.getMaLop())) {
                 Map<String, List<String>> assignmentsForClass = classTeacherAssignmentsInput.get(lop.getMaLop());
                 if (assignmentsForClass != null && assignmentsForClass.containsKey(mhh.getMaMH())) {
@@ -405,13 +406,14 @@ public class XepTKBTuDongController {
                             if (gv != null) {
                                 TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
                                 boolean canTeachThisSubject = (settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH()));
+                                // Sử dụng isTeacherGenerallyAvailable đã được điều chỉnh
                                 boolean generallyAvailable = isTeacherGenerallyAvailable(gv, mhh.getTongSoTiet());
 
-                                System.out.println(logPrefix + "  Kiểm tra GV " + maGV + " từ cài đặt: Có thể dạy môn này? " + canTeachThisSubject + ". Còn khả năng nhận tiết? " + generallyAvailable);
+                                System.out.println(logPrefix + "  Kiểm tra GV " + maGV + " từ cài đặt: Có thể dạy môn này? " + canTeachThisSubject + ". Còn khả năng nhận phân công này? " + generallyAvailable);
                                 if (canTeachThisSubject && generallyAvailable) {
                                     determinedTeam.add(gv);
                                 } else {
-                                    System.out.println(logPrefix + "  GV " + maGV + " từ cài đặt không thể dạy môn này hoặc không còn khả năng nhận thêm tiết.");
+                                    System.out.println(logPrefix + "  GV " + maGV + " từ cài đặt không thể dạy môn này hoặc không còn khả năng nhận thêm phân công này.");
                                 }
                             } else {
                                 System.out.println(logPrefix + "  GV " + maGV + " từ cài đặt không nằm trong danh sách GV hợp lệ.");
@@ -430,6 +432,7 @@ public class XepTKBTuDongController {
                 }
             }
 
+            // 2. Ưu tiên TKB Cơ Sở
             if (pinnedTeacherForSubjectClassFromBaseTKB.containsKey(classSubjectKey)) {
                 String pinnedMaGV = pinnedTeacherForSubjectClassFromBaseTKB.get(classSubjectKey);
                 System.out.println(logPrefix + "Tìm thấy GV từ TKB cơ sở: " + pinnedMaGV);
@@ -440,14 +443,14 @@ public class XepTKBTuDongController {
                         boolean canTeachThisSubject = (settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH()));
                         boolean generallyAvailable = isTeacherGenerallyAvailable(gvFromBase, mhh.getTongSoTiet());
 
-                        System.out.println(logPrefix + "  Kiểm tra GV " + pinnedMaGV + " từ TKB cơ sở: Có thể dạy môn này? " + canTeachThisSubject + ". Còn khả năng nhận tiết? " + generallyAvailable);
+                        System.out.println(logPrefix + "  Kiểm tra GV " + pinnedMaGV + " từ TKB cơ sở: Có thể dạy môn này? " + canTeachThisSubject + ". Còn khả năng nhận phân công này? " + generallyAvailable);
                         if (canTeachThisSubject && generallyAvailable) {
                             determinedTeam.add(gvFromBase);
                             System.out.println(logPrefix + "Đã chọn GV từ TKB cơ sở: " + determinedTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
                             currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
                             return determinedTeam;
                         } else if (isPriorityRule) {
-                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): GV " + pinnedMaGV + " từ TKB cơ sở không thể dạy môn này hoặc không còn khả năng nhận thêm tiết.");
+                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): GV " + pinnedMaGV + " từ TKB cơ sở không thể dạy môn này hoặc không còn khả năng nhận thêm phân công này.");
                             currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
                             return Collections.emptyList();
                         }
@@ -460,7 +463,8 @@ public class XepTKBTuDongController {
             }
         }
 
-        System.out.println(logPrefix + "Thực hiện 'Để thuật toán tự chọn'...");
+        // 3. "Để thuật toán tự chọn" - Tìm GV lý tưởng (dưới quota)
+        System.out.println(logPrefix + "Thực hiện 'Để thuật toán tự chọn' (tìm GV dưới quota)...");
         List<GiaoVien> potentialTeachers;
         boolean isSpecialSubject = mhh.getMaMH().startsWith("GDDP") || mhh.getMaMH().startsWith("HDTNHN");
         String targetMaTCM = mhh.getMaTCM();
@@ -474,28 +478,57 @@ public class XepTKBTuDongController {
                 .filter(gv -> {
                     if (targetMaTCM != null && !targetMaTCM.isBlank()) {
                         return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCM);
-                    } else if (isSpecialSubject) {
-                        return true; // Môn đặc biệt không có TCM chuẩn, chỉ dựa vào preference
-                    }
-                    return false; // Môn không đặc biệt, không có TCM -> không hợp lệ
+                    } else return isSpecialSubject;
                 })
+                // Sử dụng isTeacherGenerallyAvailable đã điều chỉnh
                 .filter(gv -> isTeacherGenerallyAvailable(gv, mhh.getTongSoTiet()))
                 .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher))
-                .collect(Collectors.toList());
+                .toList();
 
         if (!potentialTeachers.isEmpty()) {
-            System.out.println(logPrefix + "Danh sách GV tiềm năng sau khi lọc ('tự chọn'): " + potentialTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+            System.out.println(logPrefix + "Danh sách GV tiềm năng (dưới quota) sau khi lọc: " + potentialTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
             GiaoVien selectedTeacher = potentialTeachers.stream()
                     .filter(gv -> lop.getGvcn() != null && gv.getMaGV().equals(lop.getGvcn()))
                     .findFirst()
-                    .orElse(potentialTeachers.get(0));
+                    .orElse(potentialTeachers.getFirst());
 
             determinedTeam.add(selectedTeacher);
-            System.out.println(logPrefix + "Đã chọn GV bởi thuật toán 'tự chọn': " + selectedTeacher.getMaGV());
+            System.out.println(logPrefix + "Đã chọn GV (dưới quota) bởi thuật toán 'tự chọn': " + selectedTeacher.getMaGV());
             currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
             return determinedTeam;
         } else {
-            System.out.println(logPrefix + "KHÔNG tìm thấy GV tiềm năng nào sau khi lọc ('tự chọn').");
+            // Bước 4: Nếu không có GV lý tưởng (dưới quota), thử tìm "Last Resort"
+            System.out.println(logPrefix + "Không tìm thấy GV tiềm năng (dưới quota). Thử tìm GV 'cuối cùng' (ưu tiên ít tiết nhất, bất kể quota)...");
+
+            List<GiaoVien> lastResortTeachers = giaoVienHopLe.stream()
+                    .filter(gv -> !finalExcludedMaGVs.contains(gv.getMaGV())) // Vẫn loại trừ GV đã thử thất bại
+                    .filter(gv -> { // Lọc theo khả năng dạy môn (CaiDatGV)
+                        TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
+                        return settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH());
+                    })
+                    .filter(gv -> { // Lọc theo TCM (nếu môn có TCM)
+                        // Sử dụng lại targetMaTCM và isSpecialSubject đã định nghĩa ở trên
+                        if (targetMaTCM != null && !targetMaTCM.isBlank()) {
+                            return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCM);
+                        } else return isSpecialSubject;
+                    })
+                    // KHÔNG lọc theo isTeacherGenerallyAvailable ở đây nữa
+                    .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher)) // Sắp xếp theo số tiết đã thực hiện
+                    .toList();
+
+            if (!lastResortTeachers.isEmpty()) {
+                GiaoVien selectedTeacher = lastResortTeachers.getFirst(); // Chọn GV ít tiết nhất trong nhóm này
+                determinedTeam.add(selectedTeacher);
+                long currentLoadOfSelected = countCurrentPeriodsForTeacher(selectedTeacher);
+                int chucVuLoad = xepTKBDAO.getSoTietChucVuDaSuDung(selectedTeacher.getMaGV(), (selectedHocKy != null ? selectedHocKy.getMaHK() : ""));
+                System.out.println(logPrefix + "Đã chọn GV 'cuối cùng' (ít tiết nhất trong số người có thể dạy): " + selectedTeacher.getMaGV() +
+                        " (Số tiết hiện tại: " + currentLoadOfSelected + ", Chức vụ: " + chucVuLoad +
+                        ", Quy định: " + selectedTeacher.getSoTietQuyDinh() + "). GV này có thể đã/sẽ vượt quota.");
+                currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
+                return determinedTeam;
+            } else {
+                System.out.println(logPrefix + "KHÔNG tìm thấy GV 'cuối cùng' nào có thể dạy môn này.");
+            }
         }
 
         if (isInitialAttemptForThisClassSubject && !currentLockedTeachersForClassSubject.containsKey(classSubjectKey)) {
@@ -506,10 +539,29 @@ public class XepTKBTuDongController {
     }
 
     private boolean isTeacherGenerallyAvailable(GiaoVien gv, int periodsToAdd) {
-        if (gv.getSoTietQuyDinh() == null || gv.getSoTietQuyDinh() == 0) return true;
+        if (gv.getSoTietQuyDinh() == null || gv.getSoTietQuyDinh() == 0) {
+            // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() + " không có giới hạn số tiết.");
+            return true; // Không giới hạn
+        }
         long soTietDaDayHienTai = countCurrentPeriodsForTeacher(gv);
-        int soTietChucVu = xepTKBDAO.getSoTietChucVuDaSuDung(gv.getMaGV(), (selectedHocKy != null ? selectedHocKy.getMaHK() : "")); // Cần MaHK
-        return (soTietDaDayHienTai + soTietChucVu + periodsToAdd) <= gv.getSoTietQuyDinh();
+        int soTietChucVu = xepTKBDAO.getSoTietChucVuDaSuDung(gv.getMaGV(), (selectedHocKy != null ? selectedHocKy.getMaHK() : ""));
+        long currentPlannedLoad = soTietDaDayHienTai + soTietChucVu;
+
+        // Log để debug
+        // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() +
+        //         " - CurrentLoad: " + currentPlannedLoad +
+        //         " (Dạy: " + soTietDaDayHienTai + ", CV: " + soTietChucVu + ")" +
+        //         ", QuyDinh: " + gv.getSoTietQuyDinh() +
+        //         ", periodsToAdd: " + periodsToAdd);
+
+        if (currentPlannedLoad < gv.getSoTietQuyDinh()) {
+            // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() + " OK (dưới quota).");
+            return true; // Đang dưới quota, có thể nhận thêm phân công này.
+        } else {
+            // Đã bằng hoặc vượt quota. Chỉ "available" nếu phân công này không thêm tiết nào.
+            // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() + (periodsToAdd <= 0 ? " OK (đã >= quota, nhưng periodsToAdd <=0)." : " FAILED (đã >= quota và periodsToAdd > 0)."));
+            return periodsToAdd <= 0;
+        }
     }
 
     private int scheduleAllPeriodsForSubject(MonHocHoc mhh, Lop lop, List<GiaoVien> lockedInTeam, int soTietCanXep, Map<Integer, Integer> currentSoTietMoiThuForThisKhoi, boolean useRandomSlots) {
@@ -517,26 +569,18 @@ public class XepTKBTuDongController {
         String classSubjectIdentifier = lop.getMaLop() + "-" + mhh.getMaMH();
         String teamString = lockedInTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(","));
 
-        if (lockedInTeam == null || lockedInTeam.isEmpty()) {
+        if (lockedInTeam.isEmpty()) {
             System.err.println("    SCHEDULE_ALL: Không có GV nào được khóa cho " + classSubjectIdentifier + ". Không thể xếp.");
             return 0;
         }
         System.out.println("    SCHEDULE_ALL ["+ classSubjectIdentifier + " với GV " + teamString + "]: Cần xếp " + soTietCanXep + " tiết. Dùng slot " + (useRandomSlots ? "ngẫu nhiên." : "xác định."));
 
-        for (int i = 0; i < soTietCanXep; i++) {
-            boolean teamStillAvailable = true;
-            for(GiaoVien gv : lockedInTeam) {
-                if (!isTeacherGenerallyAvailable(gv, 1)) {
-                    System.out.println("    SCHEDULE_ALL: GV " + gv.getMaGV() + " trong đội không còn khả năng nhận thêm tiết cho " + classSubjectIdentifier);
-                    teamStillAvailable = false;
-                    break;
-                }
-            }
-            if (!teamStillAvailable) {
-                System.err.println("    SCHEDULE_ALL: Một GV trong đội " + teamString + " không còn khả năng nhận thêm tiết cho " + classSubjectIdentifier + ". Dừng xếp cho môn này với đội này.");
-                break;
-            }
+        // **ĐÃ LOẠI BỎ VÒNG LẶP KIỂM TRA isTeacherGenerallyAvailable(gv, 1) Ở ĐÂY**
+        // Lý do: Nếu GV đã được chọn trong getAndLockTeachingTeamForSubject,
+        // họ được coi là cam kết dạy hết số tiết của phân công đó.
+        // Việc kiểm tra lại ở đây có thể ngăn họ hoàn thành nếu tiết đầu tiên đẩy họ qua ngưỡng.
 
+        for (int i = 0; i < soTietCanXep; i++) {
             if (tryScheduleSinglePeriodForSubject(mhh, lop, lockedInTeam, currentSoTietMoiThuForThisKhoi, useRandomSlots)) {
                 soTietDaXepThucTeChoDotNay++;
             } else {
@@ -546,6 +590,9 @@ public class XepTKBTuDongController {
                         " cho môn " + mhh.getTenMH() + " (" + mhh.getMaMH() + ") của lớp " + lop.getMaLop() +
                         " với đội GV: " + teamString +
                         (useRandomSlots ? " (thử ngẫu nhiên)" : " (thử xác định)"));
+                // Không break ở đây, có thể các tiết sau vẫn xếp được nếu là do ràng buộc cụ thể của slot đó
+                // Tuy nhiên, nếu không xếp được 1 tiết thì khả năng cao các tiết sau của cùng môn đó cũng khó.
+                // Cân nhắc việc break nếu muốn dừng sớm khi không tìm được slot.
             }
         }
         System.out.println("    SCHEDULE_ALL ["+ classSubjectIdentifier + "]: Đã xếp được thực tế " + soTietDaXepThucTeChoDotNay + " tiết trong đợt này.");
@@ -596,7 +643,7 @@ public class XepTKBTuDongController {
                                 .collect(Collectors.joining(", "));
                     }
 
-                    String maGVForChiTiet = lockedInTeam.isEmpty() ? null : lockedInTeam.get(0).getMaGV();
+                    String maGVForChiTiet = lockedInTeam.isEmpty() ? null : lockedInTeam.getFirst().getMaGV();
 
                     ChiTietTKB chiTietMoi = ChiTietTKB.taoChoXepLichTuDong(
                             thu, tiet, mhh.getTenMH(),
@@ -706,7 +753,7 @@ public class XepTKBTuDongController {
 
     private boolean checkSpecificConstraints(MonHocHoc mhh, Lop lop, int thu, int tiet, List<GiaoVien> teamOfTeachers) {
         List<ChiTietTKB> tkbCuaLopTrongNgay = generatedTimetable.getOrDefault(lop.getMaLop(), Collections.emptyList())
-                .stream().filter(ct -> ct.getThu() == thu).collect(Collectors.toList());
+                .stream().filter(ct -> ct.getThu() == thu).toList();
 
         String maMHCurrentUpper = mhh.getMaMH().toUpperCase();
         if (maMHCurrentUpper.startsWith(PREFIX_GDQPAN) || maMHCurrentUpper.startsWith(PREFIX_GDTC)) {
@@ -733,9 +780,6 @@ public class XepTKBTuDongController {
                     }
                 }
                 if (!matchFoundForPrevPeriod) break;
-            }
-            if (consecutiveCountForThisGV >= MAX_CONSECUTIVE_PERIODS) {
-                return false;
             }
         }
         return true;
@@ -875,7 +919,7 @@ public class XepTKBTuDongController {
                 .collect(Collectors.groupingBy(Lop::getKhoi, TreeMap::new, Collectors.toList()));
 
         lopTheoKhoi.forEach((khoi, listLopTrongKhoi) -> {
-            listLopTrongKhoi.sort(Comparator.comparing(Lop::getTenLop, Comparator.nullsLast(String::compareToIgnoreCase)));
+            listLopTrongKhoi.sort(Comparator.comparing(Lop::getMaLop, Comparator.nullsLast(String::compareToIgnoreCase))); // Sửa đây để sắp xếp theo mã lớp
             Menu menuForThisKhoi = null;
             if ("10".equals(khoi)) menuForThisKhoi = menuKhoi10;
             else if ("11".equals(khoi)) menuForThisKhoi = menuKhoi11;
@@ -884,11 +928,11 @@ public class XepTKBTuDongController {
             if (menuForThisKhoi != null) {
                 final Menu finalMenuForThisKhoi = menuForThisKhoi;
                 listLopTrongKhoi.forEach(lop -> {
-                    String tenLopHienThi = (lop.getTenLop() != null && !lop.getTenLop().isBlank()) ? lop.getTenLop() : lop.getMaLop();
-                    if (!tenLopHienThi.equals(lop.getMaLop())) {
-                        tenLopHienThi += " (" + lop.getMaLop() + ")";
+                    String maLopHienThi = (lop.getMaLop() != null && !lop.getMaLop().isBlank()) ? lop.getMaLop() : lop.getTenLop(); // Sửa để lấy mã lớp
+                    if (!maLopHienThi.equals(lop.getMaLop())) {
+                        maLopHienThi += " (" + lop.getMaLop() + ")";
                     }
-                    MenuItem item = new MenuItem(tenLopHienThi);
+                    MenuItem item = new MenuItem(maLopHienThi);
                     item.setOnAction(e -> displayTKBForLop(lop.getMaLop()));
                     finalMenuForThisKhoi.getItems().add(item);
                 });
@@ -951,11 +995,8 @@ public class XepTKBTuDongController {
         tkbTableView.refresh();
 
         String tenLopDisplay = maLop;
-        if (currentLop != null && currentLop.getTenLop() != null && !currentLop.getTenLop().isBlank()) {
-            tenLopDisplay = currentLop.getTenLop() + " (" + maLop + ")";
-        }
         lopTKBTitleLabel.setText("THỜI KHÓA BIỂU LỚP " + tenLopDisplay.toUpperCase());
-        infoLabel.setText("Hiển thị TKB lớp: " + maLop + (selectedHocKy != null ? " (HK: " + selectedHocKy.toString() + ")" : "")); // Sử dụng toString()
+        infoLabel.setText("Hiển thị TKB lớp: " + maLop + (selectedHocKy != null ? " (HK: " + selectedHocKy + ")" : "")); // Sử dụng toString()
     }
 
     private void displayEmptyTKB() {
@@ -997,7 +1038,7 @@ public class XepTKBTuDongController {
             // Sắp xếp môn cần dạy để thống kê có thứ tự
             monCanDay.sort(Comparator.comparing(MonHocHoc::getTenMH, Comparator.nullsLast(String::compareToIgnoreCase)));
 
-            System.out.println("Lớp: " + lop.getMaLop() + " (" + lop.getTenLop() + ")");
+            System.out.println("Lớp: " + lop.getMaLop());
             for (MonHocHoc mhh : monCanDay) {
                 long soTietDaXepChoMonNay = 0;
                 if (monDaXep != null) {
@@ -1025,7 +1066,7 @@ public class XepTKBTuDongController {
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Bạn có chắc muốn lưu thời khóa biểu này?\nMột mã TKB mới sẽ được tạo cho Học kỳ: " + selectedHocKy.toString() + ".\nLƯU Ý: Các TKB cũ của học kỳ này sẽ không bị ảnh hưởng trực tiếp, nhưng bạn nên quản lý các phiên bản TKB cẩn thận.", // Sử dụng toString()
+                "Bạn có chắc muốn lưu thời khóa biểu này?\nMột mã TKB mới sẽ được tạo cho Học kỳ: " + selectedHocKy + ".\nLƯU Ý: Các TKB cũ của học kỳ này sẽ không bị ảnh hưởng trực tiếp, nhưng bạn nên quản lý các phiên bản TKB cẩn thận.", // Sử dụng toString()
                 ButtonType.YES, ButtonType.NO);
         confirm.setTitle("Xác nhận lưu Thời Khóa Biểu");
         confirm.setHeaderText(null);
@@ -1049,7 +1090,7 @@ public class XepTKBTuDongController {
                 List<ChiTietTKB> allChiTietToSave = generatedTimetable.values().stream()
                         .flatMap(List::stream)
                         .filter(ct -> ct.getMaMH() != null && !ct.getMaMH().isBlank())
-                        .collect(Collectors.toList());
+                        .toList();
 
                 if (allChiTietToSave.isEmpty()) {
                     progressIndicator.setVisible(false);
@@ -1119,7 +1160,7 @@ public class XepTKBTuDongController {
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Bạn có chắc muốn chạy lại thuật toán xếp TKB cho Học Kỳ: " + selectedHocKy.toString() + "?\n" + // Sử dụng toString()
+                "Bạn có chắc muốn chạy lại thuật toán xếp TKB cho Học Kỳ: " + selectedHocKy + "?\n" + // Sử dụng toString()
                         "Tất cả các thay đổi hoặc TKB hiện tại (nếu chưa lưu) sẽ bị mất và được tạo lại từ đầu.",
                 ButtonType.YES, ButtonType.NO);
         confirm.setTitle("Xác nhận Xếp Lại TKB");

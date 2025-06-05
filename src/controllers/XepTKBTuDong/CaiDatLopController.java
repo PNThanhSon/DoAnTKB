@@ -30,12 +30,10 @@ public class CaiDatLopController {
     @FXML private Button btnCancel;
 
     private Lop selectedLop;
-    private HocKy currentHocKy;
     private Map<String, Map<String, List<String>>> classTeacherAssignmentsMap; // Tham chiếu đến map chính
     private List<MonHocHoc> subjectsForClass; // Danh sách môn lớp này học (từ HOC)
     private List<GiaoVien> allAvailableTeachers; // Danh sách GV đã lọc (tham gia TKB)
     private Map<String, TeacherCustomSettings> teacherCustomSettings; // Cài đặt riêng của từng GV
-    private XepTKBDAO xepTKBDAO;
 
     private final GiaoVien AUTO_SELECT_GV_PLACEHOLDER = new GiaoVien(); // Placeholder cho "Để thuật toán tự chọn"
 
@@ -54,12 +52,10 @@ public class CaiDatLopController {
                          Map<String, TeacherCustomSettings> teacherSettings,
                          XepTKBDAO dao) {
         this.selectedLop = lop;
-        this.currentHocKy = hk;
         this.classTeacherAssignmentsMap = assignmentsMap;
         this.subjectsForClass = subjectsOfThisClass;
         this.allAvailableTeachers = allTeachers; // Đây là danh sách GV đã được lọc bởi ChuanBiController
         this.teacherCustomSettings = teacherSettings;
-        this.xepTKBDAO = dao;
 
         titleLabel.setText("Cài Đặt Phân Công GV cho Lớp: " + selectedLop.getTenLop() + " (" + selectedLop.getMaLop() + ")");
         populateSubjectAssignments();
@@ -68,9 +64,8 @@ public class CaiDatLopController {
     private void filterSubjectDisplay(String searchText) {
         String lowerCaseSearchText = searchText != null ? searchText.toLowerCase().trim() : "";
         for (Node node : subjectAssignmentsVBox.getChildren()) {
-            if (node instanceof VBox) { // Mỗi môn là một VBox
-                VBox subjectPane = (VBox) node;
-                Label subjectLabel = (Label) subjectPane.getChildren().get(0); // Giả sử Label là con đầu tiên
+            if (node instanceof VBox subjectPane) { // Mỗi môn là một VBox
+                Label subjectLabel = (Label) subjectPane.getChildren().getFirst(); // Giả sử Label là con đầu tiên
                 boolean matches = lowerCaseSearchText.isEmpty() ||
                         subjectLabel.getText().toLowerCase().contains(lowerCaseSearchText);
                 subjectPane.setVisible(matches);
@@ -144,10 +139,10 @@ public class CaiDatLopController {
                 })
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        teacherOptions.add(0, AUTO_SELECT_GV_PLACEHOLDER); // Luôn có lựa chọn "Để thuật toán"
+        teacherOptions.addFirst(AUTO_SELECT_GV_PLACEHOLDER); // Luôn có lựa chọn "Để thuật toán"
         gvComboBox.setItems(teacherOptions);
 
-        gvComboBox.setConverter(new StringConverter<GiaoVien>() {
+        gvComboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(GiaoVien gv) {
                 if (gv == null) return null;
@@ -158,7 +153,9 @@ public class CaiDatLopController {
             }
 
             @Override
-            public GiaoVien fromString(String string) { return null; }
+            public GiaoVien fromString(String string) {
+                return null;
+            }
         });
 
         // Chọn giáo viên đã được gán trước (nếu có)
@@ -192,8 +189,7 @@ public class CaiDatLopController {
         Map<String, List<String>> assignmentsForThisClass = new HashMap<>();
 
         for (Node subjectPaneNode : subjectAssignmentsVBox.getChildren()) {
-            if (subjectPaneNode instanceof VBox) {
-                VBox subjectPane = (VBox) subjectPaneNode;
+            if (subjectPaneNode instanceof VBox subjectPane) {
                 String maMH = (String) subjectPane.getUserData();
                 if (maMH == null) continue;
 
@@ -201,9 +197,8 @@ public class CaiDatLopController {
                 VBox teacherSelectorsVBox = (VBox) subjectPane.getChildren().get(1); // VBox chứa các HBox selector
 
                 for (Node selectorNode : teacherSelectorsVBox.getChildren()) {
-                    if (selectorNode instanceof HBox) {
-                        HBox selectorHBox = (HBox) selectorNode;
-                        ComboBox<GiaoVien> gvComboBox = (ComboBox<GiaoVien>) selectorHBox.getChildren().get(0);
+                    if (selectorNode instanceof HBox selectorHBox) {
+                        ComboBox<GiaoVien> gvComboBox = (ComboBox<GiaoVien>) selectorHBox.getChildren().getFirst();
                         GiaoVien selectedGv = gvComboBox.getValue();
 
                         if (selectedGv != null && !AUTO_SELECT_GV_PLACEHOLDER.getMaGV().equals(selectedGv.getMaGV())) {

@@ -115,11 +115,11 @@ public class BCTKController implements Initializable {
 
         // Cập nhật tên các mục PieChart.Data để khớp với key mới và ý nghĩa
         if (stats.getOrDefault("ThieuNhieu", 0) > 0) {
-            pieChartData.add(new PieChart.Data("Thiếu nhiều (<= -3 tiết)", stats.get("ThieuNhieu")));
+            pieChartData.add(new PieChart.Data("Thiếu nhiều (<= -4 tiết)", stats.get("ThieuNhieu")));
             totalTeachersWithValue += stats.get("ThieuNhieu");
         }
         if (stats.getOrDefault("Thieu", 0) > 0) {
-            pieChartData.add(new PieChart.Data("Thiếu (-1 hoặc -2 tiết)", stats.get("Thieu")));
+            pieChartData.add(new PieChart.Data("Thiếu (-1, -2 hoặc -3 tiết)", stats.get("Thieu")));
             totalTeachersWithValue += stats.get("Thieu");
         }
         if (stats.getOrDefault("Du", 0) > 0) {
@@ -127,11 +127,11 @@ public class BCTKController implements Initializable {
             totalTeachersWithValue += stats.get("Du");
         }
         if (stats.getOrDefault("DuVua", 0) > 0) {
-            pieChartData.add(new PieChart.Data("Dư vừa (1 hoặc 2 tiết)", stats.get("DuVua")));
+            pieChartData.add(new PieChart.Data("Dư vừa (1, 2 hoặc 3 tiết)", stats.get("DuVua")));
             totalTeachersWithValue += stats.get("DuVua");
         }
         if (stats.getOrDefault("DuNhieu", 0) > 0) {
-            pieChartData.add(new PieChart.Data("Dư nhiều (>= 3 tiết)", stats.get("DuNhieu")));
+            pieChartData.add(new PieChart.Data("Dư nhiều (>= 4 tiết)", stats.get("DuNhieu")));
             totalTeachersWithValue += stats.get("DuNhieu");
         }
 
@@ -322,11 +322,11 @@ public class BCTKController implements Initializable {
 
                 String[] categories = {"ThieuNhieu", "Thieu", "Du", "DuVua", "DuNhieu"};
                 String[] categoryLabels = {
-                        "Thiếu nhiều (<= -3 tiết)",
-                        "Thiếu (-1 hoặc -2 tiết)",
+                        "Thiếu nhiều (<= -4 tiết)",
+                        "Thiếu (-1, -2 hoặc -3 tiết)",
                         "Đủ tiết (0 tiết)",
-                        "Dư vừa (1 hoặc 2 tiết)",
-                        "Dư nhiều (>= 3 tiết)"
+                        "Dư vừa (1, 2 hoặc 3 tiết)",
+                        "Dư nhiều (>= 4 tiết)"
                 };
 
                 // Chuẩn bị dữ liệu cho biểu đồ

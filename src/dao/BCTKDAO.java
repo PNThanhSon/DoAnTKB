@@ -84,11 +84,11 @@ public class BCTKDAO {
     public Map<String, Integer> getSoTietDuThieuStats(String selectedMaHK, String selectedMaTKB) {
         Map<String, Integer> stats = new HashMap<>();
         // Khởi tạo các danh mục theo yêu cầu mới
-        stats.put("ThieuNhieu", 0); // <= -3 tiết
-        stats.put("Thieu", 0);      // == -1 và -2 tiết
+        stats.put("ThieuNhieu", 0); // <= -4 tiết
+        stats.put("Thieu", 0);      // == -1, -2, -3 tiết
         stats.put("Du", 0);         // == 0 tiết (Đủ)
-        stats.put("DuVua", 0);      // == 1 tiết và 2 tiết (Đổi tên key để rõ nghĩa hơn)
-        stats.put("DuNhieu", 0);    // >= 3 tiết
+        stats.put("DuVua", 0);      // == 1, 2, 3, tiết
+        stats.put("DuNhieu", 0);    // >= 4 tiết
 
         // Câu SQL để lấy MaGV và SoTietQuyDinh từ bảng GIAOVIEN
         String sqlGiaoVien = "SELECT MaGV, SoTietQuyDinh FROM GIAOVIEN WHERE MaGV <> 'ADMIN'";
@@ -135,15 +135,15 @@ public class BCTKDAO {
                 int soTietDuThieu = soTietThucHien - soTietQuyDinh;
 
                 // Phân loại SoTietDuThieu theo yêu cầu mới
-                if (soTietDuThieu <= -3) {
+                if (soTietDuThieu <= -4) {
                     stats.put("ThieuNhieu", stats.get("ThieuNhieu") + 1);
-                } else if (soTietDuThieu == -2 || soTietDuThieu == -1) {
+                } else if (soTietDuThieu == -3 || soTietDuThieu == -2 || soTietDuThieu == -1) {
                     stats.put("Thieu", stats.get("Thieu") + 1);
                 } else if (soTietDuThieu == 0) {
                     stats.put("Du", stats.get("Du") + 1);
-                } else if (soTietDuThieu == 1 || soTietDuThieu == 2) {
+                } else if (soTietDuThieu == 1 || soTietDuThieu == 2 || soTietDuThieu == 3) {
                     stats.put("DuVua", stats.get("DuVua") + 1);
-                } else { // soTietDuThieu >= 3
+                } else { // soTietDuThieu >= 4
                     stats.put("DuNhieu", stats.get("DuNhieu") + 1);
                 }
             }

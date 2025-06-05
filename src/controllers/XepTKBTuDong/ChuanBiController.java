@@ -20,7 +20,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -491,7 +490,7 @@ public class ChuanBiController {
                 updateSpinnersAndLabelsForSelectedKhoi(currentSelectedKhoi);
             } else if (!KHOI_LIST.isEmpty()) {
                 khoiComboBoxSoTiet.getSelectionModel().selectFirst();
-                updateSpinnersAndLabelsForSelectedKhoi(KHOI_LIST.get(0));
+                updateSpinnersAndLabelsForSelectedKhoi(KHOI_LIST.getFirst());
             }
         } else {
             phanCongMonHocChoTatCaLopTrongHK.clear();
@@ -595,8 +594,7 @@ public class ChuanBiController {
 
     private void setupSearchGiaoVienTextField() {
         searchGiaoVienTextField.textProperty().addListener((obs, oldV, newV) -> {
-            if (giaoVienListView.getItems() instanceof FilteredList) {
-                FilteredList<GiaoVien> filteredData = (FilteredList<GiaoVien>) giaoVienListView.getItems();
+            if (giaoVienListView.getItems() instanceof FilteredList<GiaoVien> filteredData) {
                 String lowerCaseFilter = (newV == null) ? "" : newV.toLowerCase().trim();
                 filteredData.setPredicate(gv -> lowerCaseFilter.isEmpty() ||
                         (gv.getTenGV() != null && gv.getTenGV().toLowerCase().contains(lowerCaseFilter)) ||
@@ -610,11 +608,12 @@ public class ChuanBiController {
     private void setupLopCustomSettingsListView() {
         FilteredList<Lop> filteredLopData = new FilteredList<>(allLopList, p -> true);
         lopListView.setItems(filteredLopData);
-        lopListView.setCellFactory(lv -> new ListCell<Lop>() {
+        lopListView.setCellFactory(lv -> new ListCell<>() {
             private final HBox hbox = new HBox(10);
             private final Label lblLopName = new Label();
             private final Button btnConfigureLop = new Button("Cài đặt Lớp");
             private final Region spacer = new Region();
+
             {
                 HBox.setHgrow(spacer, Priority.ALWAYS);
                 hbox.getChildren().addAll(lblLopName, spacer, btnConfigureLop);
@@ -624,13 +623,15 @@ public class ChuanBiController {
                     if (lop != null) openLopSettingsWindow(lop);
                 });
             }
+
             @Override
             protected void updateItem(Lop lop, boolean empty) {
                 super.updateItem(lop, empty);
                 if (empty || lop == null) {
-                    setText(null); setGraphic(null);
+                    setText(null);
+                    setGraphic(null);
                 } else {
-                    lblLopName.setText(lop.getTenLop() + " (" + lop.getMaLop() + ")");
+                    lblLopName.setText(lop.getMaLop());
                     setGraphic(hbox);
                 }
             }
@@ -653,7 +654,7 @@ public class ChuanBiController {
 
         List<MonHocHoc> subjectsOfThisClass = phanCongMonHocChoTatCaLopTrongHK.get(lop.getMaLop());
         if (subjectsOfThisClass == null || subjectsOfThisClass.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Thông báo", "Lớp " + lop.getTenLop() + " không có môn học nào được phân công trong học kỳ này.");
+            showAlert(Alert.AlertType.INFORMATION, "Thông báo", "Lớp " + lop.getMaLop() + " không có môn học nào được phân công trong học kỳ này.");
             return;
         }
 
@@ -671,7 +672,7 @@ public class ChuanBiController {
             CaiDatLopController controller = loader.getController();
             controller.initData(lop, selectedHocKy, classTeacherAssignmentsMap, subjectsOfThisClass, availableTeachersForScheduling, teacherCustomSettingsMap, xepTKBDAO);
             Stage stage = new Stage();
-            stage.setTitle("Cài đặt Phân Công GV cho Lớp: " + lop.getTenLop());
+            stage.setTitle("Cài đặt Phân Công GV cho Lớp: " + lop.getMaLop());
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(lopListView.getScene().getWindow());
@@ -690,8 +691,7 @@ public class ChuanBiController {
 
     private void setupSearchLopTextField() {
         searchLopTextField.textProperty().addListener((obs, oldV, newV) -> {
-            if (lopListView.getItems() instanceof FilteredList) {
-                FilteredList<Lop> filteredData = (FilteredList<Lop>) lopListView.getItems();
+            if (lopListView.getItems() instanceof FilteredList<Lop> filteredData) {
                 String lowerCaseFilter = (newV == null) ? "" : newV.toLowerCase().trim();
                 filteredData.setPredicate(lop -> lowerCaseFilter.isEmpty() ||
                         (lop.getTenLop() != null && lop.getTenLop().toLowerCase().contains(lowerCaseFilter)) ||

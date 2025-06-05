@@ -16,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CaiDatGVController {
 
@@ -30,7 +29,6 @@ public class CaiDatGVController {
 
     private GiaoVien selectedGV;
     private HocKy currentHocKy;
-    private Map<String, TeacherCustomSettings> allTeacherSettingsMap; // Đây là tham chiếu đến map của ChuanBiController
     private XepTKBDAO xepTKBDAO;
 
     private TeacherCustomSettings currentSettingsForGV; // Đối tượng settings hiện tại cho GV đang được cấu hình
@@ -66,13 +64,13 @@ public class CaiDatGVController {
     public void initData(GiaoVien gv, HocKy hk, Map<String, TeacherCustomSettings> settingsMap, XepTKBDAO dao) {
         this.selectedGV = gv;
         this.currentHocKy = hk;
-        this.allTeacherSettingsMap = settingsMap; // Nhận map từ ChuanBiController
+        // Đây là tham chiếu đến map của ChuanBiController
         this.xepTKBDAO = dao;
 
         titleLabel.setText("Cài Đặt Chi Tiết cho GV: " + selectedGV.getHoGV() + " " + selectedGV.getTenGV() + " (" + selectedGV.getMaGV() + ")");
 
         // Lấy hoặc tạo mới TeacherCustomSettings cho GV này từ map chung
-        this.currentSettingsForGV = allTeacherSettingsMap.computeIfAbsent(selectedGV.getMaGV(), k -> {
+        this.currentSettingsForGV = settingsMap.computeIfAbsent(selectedGV.getMaGV(), k -> {
             System.out.println("[CaiDatGVController.initData] Tạo mới TeacherCustomSettings cho GV: " + k);
             return new TeacherCustomSettings(k);
         });
@@ -95,7 +93,7 @@ public class CaiDatGVController {
             List<MonHoc> tcmSubjects = xepTKBDAO.getMonHocByTCM(selectedGV.getMaTCM());
             if (tcmSubjects != null) {
                 subjectsToShow.addAll(tcmSubjects);
-                System.out.println("[CaiDatGVController.populateSubjectList] Môn từ TCM: " + tcmSubjects.stream().map(MonHoc::getMaMH).collect(Collectors.toList()));
+                System.out.println("[CaiDatGVController.populateSubjectList] Môn từ TCM: " + tcmSubjects.stream().map(MonHoc::getMaMH).toList());
             }
         } else {
             subjectListVBox.getChildren().add(new Label("Giáo viên này chưa được gán Tổ Chuyên Môn."));
@@ -161,8 +159,7 @@ public class CaiDatGVController {
 
         if (chkParticipateInScheduling.isSelected()) {
             for (javafx.scene.Node node : subjectListVBox.getChildren()) {
-                if (node instanceof CheckBox) {
-                    CheckBox chkSubject = (CheckBox) node;
+                if (node instanceof CheckBox chkSubject) {
                     String maMH = (String) chkSubject.getUserData();
                     if (maMH != null) {
                         boolean isSelected = chkSubject.isSelected();
