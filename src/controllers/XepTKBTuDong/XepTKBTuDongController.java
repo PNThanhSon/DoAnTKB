@@ -38,7 +38,7 @@ public class XepTKBTuDongController {
     @FXML private TableColumn<TietHocData, ChiTietTKB> thu6Column;
     @FXML private TableColumn<TietHocData, ChiTietTKB> thu7Column;
 
-    private XepTKBDAO xepTKBDAO;
+    private final XepTKBDAO xepTKBDAO;
 
     private HocKy selectedHocKy;
     private Map<String, TeacherCustomSettings> teacherCustomSettingsInput;
@@ -229,10 +229,11 @@ public class XepTKBTuDongController {
         Lop lop = csp.lop;
         MonHocHoc mhh = csp.mhh;
         String classSubjectIdentifier = lop.getMaLop() + " - " + mhh.getMaMH() + " (" + mhh.getTenMH() + ")";
+        String logPrefix = "  [" + classSubjectIdentifier + "]: ";
 
         Map<Integer, Integer> currentSoTietMoiThuForThisKhoi = soTietMoiThuTheoKhoiInput.get(lop.getKhoi());
         if (currentSoTietMoiThuForThisKhoi == null) {
-            System.err.println("Cảnh báo: Lớp " + lop.getMaLop() + " (Khối " + lop.getKhoi() + ") không có cài đặt số tiết mỗi thứ. Sử dụng mặc định " + MAX_PERIODS_PER_DAY_SETTING + " tiết/ngày.");
+            System.err.println(logPrefix + "Cảnh báo: Khối " + lop.getKhoi() + " không có cài đặt số tiết mỗi thứ. Sử dụng mặc định " + MAX_PERIODS_PER_DAY_SETTING + " tiết/ngày.");
             currentSoTietMoiThuForThisKhoi = new HashMap<>();
             for (int d = 2; d <= 7; d++) currentSoTietMoiThuForThisKhoi.put(d, MAX_PERIODS_PER_DAY_SETTING);
         }
@@ -244,76 +245,148 @@ public class XepTKBTuDongController {
                     .filter(ct -> ct.getMaMH() != null && ct.getMaMH().equals(mhh.getMaMH()))
                     .count();
         }
-        int soTietConLaiCanXep = soTietCanXepBanDau - this.soTietDaXepTuCoSoGlobal;
+        final int soTietMucTieuCanXepThem = soTietCanXepBanDau - this.soTietDaXepTuCoSoGlobal;
 
-        System.out.println("  " + classSubjectIdentifier + ": Tổng tiết theo PPCT: " + soTietCanXepBanDau +
+        System.out.println(logPrefix + "Tổng tiết PPCT: " + soTietCanXepBanDau +
                 ", Đã xếp từ TKB cơ sở: " + this.soTietDaXepTuCoSoGlobal +
-                ", Cần xếp thêm: " + soTietConLaiCanXep);
+                ", Mục tiêu cần xếp thêm: " + soTietMucTieuCanXepThem);
 
-        if (soTietConLaiCanXep <= 0) {
-            System.out.println("  Đã đủ tiết (từ TKB cơ sở hoặc không cần xếp thêm) cho: " + classSubjectIdentifier);
+        if (soTietMucTieuCanXepThem <= 0) {
+            System.out.println(logPrefix + "Đã đủ tiết (từ TKB cơ sở hoặc không cần xếp thêm).");
             return;
         }
 
+        int actualPeriodsScheduledInThisEntireEntry = 0; // Số tiết cuối cùng xếp được cho csp này
+        List<GiaoVien> finalSuccessfulTeam = null; // Team cuối cùng xếp được (có thể là một phần)
+
+        List<GiaoVien> teamsTriedAndFailedCompletely = new ArrayList<>(); // GV trong các team đã thử và thất bại hoàn toàn với csp này
+
+        // --- CỐ GẮNG 1: VỚI INITIAL TEAM ---
+        System.out.println(logPrefix + "Cố gắng 1: Tìm Initial Team.");
         List<GiaoVien> initialTeam = getAndLockTeachingTeamForSubject(mhh, lop, Collections.emptyList(), isPriorityRule, true);
 
-        if (initialTeam.isEmpty()) {
-            System.err.println("  KHÔNG TÌM ĐƯỢC GV BAN ĐẦU cho: " + classSubjectIdentifier +
-                    (isPriorityRule ? " (ƯU TIÊN)" : " (LINH HOẠT)") +
-                    ". Sẽ bị thiếu " + soTietConLaiCanXep + " tiết.");
-            return;
-        }
-        System.out.println("  Đội GV ban đầu cho " + classSubjectIdentifier + ": " + initialTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+        if (!initialTeam.isEmpty()) {
+            System.out.println(logPrefix + "Initial Team được chọn: " + initialTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+            int attempt1Random = scheduleAllPeriodsForSubject(mhh, lop, initialTeam, soTietMucTieuCanXepThem, currentSoTietMoiThuForThisKhoi, true);
 
-        int scheduledPeriods = scheduleAllPeriodsForSubject(mhh, lop, initialTeam, soTietConLaiCanXep, currentSoTietMoiThuForThisKhoi, true);
-
-        if (scheduledPeriods < soTietConLaiCanXep) {
-            System.out.println("  THIẾU " + (soTietConLaiCanXep - scheduledPeriods) + " tiết cho " + classSubjectIdentifier +
-                    " với đội GV: " + initialTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")) +
-                    " (sau lần thử ngẫu nhiên). Gỡ các tiết đã xếp của lần thử này.");
-            undoScheduledPeriodsForSubject(mhh, lop, initialTeam, scheduledPeriods);
-
-            System.out.println("  Thử xếp lại (slot xác định) cho " + classSubjectIdentifier + " với đội GV ban đầu.");
-            scheduledPeriods = scheduleAllPeriodsForSubject(mhh, lop, initialTeam, soTietConLaiCanXep, currentSoTietMoiThuForThisKhoi, false);
-
-            if (scheduledPeriods < soTietConLaiCanXep) {
-                System.out.println("  VẪN THIẾU " + (soTietConLaiCanXep - scheduledPeriods) + " tiết cho " + classSubjectIdentifier +
-                        " với đội GV ban đầu (sau lần thử slot xác định). Gỡ các tiết đã xếp của lần thử này.");
-                undoScheduledPeriodsForSubject(mhh, lop, initialTeam, scheduledPeriods);
-
-                if (!isPriorityRule) {
-                    System.out.println("  Môn linh hoạt " + classSubjectIdentifier + " bị thiếu tiết. Thử tìm đội GV MỚI (loại trừ đội GV ban đầu).");
-                    List<GiaoVien> excludedTeachers = new ArrayList<>(initialTeam);
-                    List<GiaoVien> newTeam = getAndLockTeachingTeamForSubject(mhh, lop, excludedTeachers, false, false);
-
-                    if (!newTeam.isEmpty() && !listEqualsIgnoreOrder(newTeam, initialTeam)) {
-                        System.out.println("  Đã tìm thấy đội GV MỚI cho " + classSubjectIdentifier + ": " + newTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
-                        System.out.println("  Thử xếp (slot ngẫu nhiên) cho " + classSubjectIdentifier + " với đội GV MỚI.");
-                        scheduledPeriods = scheduleAllPeriodsForSubject(mhh, lop, newTeam, soTietConLaiCanXep, currentSoTietMoiThuForThisKhoi, true);
-
-                        if (scheduledPeriods < soTietConLaiCanXep) {
-                            System.out.println("  THIẾU " + (soTietConLaiCanXep - scheduledPeriods) + " tiết cho " + classSubjectIdentifier +
-                                    " với đội GV MỚI (sau lần thử ngẫu nhiên). Gỡ các tiết đã xếp của lần thử này.");
-                            undoScheduledPeriodsForSubject(mhh, lop, newTeam, scheduledPeriods);
-
-                            System.out.println("  Thử xếp lại (slot xác định) cho " + classSubjectIdentifier + " với đội GV MỚI.");
-                            scheduledPeriods = scheduleAllPeriodsForSubject(mhh, lop, newTeam, soTietConLaiCanXep, currentSoTietMoiThuForThisKhoi, false);
-
-                            if (scheduledPeriods < soTietConLaiCanXep) {
-                                System.err.println("  VẪN THIẾU " + (soTietConLaiCanXep - scheduledPeriods) + " tiết cho " + classSubjectIdentifier +
-                                        " ngay cả với đội GV MỚI và thử slot xác định. Chấp nhận thiếu.");
-                            }
-                        }
-                    } else {
-                        System.err.println("  KHÔNG TÌM ĐƯỢC ĐỘI GV MỚI hoặc đội GV mới giống đội cũ cho " + classSubjectIdentifier + ". Chấp nhận thiếu.");
-                    }
-                } else {
-                    System.err.println("  Môn ƯU TIÊN " + classSubjectIdentifier + " VẪN THIẾU " + (soTietConLaiCanXep - scheduledPeriods) + " tiết sau khi thử slot xác định. Chấp nhận thiếu.");
+            if (attempt1Random == soTietMucTieuCanXepThem) {
+                actualPeriodsScheduledInThisEntireEntry = attempt1Random;
+                finalSuccessfulTeam = initialTeam;
+                System.out.println(logPrefix + "Initial Team (random) ĐÃ XẾP ĐỦ " + actualPeriodsScheduledInThisEntireEntry + "/" + soTietMucTieuCanXepThem + " tiết.");
+            } else {
+                System.out.println(logPrefix + "Initial Team (random) xếp được " + attempt1Random + "/" + soTietMucTieuCanXepThem + ". Gỡ và thử lại (deterministic).");
+                undoScheduledPeriodsForSubject(mhh, lop, initialTeam, attempt1Random);
+                int attempt1Deterministic = scheduleAllPeriodsForSubject(mhh, lop, initialTeam, soTietMucTieuCanXepThem, currentSoTietMoiThuForThisKhoi, false);
+                System.out.println(logPrefix + "Initial Team (deterministic) xếp được " + attempt1Deterministic + "/" + soTietMucTieuCanXepThem + ".");
+                if (attempt1Deterministic == soTietMucTieuCanXepThem) {
+                    actualPeriodsScheduledInThisEntireEntry = attempt1Deterministic;
+                    finalSuccessfulTeam = initialTeam;
+                } else { // Initial team thất bại hoàn toàn (không xếp đủ dù đã thử deterministic)
+                    undoScheduledPeriodsForSubject(mhh, lop, initialTeam, attempt1Deterministic); // Gỡ phần làm dở
+                    teamsTriedAndFailedCompletely.addAll(initialTeam); // Thêm vào danh sách đã thử thất bại
                 }
             }
+        } else {
+            System.out.println(logPrefix + "Không tìm được Initial Team.");
         }
-        if (scheduledPeriods > 0) {
-            System.out.println("  Đã xếp được " + scheduledPeriods + "/" + soTietConLaiCanXep + " tiết còn lại cho " + classSubjectIdentifier);
+
+        // --- CỐ GẮNG 2: VỚI NEW TEAM (NẾU LÀ MÔN LINH HOẠT VÀ CỐ GẮNG 1 CHƯA ĐỦ) ---
+        if (actualPeriodsScheduledInThisEntireEntry < soTietMucTieuCanXepThem && !isPriorityRule) {
+            // Initial team đã thất bại hoàn toàn và đã được undo, actualPeriodsScheduledInThisEntireEntry là 0
+            System.out.println(logPrefix + "Cố gắng 2: Tìm New Team (môn linh hoạt, loại trừ các team đã thử thất bại hoàn toàn).");
+            List<GiaoVien> newTeam = getAndLockTeachingTeamForSubject(mhh, lop, new ArrayList<>(teamsTriedAndFailedCompletely), false, false);
+
+            if (!newTeam.isEmpty()) { // Chỉ thử nếu tìm được newTeam thực sự mới
+                System.out.println(logPrefix + "New Team được chọn: " + newTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+                int attempt2Random = scheduleAllPeriodsForSubject(mhh, lop, newTeam, soTietMucTieuCanXepThem, currentSoTietMoiThuForThisKhoi, true);
+
+                if (attempt2Random == soTietMucTieuCanXepThem) {
+                    actualPeriodsScheduledInThisEntireEntry = attempt2Random;
+                    finalSuccessfulTeam = newTeam;
+                    System.out.println(logPrefix + "New Team (random) ĐÃ XẾP ĐỦ " + actualPeriodsScheduledInThisEntireEntry + "/" + soTietMucTieuCanXepThem + " tiết.");
+                } else {
+                    System.out.println(logPrefix + "New Team (random) xếp được " + attempt2Random + "/" + soTietMucTieuCanXepThem + ". Gỡ và thử lại (deterministic).");
+                    undoScheduledPeriodsForSubject(mhh, lop, newTeam, attempt2Random);
+                    int attempt2Deterministic = scheduleAllPeriodsForSubject(mhh, lop, newTeam, soTietMucTieuCanXepThem, currentSoTietMoiThuForThisKhoi, false);
+                    System.out.println(logPrefix + "New Team (deterministic) xếp được " + attempt2Deterministic + "/" + soTietMucTieuCanXepThem + ".");
+                    if (attempt2Deterministic == soTietMucTieuCanXepThem) {
+                        actualPeriodsScheduledInThisEntireEntry = attempt2Deterministic;
+                        finalSuccessfulTeam = newTeam;
+                    } else { // New team cũng thất bại hoàn toàn
+                        undoScheduledPeriodsForSubject(mhh, lop, newTeam, attempt2Deterministic);
+                        teamsTriedAndFailedCompletely.addAll(newTeam);
+                    }
+                }
+            } else {
+                System.out.println(logPrefix + "Không tìm được New Team hợp lệ hoặc New Team giống các team đã thử.");
+            }
+        } else if (actualPeriodsScheduledInThisEntireEntry < soTietMucTieuCanXepThem) {
+            // Môn ưu tiên, Initial team đã thất bại, không thử New Team
+            // Initial team đã tự undo nếu không xếp đủ
+            System.out.println(logPrefix + "Môn ưu tiên, Initial Team không xếp đủ. Chuyển sang Siêu Last Resort (nếu có).");
+        }
+
+
+        // --- CỐ GẮNG 3: "SIÊU LAST RESORT" LẶP (NẾU CÁC CỐ GẮNG TRÊN VẪN CHƯA ĐỦ) ---
+        if (actualPeriodsScheduledInThisEntireEntry < soTietMucTieuCanXepThem) {
+            // Lúc này, các nỗ lực trước đã thất bại hoàn toàn và đã undo, actualPeriodsScheduledInThisEntireEntry là 0
+            System.out.println(logPrefix + "Cố gắng 3: Tìm 'Siêu Last Resort' GV (loại trừ các GV đã thử hoàn toàn trong teamsTriedAndFailedCompletely).");
+
+            List<GiaoVien> superLastResortCandidates = giaoVienHopLe.stream()
+                    .filter(gv -> !teamsTriedAndFailedCompletely.contains(gv))
+                    .filter(gv -> {
+                        TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
+                        if (settings == null || !settings.getTeachingPreferenceForSubject(mhh.getMaMH())) return false;
+                        String targetMaTCMForSuper = mhh.getMaTCM();
+                        boolean isSpecialForSuper = mhh.getMaMH().startsWith("GDDP") || mhh.getMaMH().startsWith("HDTNHN");
+                        if (targetMaTCMForSuper != null && !targetMaTCMForSuper.isBlank()) {
+                            return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCMForSuper);
+                        } else return isSpecialForSuper;
+                    })
+                    .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher))
+                    .toList(); // Thu thập vào List để có thể lặp
+
+            if (!superLastResortCandidates.isEmpty()) {
+                System.out.println(logPrefix + "Danh sách ứng viên 'Siêu Last Resort' (sắp xếp theo số tiết tăng dần): " +
+                        superLastResortCandidates.stream().map(g -> g.getMaGV() + "(" + countCurrentPeriodsForTeacher(g) + "t)").collect(Collectors.joining(", ")));
+
+                for (GiaoVien superLastResortGV : superLastResortCandidates) {
+                    System.out.println(logPrefix + "Thử 'Siêu Last Resort' với GV: " + superLastResortGV.getMaGV() +
+                            " (hiện có " + countCurrentPeriodsForTeacher(superLastResortGV) + " tiết). Cần xếp: " + soTietMucTieuCanXepThem + " tiết.");
+                    List<GiaoVien> superTeam = List.of(superLastResortGV);
+
+                    // Không cần gọi getAndLockTeachingTeamForSubject ở đây vì chúng ta đã tự chọn superLastResortGV
+                    // và cơ chế isTeacherGenerallyAvailable sẽ được bỏ qua cho lựa chọn này (theo ý muốn "bất kể dư hay thiếu")
+                    // Tuy nhiên, việc ghi nhận currentLockedTeachersForClassSubject vẫn cần nếu muốn logic khóa hoạt động cho lần sau
+                    // For now, let's assume we manually form the team and try.
+
+                    int attemptSLR = scheduleAllPeriodsForSubject(mhh, lop, superTeam, soTietMucTieuCanXepThem, currentSoTietMoiThuForThisKhoi, false /*deterministic first*/);
+
+                    if (attemptSLR == soTietMucTieuCanXepThem) {
+                        System.out.println(logPrefix + "'Siêu Last Resort' GV " + superLastResortGV.getMaGV() + " ĐÃ XẾP ĐỦ " + soTietMucTieuCanXepThem + " tiết.");
+                        actualPeriodsScheduledInThisEntireEntry = attemptSLR;
+                        finalSuccessfulTeam = superTeam;
+                        break; // Đã tìm được người xếp đủ, thoát vòng lặp "Siêu Last Resort"
+                    } else {
+                        System.err.println(logPrefix + "'Siêu Last Resort' GV " + superLastResortGV.getMaGV() + " VẪN KHÔNG xếp đủ ("+ attemptSLR + "/" + soTietMucTieuCanXepThem + "). Gỡ bỏ và thử ứng viên tiếp theo (nếu có).");
+                        undoScheduledPeriodsForSubject(mhh, lop, superTeam, attemptSLR);
+                        // Không thêm vào teamsTriedAndFailedCompletely ở đây nữa vì vòng lặp sẽ thử người tiếp theo
+                    }
+                }
+            } else {
+                System.err.println(logPrefix + "KHÔNG tìm được GV nào cho 'Siêu Last Resort' (sau khi loại trừ các team đã thử).");
+            }
+        }
+
+        // --- KẾT LUẬN CUỐI CÙNG CHO LẦN XỬ LÝ NÀY ---
+        if (actualPeriodsScheduledInThisEntireEntry < soTietMucTieuCanXepThem) {
+            System.err.println(logPrefix + "CUỐI CÙNG (sau tất cả cố gắng): Vẫn bị thiếu " + (soTietMucTieuCanXepThem - actualPeriodsScheduledInThisEntireEntry) + " tiết.");
+            // Nếu đến đây mà vẫn thiếu, có nghĩa là không có cách nào xếp đủ cho môn này trong lần xử lý này
+            // Các tiết đã được undo ở các bước thất bại trước đó.
+            // Nếu bạn muốn giữ lại một phần nào đó đã xếp được (ví dụ từ initialTeam nếu nó tốt hơn 0), bạn cần logic phức tạp hơn để so sánh và quyết định.
+            // Hiện tại, nếu không xếp đủ, coi như 0 tiết được xếp bởi thuật toán cho lần chạy này.
+        } else { // Chỉ log thành công nếu có tiết cần xếp và đã xếp đủ
+            System.out.println(logPrefix + "CUỐI CÙNG: ĐÃ XẾP ĐỦ " + actualPeriodsScheduledInThisEntireEntry + " tiết bởi team: " + finalSuccessfulTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
         }
     }
 
@@ -389,6 +462,7 @@ public class XepTKBTuDongController {
         List<GiaoVien> determinedTeam = new ArrayList<>();
         List<String> finalExcludedMaGVs = excludedTeachers.stream().map(GiaoVien::getMaGV).toList();
 
+        // Bước 1 & 2: Ưu tiên cài đặt người dùng và TKB Cơ Sở
         if (isPriorityRule || isInitialAttemptForThisClassSubject) {
             // 1. Ưu tiên cài đặt của người dùng
             if (classTeacherAssignmentsInput != null && classTeacherAssignmentsInput.containsKey(lop.getMaLop())) {
@@ -424,14 +498,13 @@ public class XepTKBTuDongController {
                             currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
                             return determinedTeam;
                         } else if (isPriorityRule) {
-                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): Không tìm được GV hợp lệ nào từ cài đặt người dùng cho " + classSubjectKey + " sau khi lọc.");
+                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): Không tìm được GV hợp lệ nào từ cài đặt người dùng.");
                             currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
                             return Collections.emptyList();
                         }
                     }
                 }
             }
-
             // 2. Ưu tiên TKB Cơ Sở
             if (pinnedTeacherForSubjectClassFromBaseTKB.containsKey(classSubjectKey)) {
                 String pinnedMaGV = pinnedTeacherForSubjectClassFromBaseTKB.get(classSubjectKey);
@@ -441,35 +514,28 @@ public class XepTKBTuDongController {
                     if (gvFromBase != null) {
                         TeacherCustomSettings settings = teacherCustomSettingsInput.get(gvFromBase.getMaGV());
                         boolean canTeachThisSubject = (settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH()));
-                        boolean generallyAvailable = isTeacherGenerallyAvailable(gvFromBase, mhh.getTongSoTiet());
-
-                        System.out.println(logPrefix + "  Kiểm tra GV " + pinnedMaGV + " từ TKB cơ sở: Có thể dạy môn này? " + canTeachThisSubject + ". Còn khả năng nhận phân công này? " + generallyAvailable);
+                        boolean generallyAvailable = isTeacherGenerallyAvailable(gvFromBase, mhh.getTongSoTiet()); // Sử dụng hàm đã sửa
                         if (canTeachThisSubject && generallyAvailable) {
                             determinedTeam.add(gvFromBase);
                             System.out.println(logPrefix + "Đã chọn GV từ TKB cơ sở: " + determinedTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
                             currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
                             return determinedTeam;
                         } else if (isPriorityRule) {
-                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): GV " + pinnedMaGV + " từ TKB cơ sở không thể dạy môn này hoặc không còn khả năng nhận thêm phân công này.");
+                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): GV " + pinnedMaGV + " từ TKB cơ sở không hợp lệ (chuyên môn/quota). Dạy môn? " + canTeachThisSubject + ". Available? " + generallyAvailable);
                             currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
                             return Collections.emptyList();
                         }
-                    } else {
-                        System.out.println(logPrefix + "  GV " + pinnedMaGV + " từ TKB cơ sở không nằm trong danh sách GV hợp lệ.");
-                    }
-                } else {
-                    System.out.println(logPrefix + "GV " + pinnedMaGV + " từ TKB cơ sở bị loại trừ.");
-                }
+                    } else System.out.println(logPrefix + "  GV " + pinnedMaGV + " từ TKB cơ sở không trong ds hợp lệ.");
+                } else System.out.println(logPrefix + "GV " + pinnedMaGV + " từ TKB cơ sở bị loại trừ.");
             }
-        }
+        } // Kết thúc khối if (isPriorityRule || isInitialAttemptForThisClassSubject)
 
-        // 3. "Để thuật toán tự chọn" - Tìm GV lý tưởng (dưới quota)
+        // Bước 3: "Để thuật toán tự chọn" - Tìm GV lý tưởng (dưới quota)
         System.out.println(logPrefix + "Thực hiện 'Để thuật toán tự chọn' (tìm GV dưới quota)...");
-        List<GiaoVien> potentialTeachers;
         boolean isSpecialSubject = mhh.getMaMH().startsWith("GDDP") || mhh.getMaMH().startsWith("HDTNHN");
         String targetMaTCM = mhh.getMaTCM();
 
-        potentialTeachers = giaoVienHopLe.stream()
+        List<GiaoVien> idealPotentialTeachers = giaoVienHopLe.stream()
                 .filter(gv -> !finalExcludedMaGVs.contains(gv.getMaGV()))
                 .filter(gv -> {
                     TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
@@ -480,34 +546,29 @@ public class XepTKBTuDongController {
                         return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCM);
                     } else return isSpecialSubject;
                 })
-                // Sử dụng isTeacherGenerallyAvailable đã điều chỉnh
-                .filter(gv -> isTeacherGenerallyAvailable(gv, mhh.getTongSoTiet()))
+                .filter(gv -> isTeacherGenerallyAvailable(gv, mhh.getTongSoTiet())) // Kiểm tra xem có dưới quota không
                 .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher))
                 .toList();
 
-        if (!potentialTeachers.isEmpty()) {
-            System.out.println(logPrefix + "Danh sách GV tiềm năng (dưới quota) sau khi lọc: " + potentialTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
-            GiaoVien selectedTeacher = potentialTeachers.stream()
+        if (!idealPotentialTeachers.isEmpty()) {
+            System.out.println(logPrefix + "Danh sách GV tiềm năng (dưới quota) sau khi lọc: " + idealPotentialTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+            GiaoVien selectedTeacher = idealPotentialTeachers.stream()
                     .filter(gv -> lop.getGvcn() != null && gv.getMaGV().equals(lop.getGvcn()))
                     .findFirst()
-                    .orElse(potentialTeachers.getFirst());
+                    .orElse(idealPotentialTeachers.getFirst());
 
             determinedTeam.add(selectedTeacher);
             System.out.println(logPrefix + "Đã chọn GV (dưới quota) bởi thuật toán 'tự chọn': " + selectedTeacher.getMaGV());
-            currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
-            return determinedTeam;
         } else {
-            // Bước 4: Nếu không có GV lý tưởng (dưới quota), thử tìm "Last Resort"
-            System.out.println(logPrefix + "Không tìm thấy GV tiềm năng (dưới quota). Thử tìm GV 'cuối cùng' (ưu tiên ít tiết nhất, bất kể quota)...");
-
-            List<GiaoVien> lastResortTeachers = giaoVienHopLe.stream()
-                    .filter(gv -> !finalExcludedMaGVs.contains(gv.getMaGV())) // Vẫn loại trừ GV đã thử thất bại
+            // Bước 4: KHÔNG CÓ GV LÝ TƯỞNG (DƯỚI QUOTA) PHÙ HỢP -> "Siêu Last Resort"
+            System.out.println(logPrefix + "Không tìm thấy GV lý tưởng (dưới quota). Thử 'Siêu Last Resort': Tìm GV đủ chuyên môn có số tiết ít nhất (bất kể quota).");
+            List<GiaoVien> superLastResortCandidates = giaoVienHopLe.stream()
+                    .filter(gv -> !finalExcludedMaGVs.contains(gv.getMaGV()))
                     .filter(gv -> { // Lọc theo khả năng dạy môn (CaiDatGV)
                         TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
                         return settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH());
                     })
                     .filter(gv -> { // Lọc theo TCM (nếu môn có TCM)
-                        // Sử dụng lại targetMaTCM và isSpecialSubject đã định nghĩa ở trên
                         if (targetMaTCM != null && !targetMaTCM.isBlank()) {
                             return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCM);
                         } else return isSpecialSubject;
@@ -516,23 +577,27 @@ public class XepTKBTuDongController {
                     .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher)) // Sắp xếp theo số tiết đã thực hiện
                     .toList();
 
-            if (!lastResortTeachers.isEmpty()) {
-                GiaoVien selectedTeacher = lastResortTeachers.getFirst(); // Chọn GV ít tiết nhất trong nhóm này
+            if (!superLastResortCandidates.isEmpty()) {
+                GiaoVien selectedTeacher = superLastResortCandidates.getFirst(); // Chọn GV ít tiết nhất trong nhóm này
                 determinedTeam.add(selectedTeacher);
                 long currentLoadOfSelected = countCurrentPeriodsForTeacher(selectedTeacher);
                 int chucVuLoad = xepTKBDAO.getSoTietChucVuDaSuDung(selectedTeacher.getMaGV(), (selectedHocKy != null ? selectedHocKy.getMaHK() : ""));
-                System.out.println(logPrefix + "Đã chọn GV 'cuối cùng' (ít tiết nhất trong số người có thể dạy): " + selectedTeacher.getMaGV() +
-                        " (Số tiết hiện tại: " + currentLoadOfSelected + ", Chức vụ: " + chucVuLoad +
+                System.out.println(logPrefix + "Đã chọn GV bằng 'Siêu Last Resort': " + selectedTeacher.getMaGV() +
+                        " (Số tiết hiện tại: " + currentLoadOfSelected + ", CV: " + chucVuLoad +
                         ", Quy định: " + selectedTeacher.getSoTietQuyDinh() + "). GV này có thể đã/sẽ vượt quota.");
-                currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
-                return determinedTeam;
             } else {
-                System.out.println(logPrefix + "KHÔNG tìm thấy GV 'cuối cùng' nào có thể dạy môn này.");
+                System.out.println(logPrefix + "KHÔNG tìm thấy GV nào đủ chuyên môn cho 'Siêu Last Resort'.");
             }
         }
 
+        if (!determinedTeam.isEmpty()) {
+            currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
+            return determinedTeam;
+        }
+
+        // Nếu đến đây mà determinedTeam vẫn rỗng
         if (isInitialAttemptForThisClassSubject && !currentLockedTeachersForClassSubject.containsKey(classSubjectKey)) {
-            System.out.println(logPrefix + "Không tìm được GV nào, khóa danh sách rỗng cho " + classSubjectKey);
+            System.out.println(logPrefix + "Không tìm được GV nào sau tất cả các bước, khóa danh sách rỗng cho " + classSubjectKey);
             currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
         }
         return Collections.emptyList();
@@ -540,26 +605,18 @@ public class XepTKBTuDongController {
 
     private boolean isTeacherGenerallyAvailable(GiaoVien gv, int periodsToAdd) {
         if (gv.getSoTietQuyDinh() == null || gv.getSoTietQuyDinh() == 0) {
-            // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() + " không có giới hạn số tiết.");
             return true; // Không giới hạn
         }
         long soTietDaDayHienTai = countCurrentPeriodsForTeacher(gv);
         int soTietChucVu = xepTKBDAO.getSoTietChucVuDaSuDung(gv.getMaGV(), (selectedHocKy != null ? selectedHocKy.getMaHK() : ""));
-        long currentPlannedLoad = soTietDaDayHienTai + soTietChucVu;
+        long currentPlannedLoadBeforeThisAssignment = soTietDaDayHienTai + soTietChucVu;
 
-        // Log để debug
-        // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() +
-        //         " - CurrentLoad: " + currentPlannedLoad +
-        //         " (Dạy: " + soTietDaDayHienTai + ", CV: " + soTietChucVu + ")" +
-        //         ", QuyDinh: " + gv.getSoTietQuyDinh() +
-        //         ", periodsToAdd: " + periodsToAdd);
-
-        if (currentPlannedLoad < gv.getSoTietQuyDinh()) {
-            // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() + " OK (dưới quota).");
-            return true; // Đang dưới quota, có thể nhận thêm phân công này.
+        if (currentPlannedLoadBeforeThisAssignment < gv.getSoTietQuyDinh()) {
+            // Đang dưới quota, có thể nhận thêm phân công này, ngay cả khi nó làm vượt quota.
+            return true;
         } else {
             // Đã bằng hoặc vượt quota. Chỉ "available" nếu phân công này không thêm tiết nào.
-            // System.out.println("    isTeacherGenerallyAvailable: GV " + gv.getMaGV() + (periodsToAdd <= 0 ? " OK (đã >= quota, nhưng periodsToAdd <=0)." : " FAILED (đã >= quota và periodsToAdd > 0)."));
+            // (Về mặt logic, nếu periodsToAdd > 0 thì sẽ không available).
             return periodsToAdd <= 0;
         }
     }
@@ -598,7 +655,6 @@ public class XepTKBTuDongController {
         System.out.println("    SCHEDULE_ALL ["+ classSubjectIdentifier + "]: Đã xếp được thực tế " + soTietDaXepThucTeChoDotNay + " tiết trong đợt này.");
         return soTietDaXepThucTeChoDotNay;
     }
-
     private boolean tryScheduleSinglePeriodForSubject(MonHocHoc mhh, Lop lop, List<GiaoVien> lockedInTeam, Map<Integer, Integer> currentSoTietMoiThuForThisKhoi, boolean useRandomSlots) {
         List<Integer> thuList = new ArrayList<>(Arrays.asList(2, 3, 4, 5, 6, 7));
         if (useRandomSlots) {
@@ -836,9 +892,7 @@ public class XepTKBTuDongController {
         if (allMonHocDB != null) {
             allMonHocDB.forEach(mh -> danhMucMonHoc.put(mh.getMaMH(), mh));
         }
-        CaiDatGVController.SPECIAL_SUBJECTS_INFO.forEach(info -> {
-            danhMucMonHoc.putIfAbsent(info.maMH, new MonHoc(info.maMH, info.tenMH, null, null));
-        });
+        CaiDatGVController.SPECIAL_SUBJECTS_INFO.forEach(info -> danhMucMonHoc.putIfAbsent(info.maMH, new MonHoc(info.maMH, info.tenMH, null, null)));
         System.out.println("  Số môn học trong danh mục (danhMucMonHoc): " + danhMucMonHoc.size());
 
         if (tkbCoSo != null) {
@@ -994,8 +1048,7 @@ public class XepTKBTuDongController {
         tkbTableView.setMaxHeight(newHeight);
         tkbTableView.refresh();
 
-        String tenLopDisplay = maLop;
-        lopTKBTitleLabel.setText("THỜI KHÓA BIỂU LỚP " + tenLopDisplay.toUpperCase());
+        lopTKBTitleLabel.setText("THỜI KHÓA BIỂU LỚP " + maLop.toUpperCase());
         infoLabel.setText("Hiển thị TKB lớp: " + maLop + (selectedHocKy != null ? " (HK: " + selectedHocKy + ")" : "")); // Sử dụng toString()
     }
 
