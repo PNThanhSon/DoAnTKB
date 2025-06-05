@@ -17,12 +17,12 @@
                     <MenuItem fx:id="menuTrangChu" mnemonicParsing="false" onAction="#handleTrangChu" text="Trang chủ" />
                     <MenuItem fx:id="menuDangXuat" mnemonicParsing="false" onAction="#handleDangXuat" text="Đăng xuất" />
                 </Menu>
-                <Menu mnemonicParsing="false" text="Quản Lý">
+                <Menu fx:id="menuQuanLyMain" mnemonicParsing="false" text="Quản Lý">
                <MenuItem mnemonicParsing="false" onAction="#handleQuanLyTKB" text="Quản lý Thời Khóa Biểu" />
                     <MenuItem fx:id="menuQLGiaoVien" mnemonicParsing="false" onAction="#handleQuanLyGiaoVien" text="Quản lý Giáo Viên" />
-                    <MenuItem fx:id="menuQLLopHoc" mnemonicParsing="false" onAction="#handleQuanLyLopHoc" text="Quản lý Lớp Học" />
-               <MenuItem fx:id="menuQLMonHoc" mnemonicParsing="false" onAction="#handleQuanLyMonHoc" text="Quản lý Môn Học" />
-               <MenuItem fx:id="menuQLTCM" mnemonicParsing="false" onAction="#handleQuanLyTCM" text="Quản lý Tổ Chuyên Môn" />
+                    <MenuItem mnemonicParsing="false" onAction="#handleQuanLyLopHoc" text="Quản lý Lớp Học" />
+               <MenuItem mnemonicParsing="false" onAction="#handleQuanLyMonHoc" text="Quản lý Môn Học" />
+               <MenuItem mnemonicParsing="false" onAction="#handleQuanLyTCM" text="Quản lý Tổ Chuyên Môn" />
                <MenuItem fx:id="menuQLChucVu" mnemonicParsing="false" onAction="#handleQuanLyChucVu" text="Quản lý Chức vụ" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Chức Năng">
@@ -30,7 +30,7 @@
                     <MenuItem fx:id="menuXemThongTinCaNhan" mnemonicParsing="false" onAction="#handleXemThongTinCaNhan" text="Xem thông tin cá nhân" />
                     <MenuItem fx:id="menuPhanHoiYKien" mnemonicParsing="false" onAction="#handlePhanHoiYKien" text="Phản hồi ý kiến" />
                     <MenuItem fx:id="menuBCTK" mnemonicParsing="false" onAction="#handleBCTK" text="Báo cáo thống kê" />
-                    <MenuItem mnemonicParsing="false" onAction="#handleXepTKB" text="Xếp TKB tự động" />
+                    <MenuItem fx:id="menuXepTKBTuDong" mnemonicParsing="false" onAction="#handleXepTKB" text="Xếp TKB tự động" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Trợ Giúp">
                     <MenuItem mnemonicParsing="false" text="Thông tin ứng dụng" />

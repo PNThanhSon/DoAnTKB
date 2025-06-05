@@ -250,11 +250,19 @@ public class QuanLyTKBController {
         if (!confirm("Xoá TKB '" + sel.getMaTKB() + "' ?")) return;
 
         try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement("DELETE FROM THOIKHOABIEU WHERE MaTKB=?")) {
+             PreparedStatement ps1 = c.prepareStatement("DELETE FROM CHITIETTKB WHERE MaTKB=?");
+             PreparedStatement ps2 = c.prepareStatement("DELETE FROM THOIKHOABIEU WHERE MaTKB=?")) {
 
-            ps.setString(1, sel.getMaTKB());
-            ps.executeUpdate();
-            loadData(); clearForm(); showInfo("Đã xoá!");
+            ps1.setString(1, sel.getMaTKB());
+            ps1.executeUpdate();
+
+            ps2.setString(1, sel.getMaTKB());
+            ps2.executeUpdate();
+
+            loadData();
+            clearForm();
+            showInfo("Đã xoá!");
+
         } catch (Exception ex) {
             showError("Không thể xoá!", ex);
         }

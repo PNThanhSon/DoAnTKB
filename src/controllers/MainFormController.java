@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -29,6 +30,11 @@ import java.sql.SQLException;
 public class MainFormController {
     @FXML
     public MenuItem menuDangXuat;
+
+    @FXML
+    public Menu menuQuanLyMain;
+    @FXML
+    public MenuItem menuXepTKBTuDong;
 
     @FXML
     private BorderPane mainBorderPane;
@@ -111,10 +117,14 @@ public class MainFormController {
     }
 
     private void applyPermissions() {
-        if (loggedInGiaoVien != null && menuQLGiaoVien != null) {
-            menuQLGiaoVien.setVisible("ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV()));
-        } else if (menuQLGiaoVien != null) {
-            menuQLGiaoVien.setVisible(false);
+        if (loggedInGiaoVien != null && loggedInGiaoVien.isAdmin()) {
+            menuQuanLyMain.setVisible(true);
+            menuBCTK.setVisible(true);
+            menuXepTKBTuDong.setVisible(true);
+        } else {
+            menuQuanLyMain.setVisible(false);
+            menuBCTK.setVisible(false);
+            menuXepTKBTuDong.setVisible(false);
         }
     }
 
@@ -273,11 +283,6 @@ public class MainFormController {
 //            return;
 //        }
 
-        // check vai tro và đăng nhập, đảm bảo bảo mật về mặt backend
-        if (!loggedInGiaoVien.isAdmin()) {
-            showAlert(Alert.AlertType.ERROR, "Không có quyền", "Chỉ dành cho ADMIN hoặc phụ Trách" );
-            return;
-        }
         // điều phối màn hình mới
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/QuanLyGiaoVien/QuanLyGiaoVienForm.fxml"));
