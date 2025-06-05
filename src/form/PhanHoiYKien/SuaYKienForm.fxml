@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/21"
-            fx:controller="controllers.PhanHoiYKien.SuaYKienController"
-            prefHeight="300.0" prefWidth="500.0">
+<BorderPane prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.PhanHoiYKien.SuaYKienController">
     <center>
-        <VBox spacing="15" alignment="CENTER" >
+        <VBox alignment="CENTER" spacing="15">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
 
-            <Label text="Sửa Ý Kiến" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+            <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="SỬA Ý KIẾN" />
 
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Người ý kiến:" minWidth="100"/>
-                <Text fx:id="txtNguoiYKien" text = "GV002"/>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label minWidth="100" text="Người ý kiến:" />
+                <Text fx:id="txtNguoiYKien" text="GV002" />
             </HBox>
 
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Nội dung:" minWidth="100"/>
-                <TextArea fx:id="txtNoiDung" prefRowCount="4" wrapText="true" prefWidth="300"/>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label minWidth="100" text="Nội dung:" />
+                <TextArea fx:id="txtNoiDung" prefRowCount="4" prefWidth="300" wrapText="true" />
             </HBox>
 
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Ẩn danh:" minWidth="100"/>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label minWidth="100" text="Ẩn danh:" />
                 <CheckBox fx:id="chkAnDanh" />
             </HBox>
 
 
-            <Button text="Lưu" fx:id="btnLuu" prefWidth="100" onAction="#handleLuu"/>
+            <Button fx:id="btnLuu" onAction="#handleLuu" prefWidth="100" text="Lưu" />
         </VBox>
     </center>
 </BorderPane>

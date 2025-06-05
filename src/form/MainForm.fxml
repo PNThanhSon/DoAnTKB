@@ -24,6 +24,7 @@
                <MenuItem mnemonicParsing="false" onAction="#handleQuanLyMonHoc" text="Quản lý Môn Học" />
                <MenuItem mnemonicParsing="false" onAction="#handleQuanLyTCM" text="Quản lý Tổ Chuyên Môn" />
                <MenuItem fx:id="menuQLChucVu" mnemonicParsing="false" onAction="#handleQuanLyChucVu" text="Quản lý Chức vụ" />
+                    <MenuItem mnemonicParsing="false" onAction="#handleQuanLyHocKy" text="Quản lý Học kỳ"/>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Chức Năng">
                     <MenuItem fx:id="menuXemCacTKB" mnemonicParsing="false" onAction="#handleXemCacTKB" text="Xem các thời khóa biểu" />

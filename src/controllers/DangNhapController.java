@@ -193,8 +193,21 @@ public class DangNhapController {
         }
 
         Connection conn = DatabaseConnection.getConnection();
+        String sqlKiemTraBGH = "SELECT COUNT(*) AS SoLuong FROM GIAOVIEN_CHUCVU WHERE MaCV = 'BGH' AND MaGV = ?";
         String sqlKiemTraToTruongPho = "SELECT COUNT(*) AS SoLuong FROM TOCHUYENMON WHERE TOTRUONG = ? OR TOPHO = ?";
         String sqlKiemTraGVCN = "SELECT COUNT(*) AS SoLuong FROM LOP WHERE GVCN = ?";
+
+        try (PreparedStatement pstmtTCM = conn.prepareStatement(sqlKiemTraBGH)) {
+            pstmtTCM.setString(1, maGV);
+
+            try (ResultSet rsTCM = pstmtTCM.executeQuery()) {
+                if (rsTCM.next() && rsTCM.getInt("SoLuong") > 0) {
+                    return VaiTroGV.BGH; //Là tổ trưởng hoặc tổ phó chuyên môn
+                }
+            }
+        } catch (SQLException e_tcm) {
+            System.err.println("Lỗi khi kiểm tra vai trò Tổ trưởng/phó: " + e_tcm.getMessage());
+        }
 
         try (PreparedStatement pstmtTCM = conn.prepareStatement(sqlKiemTraToTruongPho)) {
             pstmtTCM.setString(1, maGV);

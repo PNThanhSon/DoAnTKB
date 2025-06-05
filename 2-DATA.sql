@@ -1,4 +1,3 @@
---SAU KHI TẠO BẢNG THÌ CHẠY ĐỂ ADD DATA CHO APP
 INSERT INTO GIAOVIEN (MaGV, HoGV, TenGV, GioiTinh, ChuyenMon, MaTCM, SoTietQuyDinh, SoTietThucHien, SoTietDuThieu, Email, SDT, MatKhau, GhiChu) VALUES
 ('ADMIN','Quản trị','viên','Khác','Quản trị hệ thống',NULL,0,0,0,'admin@example.com','0000000000','pass','Tài khoản quản trị viên cao nhất của hệ thống.');
 
@@ -19,6 +18,7 @@ INSERT INTO CHUCVU (MaCV, TenCV) VALUES ('CN', 'Chủ nhiệm');
 INSERT INTO CHUCVU (MaCV, TenCV) VALUES ('PTHLY', 'Phòng thực hành Vật lý');
 INSERT INTO CHUCVU (MaCV, TenCV) VALUES ('PTHHOA', 'Phòng thực hành Hóa học');
 INSERT INTO CHUCVU (MaCV, TenCV) VALUES ('PTHSINH', 'Phòng thực hành Sinh học');
+INSERT INTO CHUCVU (MaCV, TenCV) VALUES ('BGH', 'Ban giám hiệu');
 
 -- Thêm dữ liệu vào bảng HOCKY
 INSERT INTO HOCKY (MaHK, HocKy, NamHoc) VALUES ('HK1-24-25', 'Học kỳ I', '2024-2025');
@@ -233,6 +233,18 @@ SET ToTruong = 'GV065',
     ToPho = NULL
 WHERE MaTCM = 'NGOAINGU';
 
+INSERT INTO GIAOVIEN_CHUCVU (MaGV, MaCV, MaHK, SoTiet, GhiChu) VALUES
+('GV001', 'BGH', 'HK1-24-25', 0, 'Hiệu trưởng');
+INSERT INTO GIAOVIEN_CHUCVU (MaGV, MaCV, MaHK, SoTiet, GhiChu) VALUES
+('GV002', 'BGH', 'HK1-24-25', 0, 'Phó hiệu trưởng');
+INSERT INTO GIAOVIEN_CHUCVU (MaGV, MaCV, MaHK, SoTiet, GhiChu) VALUES
+('GV003', 'BGH', 'HK1-24-25', 0, NULL);
+INSERT INTO GIAOVIEN_CHUCVU (MaGV, MaCV, MaHK, SoTiet, GhiChu) VALUES
+('GV001', 'BGH', 'HK2-24-25', 0, 'Hiệu trưởng');
+INSERT INTO GIAOVIEN_CHUCVU (MaGV, MaCV, MaHK, SoTiet, GhiChu) VALUES
+('GV002', 'BGH', 'HK2-24-25', 0, 'Phó hiệu trưởng');
+INSERT INTO GIAOVIEN_CHUCVU (MaGV, MaCV, MaHK, SoTiet, GhiChu) VALUES
+('GV003', 'BGH', 'HK2-24-25', 0, NULL);
 -- Học kỳ áp dụng: HK1-24-25
 -- Ghi chú: Số tiết cho TLHĐ (Tâm lý học đường) sẽ tạm để là 1, bạn có thể điều chỉnh.
 -- Ghi chú: PM, CNTT gộp thành một MaCV là 'PMCNTT' với 6 tiết.
@@ -2458,5 +2470,608 @@ INSERT INTO CHITIETTKB (MaTKB, Thu, Tiet, MaLop, MaGV, MaMH)
 VALUES ('TKB01', 7, 4, '10A10', 'GV012', 'TOAN10');
 INSERT INTO CHITIETTKB (MaTKB, Thu, Tiet, MaLop, MaGV, MaMH)
 VALUES ('TKB01', 7, 4, '10A11', 'GV042', 'NGUVAN10');
+
+--Bảng HOC, phân phối theo chương trình, học kì I, 2425
+-- Khối 10: Các lớp 10A1, 10A2, 10A3, 10A4, 10A5, 10A6, 10A7, 10A8, 10A9, 10A10, 10A11
+-- Môn Toán (TOAN10), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'TOAN10', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Ngữ Văn (NGUVAN10), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'NGUVAN10', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Tiếng Anh (TIENGANH10), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'TIENGANH10', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Lịch Sử (LICHSU10), 2 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'LICHSU10', 'HK1-24-25', 'Bắt buộc', 2);
+
+-- Môn GDTC (GDTC10), 2 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'GDTC10', 'HK1-24-25', 'Bắt buộc', 2);
+
+-- Môn GDQPAN (GDQPAN10), 1 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'GDQPAN10', 'HK1-24-25', 'Bắt buộc', 1);
+
+-- Môn HĐ TN-HN (HDTNHN10), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'HDTNHN10', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn GDĐP (GDDP10), 1 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'GDDP10', 'HK1-24-25', 'Bắt buộc', 1);
+
+-- Khối 11: Các lớp 11A1, 11A2, 11A3, 11A4, 11A5, 11A6, 11A7, 11A8, 11A9, 11A10, 11A11
+-- Môn Toán (TOAN11), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'TOAN11', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Ngữ Văn (NGUVAN11), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'NGUVAN11', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Tiếng Anh (TIENGANH11), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'TIENGANH11', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Lịch Sử (LICHSU11), 2 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'LICHSU11', 'HK1-24-25', 'Bắt buộc', 2);
+
+-- Môn GDTC (GDTC11), 2 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'GDTC11', 'HK1-24-25', 'Bắt buộc', 2);
+
+-- Môn GDQPAN (GDQPAN11), 1 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'GDQPAN11', 'HK1-24-25', 'Bắt buộc', 1);
+
+-- Môn HĐ TN-HN (HDTNHN11), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'HDTNHN11', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn GDĐP (GDDP11), 1 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'GDDP11', 'HK1-24-25', 'Bắt buộc', 1);
+
+-- Khối 12: Các lớp 12A1, 12A2, 12A3, 12A4, 12A5, 12A6, 12A7, 12A8, 12A9, 12A10
+-- Môn Toán (TOAN12), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'TOAN12', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Ngữ Văn (NGUVAN12), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'NGUVAN12', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Tiếng Anh (TIENGANH12), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'TIENGANH12', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn Lịch Sử (LICHSU12), 2 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'LICHSU12', 'HK1-24-25', 'Bắt buộc', 2);
+
+-- Môn GDTC (GDTC12), 2 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'GDTC12', 'HK1-24-25', 'Bắt buộc', 2);
+
+-- Môn GDQPAN (GDQPAN12), 1 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'GDQPAN12', 'HK1-24-25', 'Bắt buộc', 1);
+
+-- Môn HĐ TN-HN (HDTNHN12), 3 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'HDTNHN12', 'HK1-24-25', 'Bắt buộc', 3);
+
+-- Môn GDĐP (GDDP12), 1 tiết
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'GDDP12', 'HK1-24-25', 'Bắt buộc', 1);
+
+
+-- PHẦN 2: THÊM CÁC MÔN HỌC TỰ CHỌN VÀ CHUYÊN ĐỀ
+
+-- Khối 10
+-- Nhóm 1 (10A1): Môn lựa chọn: Lý, Hóa, Sinh, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'VATLI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'HOAHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'SINHHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'VATLI10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A1', 'HOAHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 2 (10A2): Môn lựa chọn: Lý, Hóa, Tin, CN; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'VATLI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'HOAHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'CONGNGHE10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'VATLI10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A2', 'HOAHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 3 (10A3): Môn lựa chọn: Lý, Hóa, Địa, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'VATLI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'HOAHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'VATLI10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A3', 'HOAHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 4 (10A4): Môn lựa chọn: Lý, Sinh, Tin, CN; Chuyên đề: Toán, Lý, Sinh.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'VATLI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'SINHHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'CONGNGHE10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'VATLI10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A4', 'SINHHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 5 (10A5): Môn lựa chọn: Hóa, Sinh, Địa, Tin; Chuyên đề: Toán, Hóa, Sinh.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'HOAHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'SINHHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'HOAHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A5', 'SINHHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 6 (10A6): Môn lựa chọn: Lý, Địa, KT&PL, Tin; Chuyên đề: Toán, Lý, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'VATLI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'KTEPL10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'VATLI10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A6', 'NGUVAN10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 7 (10A7): Môn lựa chọn: Lý, Địa, KT&PL, CN; Chuyên đề: Toán, Lý, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'VATLI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'KTEPL10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'CONGNGHE10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'VATLI10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A7', 'NGUVAN10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 8 (10A8): Môn lựa chọn: Hóa, Địa, KT&PL, Tin; Chuyên đề: Toán, Hóa, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'HOAHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'KTEPL10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'HOAHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A8', 'NGUVAN10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 9 (10A9): Môn lựa chọn: Sinh, Địa, KT&PL, CN; Chuyên đề: Toán, Sinh, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'SINHHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'KTEPL10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'CONGNGHE10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'SINHHOC10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A9', 'NGUVAN10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 10 (10A10, 10A11): Môn lựa chọn: Địa, KT&PL, Tin, CN; Chuyên đề: Toán, Văn, Sử.
+-- Lớp 10A10
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'KTEPL10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'CONGNGHE10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'NGUVAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A10', 'LICHSU10', 'HK1-24-25', 'Chuyên đề', 1);
+-- Lớp 10A11
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'DIALI10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'KTEPL10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'TINHOC10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'CONGNGHE10', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'TOAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'NGUVAN10', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('10A11', 'LICHSU10', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Khối 11
+-- Nhóm 1 (11A1): Môn lựa chọn: Lý, Hóa, Sinh, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'HOAHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'SINHHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A1', 'HOAHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 2 (11A2): Môn lựa chọn: Lý, Hóa, KT&PL, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'HOAHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A2', 'HOAHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 3 (11A3): Môn lựa chọn: Lý, Hóa, Địa, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'HOAHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A3', 'HOAHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 4 (11A4): Môn lựa chọn: Lý, Sinh, KT&PL, Tin; Chuyên đề: Toán, Lý, Sinh.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'SINHHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A4', 'SINHHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 5 (11A5): Môn lựa chọn: Hóa, Sinh, Địa, Tin; Chuyên đề: Toán, Hóa, Sinh.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'HOAHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'SINHHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'HOAHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A5', 'SINHHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 6 (11A6, 11A7): Môn lựa chọn: Lý, Địa, KT&PL, Tin; Chuyên đề: Toán, Lý, Văn.
+-- Lớp 11A6
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A6', 'NGUVAN11', 'HK1-24-25', 'Chuyên đề', 1);
+-- Lớp 11A7
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A7', 'NGUVAN11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 7 (11A8): Môn lựa chọn: Lý, Địa, KT&PL, CN; Chuyên đề: Toán, Lý, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'VATLI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'CONGNGHE11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'VATLI11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A8', 'NGUVAN11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 8 (11A9): Môn lựa chọn: Hóa, Địa, KT&PL, Tin; Chuyên đề: Toán, Hóa, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'HOAHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'HOAHOC11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A9', 'NGUVAN11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 9 (11A10, 11A11): Môn lựa chọn: Địa, KT&PL, Tin, CN; Chuyên đề: Toán, Văn, Sử.
+-- Lớp 11A10
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'CONGNGHE11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'NGUVAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A10', 'LICHSU11', 'HK1-24-25', 'Chuyên đề', 1);
+-- Lớp 11A11
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'DIALI11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'KTEPL11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'TINHOC11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'CONGNGHE11', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'TOAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'NGUVAN11', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('11A11', 'LICHSU11', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Khối 12
+-- Nhóm 1 (12A1): Môn lựa chọn: Lý, Hóa, Sinh, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'VATLI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'HOAHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'SINHHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'VATLI12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A1', 'HOAHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 2 (12A2): Môn lựa chọn: Lý, Hóa, KT&PL, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'VATLI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'HOAHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'VATLI12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A2', 'HOAHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 3 (12A3): Môn lựa chọn: Lý, Hóa, Địa, Tin; Chuyên đề: Toán, Lý, Hóa.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'VATLI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'HOAHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'VATLI12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A3', 'HOAHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 4 (12A4): Môn lựa chọn: Lý, Sinh, KT&PL, Tin; Chuyên đề: Toán, Lý, Sinh.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'VATLI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'SINHHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'VATLI12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A4', 'SINHHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 5 (12A5): Môn lựa chọn: Hóa, Sinh, Địa, Tin; Chuyên đề: Toán, Hóa, Sinh.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'HOAHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'SINHHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'HOAHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A5', 'SINHHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 6 (12A6): Môn lựa chọn: Lý, Địa, KT&PL, Tin; Chuyên đề: Toán, Lý, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'VATLI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'VATLI12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A6', 'NGUVAN12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 7 (12A7): Môn lựa chọn: Lý, Địa, KT&PL, CN; Chuyên đề: Toán, Lý, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'VATLI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'CONGNGHE12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'VATLI12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A7', 'NGUVAN12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 8 (12A8): Môn lựa chọn: Hóa, Địa, KT&PL, Tin; Chuyên đề: Toán, Hóa, Văn.
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'HOAHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'HOAHOC12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A8', 'NGUVAN12', 'HK1-24-25', 'Chuyên đề', 1);
+
+-- Nhóm 9 (12A9, 12A10): Môn lựa chọn: Địa, KT&PL, Tin, CN; Chuyên đề: Toán, Văn, Sử.
+-- Lớp 12A9
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'CONGNGHE12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'NGUVAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A9', 'LICHSU12', 'HK1-24-25', 'Chuyên đề', 1);
+-- Lớp 12A10
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'DIALI12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'KTEPL12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'TINHOC12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'CONGNGHE12', 'HK1-24-25', 'Tự chọn', 2);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'TOAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'NGUVAN12', 'HK1-24-25', 'Chuyên đề', 1);
+INSERT INTO HOC (MaLop, MaMH, MaHK, HinhThuc, PhanPhoiTiet) VALUES ('12A10', 'LICHSU12', 'HK1-24-25', 'Chuyên đề', 1);
+
 
 COMMIT;

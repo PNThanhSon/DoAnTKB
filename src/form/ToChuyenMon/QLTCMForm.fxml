@@ -1,86 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
-
-<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="QLTCMBorderPane" prefHeight="700.0" prefWidth="850.0"
-            xmlns="http://javafx.com/javafx/21" fx:controller="controllers.QuanLyTCM.QuanLyTCMController" stylesheets="@styles.css">
+
+<BorderPane fx:id="QLTCMBorderPane" prefHeight="700.0" prefWidth="850.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.QuanLyTCM.QuanLyTCMController">
 
     <center>
-        <VBox spacing="10.0">
+        <VBox alignment="TOP_CENTER" spacing="10.0">
             <padding>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
-            <HBox spacing="10.0">
-<!--                <VBox alignment="CENTER">-->
-<!--                    <Label text="Tổ chuyên môn: "/>-->
-<!--                </VBox>-->
-<!--                <ComboBox fx:id="ListToChuyenMon" prefWidth="200.0">-->
-<!--                    <items>-->
-<!--                        <FXCollections fx:factory="observableArrayList">-->
-<!--                            <String fx:value="Tất cả"/>-->
-
-<!--                        </FXCollections>-->
-<!--                    </items>-->
-<!--                </ComboBox>-->
-
-                <Region prefWidth="500"/>
-                <TextField fx:id="searchField" promptText="Nhập tên hoặc mã chuyên môn..." prefWidth="210"/>
-                <Button text="Tìm" onAction="#handleSearch"/>
+            <HBox alignment="CENTER" spacing="10.0">
+                <TextField fx:id="searchField" prefWidth="210" promptText="Nhập tên hoặc mã chuyên môn..." />
+                <Button onAction="#handleSearch" text="Tìm" />
             </HBox>
 
 
-            <TableView fx:id="tableToChuyenMon" prefHeight="200.0" >
+            <TableView fx:id="tableToChuyenMon" prefHeight="200.0">
                 <columns>
-                    <TableColumn text="Mã TCM" fx:id="colMaTCM" prefWidth="120.0"/>
-                    <TableColumn text="Tên TCM" fx:id="colTenTCM" prefWidth="150.0"/>
-                    <TableColumn text="Tổ trưởng" fx:id="colTotruong" prefWidth="130.0"/>
-                    <TableColumn text="Tổ phó" fx:id="colTopho" prefWidth="130.0"/>
-                    <TableColumn text="Số lượng GV" fx:id="colSLGV" prefWidth="130.0"/>
+                    <TableColumn fx:id="colMaTCM" prefWidth="120.0" text="Mã TCM" />
+                    <TableColumn fx:id="colTenTCM" prefWidth="150.0" text="Tên TCM" />
+                    <TableColumn fx:id="colTotruong" prefWidth="130.0" text="Tổ trưởng" />
+                    <TableColumn fx:id="colTopho" prefWidth="130.0" text="Tổ phó" />
+                    <TableColumn fx:id="colSLGV" prefWidth="130.0" text="Số lượng GV" />
 
                 </columns>
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
             </TableView>
 
-            <ScrollPane fitToWidth="true" fitToHeight="true" pannable="true" styleClass="scroll-bar">
-                <VBox spacing="20" alignment="TOP_LEFT"
-                      VBox.vgrow="ALWAYS">
+            <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" styleClass="scroll-bar">
+                <VBox alignment="TOP_LEFT" spacing="20" VBox.vgrow="ALWAYS">
 
 
-                    <TitledPane text="Danh sách giáo viên của toàn trường" expanded="false" fx:id="infoFormID"
-                                style="-fx-font-size: 16px; -fx-font-weight: bold;"
-                                styleClass="titled-pane">
+                    <TitledPane fx:id="infoFormID" expanded="false" style="-fx-font-size: 16px; -fx-font-weight: bold;" styleClass="titled-pane" text="Danh sách giáo viên của toàn trường">
                         <content>
-                            <VBox spacing="5" alignment="CENTER">
-                                <TableView fx:id="tableGiaoVien" prefHeight="500.0" >
+                            <VBox alignment="CENTER" spacing="5">
+                                <TableView fx:id="tableGiaoVien" prefHeight="500.0">
                                     <columns>
-                                        <TableColumn text="Mã GV" fx:id="colMaGV" prefWidth="100.0"/>
-                                        <TableColumn text="Họ" fx:id="colHoGV" prefWidth="150.0"/>
-                                        <TableColumn text="Tên" fx:id="colTenGV" prefWidth="100.0"/>
-                                        <TableColumn text="Giới Tính" fx:id="colGioiTinh" prefWidth="100.0"/>
-                                        <TableColumn text="SĐT" fx:id="colSDT" prefWidth="150.0"/>
-                                        <TableColumn text="Email" fx:id="colEmail" prefWidth="200.0"/>
-                                        <TableColumn text="Chuyên Môn" fx:id="colMaTCMgv" prefWidth="200.0"/>
-                                        <TableColumn text="Số Tiết Quy Định" fx:id="colSoTietQuyDinh" prefWidth="150.0"/>
-                                        <TableColumn text="Số Tiết Thực Hiện" fx:id="colSoTietThucHien" prefWidth="150.0"/>
-                                        <TableColumn text="Số Tiết Dư/Thiếu" fx:id="colSoTietDuThieu" prefWidth="150.0"/>
-                                        <TableColumn text="Mật Khẩu" fx:id="colMatKhau" prefWidth="150.0"/>
-                                        <TableColumn text="Ghi Chú" fx:id="colGhiChu" prefWidth="200.0"/>
+                                        <TableColumn fx:id="colMaGV" prefWidth="100.0" text="Mã GV" />
+                                        <TableColumn fx:id="colHoGV" prefWidth="150.0" text="Họ" />
+                                        <TableColumn fx:id="colTenGV" prefWidth="100.0" text="Tên" />
+                                        <TableColumn fx:id="colGioiTinh" prefWidth="100.0" text="Giới Tính" />
+                                        <TableColumn fx:id="colSDT" prefWidth="150.0" text="SĐT" />
+                                        <TableColumn fx:id="colEmail" prefWidth="200.0" text="Email" />
+                                        <TableColumn fx:id="colMaTCMgv" prefWidth="200.0" text="Chuyên Môn" />
+                                        <TableColumn fx:id="colSoTietQuyDinh" prefWidth="150.0" text="Số Tiết Quy Định" />
+                                        <TableColumn fx:id="colSoTietThucHien" prefWidth="150.0" text="Số Tiết Thực Hiện" />
+                                        <TableColumn fx:id="colSoTietDuThieu" prefWidth="150.0" text="Số Tiết Dư/Thiếu" />
+                                        <TableColumn fx:id="colMatKhau" prefWidth="150.0" text="Mật Khẩu" />
+                                        <TableColumn fx:id="colGhiChu" prefWidth="200.0" text="Ghi Chú" />
                                     </columns>
                                 </TableView>
 
                                 <HBox alignment="CENTER_RIGHT" spacing="10">
-                                    <TextField fx:id="searchFieldgv" promptText="Nhập tên hoặc mã giáo viên..." prefWidth="200" styleClass="text-field"/>
+                                    <TextField fx:id="searchFieldgv" prefWidth="200" promptText="Nhập tên hoặc mã giáo viên..." styleClass="text-field" />
                                 </HBox>
 
                             </VBox>
                         </content>
                     </TitledPane>
 
-                    <Region style="-fx-pref-height: 200px;"/>
+                    <Region style="-fx-pref-height: 200px;" />
                 </VBox>
 
             </ScrollPane>
@@ -89,14 +83,21 @@
 
     <bottom>
 
-        <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <HBox alignment="TOP_CENTER" spacing="10.0">
             <padding>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
-            <Text fx:id="txtThongBao"/>
-            <Button text="Thêm" onAction="#handleThem"/>
-            <Button text="Làm Mới" onAction="#handleLamMoi" />
+            <Text fx:id="txtThongBao" />
+            <Button onAction="#handleThem" text="Thêm" />
+            <Button onAction="#handleLamMoi" text="Làm Mới" />
         </HBox>
     </bottom>
+   <top>
+      <Label prefHeight="50.0" prefWidth="240.0" text="QUẢN LÝ TỔ CHUYÊN MÔN" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+   </top>
 
 </BorderPane>

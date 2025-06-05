@@ -277,13 +277,6 @@ public class MainFormController {
     }
     @FXML
     private void handleQuanLyGiaoVien(ActionEvent event) {
-        // check đăng nhập, k cần thiết
-//        if (!loggedInGiaoVien.isLoggedIn()) {
-//            showAlert(Alert.AlertType.ERROR, "Chưa Đăng Nhập", "Mời Đăng nhập trước để thực hiện các chức năng" );
-//            return;
-//        }
-
-        // điều phối màn hình mới
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/QuanLyGiaoVien/QuanLyGiaoVienForm.fxml"));
             Parent QLGiaoVienRoot = loader.load();
@@ -304,21 +297,11 @@ public class MainFormController {
 
     @FXML
     private void handlePhanHoiYKien(ActionEvent event) {
-        // check đăng nhập, k cần thiết
-//        if (!loggedInGiaoVien.isLoggedIn()) {
-//            showAlert(Alert.AlertType.ERROR, "Chưa Đăng Nhập", "Mời Đăng nhập trước để thực hiện các chức năng" );
-//            return;
-//        }
-
-
-        // điều phối màn hình mới
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/PhanHoiYKien/PhanHoiYKienForm.fxml"));
             Parent PhanHoiYKienRoot = loader.load();
 
             PhanHoiYKienController phanHoiYKienController = loader.getController();
-
-            // truyền data user
             phanHoiYKienController.getGiaoVienData(loggedInGiaoVien);
 
             // Ẩn các chức năng không được quyền, bảo mật fontend
@@ -366,19 +349,16 @@ public class MainFormController {
 
     @FXML
     private void handleQuanLyChucVu(ActionEvent event) {
-        if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-            loadViewIntoCenter("/form/QuanLiChucVuForm.fxml");
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
-        }
+        loadViewIntoCenter("/form/QuanLiChucVuForm.fxml");
     }
     @FXML
     private void handleQuanLyTKB(ActionEvent event) {
-        if (loggedInGiaoVien != null && "ADMIN".equalsIgnoreCase(loggedInGiaoVien.getMaGV())) {
-            loadViewIntoCenter("/form/QuanLyTKBForm.fxml");
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Từ Chối Truy Cập", "Bạn không có quyền truy cập chức năng này.");
-        }
+        loadViewIntoCenter("/form/QuanLyTKBForm.fxml");
+    }
+
+    @FXML
+    private void handleQuanLyHocKy(ActionEvent e) {
+        loadViewIntoCenter("/form/QuanLyHocKyForm.fxml");
     }
 
     private void loadViewIntoCenter(String fxmlFileName) { // Hàm ví dụ để load một view form vào vùng center

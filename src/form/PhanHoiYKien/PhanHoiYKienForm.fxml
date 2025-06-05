@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="YKienBorderPane" prefHeight="700.0" prefWidth="850.0"
-            xmlns="http://javafx.com/javafx/21" fx:controller="controllers.PhanHoiYKien.PhanHoiYKienController">
+<BorderPane fx:id="YKienBorderPane" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.PhanHoiYKien.PhanHoiYKienController">
 
     <!-- Header -->
     <top>
-        <Label alignment="CENTER" text="PHẢN HỒI Ý KIẾN" BorderPane.alignment="CENTER">
+        <Label alignment="CENTER" prefHeight="60.0" prefWidth="169.0" text="PHẢN HỒI Ý KIẾN" BorderPane.alignment="CENTER">
             <font>
-                <Font name="System Bold" size="20"/>
+                <Font name="System Bold" size="20" />
             </font>
         </Label>
     </top>
@@ -21,28 +34,40 @@
     <!-- Center: Bảng xem các ý kiến -->
     <center>
 
-        <VBox spacing="10">
+        <VBox prefHeight="186.0" prefWidth="850.0" spacing="10">
             <padding>
-                <Insets bottom="15" left="15" right="15" top="15"/>
+                <Insets bottom="15" left="15" right="15" top="15" />
             </padding>
-            <Label text="Gửi ý kiến mới:"/>
+            <Label text="Gửi ý kiến mới:">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font></Label>
             <GridPane hgap="10" vgap="10">
 
 
-                <Label text="Nội dung:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <TextArea fx:id="txtNoiDung" prefRowCount="3" wrapText="true" GridPane.columnIndex="1"
-                          GridPane.columnSpan="2" GridPane.rowIndex="0" promptText="Mời phản hồi..."/>
-                <Text fx:id="txtStatusND" fill="#f70000" GridPane.columnIndex="2"
-                      GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.halignment="RIGHT">
+                <Label text="Nội dung:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextArea fx:id="txtNoiDung" prefRowCount="3" promptText="Mời phản hồi..." wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+                <Text fx:id="txtStatusND" fill="#f70000" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                     <GridPane.margin>
-                        <Insets/>
+                        <Insets />
                     </GridPane.margin>
                 </Text>
 
-                <Label text="Ẩn danh:" GridPane.rowIndex="1"/>
-                <CheckBox fx:id="chkAnDanh" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <Button fx:id="btnGuiYKien" onAction="#handleGuiYKien" text="Gửi" textAlignment="CENTER"
-                        GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="Ẩn danh:" GridPane.rowIndex="1" />
+                <CheckBox fx:id="chkAnDanh" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Button fx:id="btnGuiYKien" onAction="#handleGuiYKien" text="Gửi" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints />
+            </rowConstraints>
 
 
             </GridPane>
@@ -53,11 +78,11 @@
     <bottom>
         <VBox spacing="10">
             <padding>
-                <Insets bottom="15" left="15" right="15" top="15"/>
+                <Insets bottom="15" left="15" right="15" top="15" />
             </padding>
-            <Label text="Danh sách ý kiến đã gửi:"/>
+            <Label text="Danh sách ý kiến đã gửi:" />
             <HBox spacing="10">
-                <Label text="Chế độ xem:"/>
+                <Label text="Chế độ xem:" />
                 <ComboBox fx:id="cbxChonCheDo" prefWidth="200">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
@@ -68,22 +93,22 @@
                 </ComboBox>
 
                 <!-- Nút Làm mới -->
-                <Button fx:id="btnLamMoi" onAction="#handleLamMoi" text="Làm mới"/>
+                <Button fx:id="btnLamMoi" onAction="#handleLamMoi" text="Làm mới" />
 
                 <!-- Đẩy thanh tìm kiếm sang phải -->
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnTim" onAction="#handleTim" text="Tìm"/>
-                <TextField fx:id="txtSearch" promptText="Tìm kiếm..."/>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnTim" onAction="#handleTim" text="Tìm" />
+                <TextField fx:id="txtSearch" promptText="Tìm kiếm..." />
             </HBox>
 
             <TableView fx:id="tableYKien" prefHeight="250">
                 <columns>
-                    <TableColumn fx:id="colMaYK" prefWidth="100" text="Mã Ý Kiến"/>
-                    <TableColumn fx:id="colNoiDung" prefWidth="300" text="Nội dung"/>
-                    <TableColumn fx:id="colNgayGui" prefWidth="150" text="Ngày gửi"/>
-                    <TableColumn fx:id="colAnDanh" text="Ẩn danh"/>
-                    <TableColumn fx:id="colMaGV" text="Mã GV"/>
-                    <TableColumn fx:id="colTrangthai" text="Trạng thái"/>
+                    <TableColumn fx:id="colMaYK" prefWidth="100" text="Mã Ý Kiến" />
+                    <TableColumn fx:id="colNoiDung" prefWidth="300" text="Nội dung" />
+                    <TableColumn fx:id="colNgayGui" prefWidth="150" text="Ngày gửi" />
+                    <TableColumn fx:id="colAnDanh" text="Ẩn danh" />
+                    <TableColumn fx:id="colMaGV" text="Mã GV" />
+                    <TableColumn fx:id="colTrangthai" text="Trạng thái" />
                 </columns>
             </TableView>
 

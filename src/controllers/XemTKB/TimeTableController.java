@@ -47,28 +47,17 @@ public class TimeTableController {
         btnTKBToanTruong.setVisible(false); btnTKBToanTruong.setManaged(false);
         btnTKBLopCN.setVisible(false);    btnTKBLopCN.setManaged(false);
         btnTKBToCM.setVisible(false);     btnTKBToCM.setManaged(false);
-        btnTKBCaNhan.setVisible(false);   btnTKBCaNhan.setManaged(false);
+        btnTKBCaNhan.setVisible(true);   btnTKBCaNhan.setManaged(true);
 
         switch (vaiTroCode) {
-            case ADMIN:
+            case ADMIN, BGH:
                 btnTKBToanTruong.setVisible(true); btnTKBToanTruong.setManaged(true);
-                btnTKBLopCN.setVisible(true);    btnTKBLopCN.setManaged(true);
-                btnTKBToCM.setVisible(true);     btnTKBToCM.setManaged(true);
-                btnTKBCaNhan.setVisible(true);   btnTKBCaNhan.setManaged(true);
                 break;
             case TCM:
                 btnTKBToCM.setVisible(true);     btnTKBToCM.setManaged(true);
-                btnTKBCaNhan.setVisible(true);   btnTKBCaNhan.setManaged(true);
                 break;
             case GVCN:
                 btnTKBLopCN.setVisible(true);    btnTKBLopCN.setManaged(true);
-                btnTKBCaNhan.setVisible(true);   btnTKBCaNhan.setManaged(true);
-                break;
-            case GV:
-            default: // Bao gồm cả UNKNOWN, nhưng chỉ hiện nếu đã đăng nhập
-                if (currentGiaoVien != null) {
-                    btnTKBCaNhan.setVisible(true);   btnTKBCaNhan.setManaged(true);
-                }
                 break;
         }
     }
