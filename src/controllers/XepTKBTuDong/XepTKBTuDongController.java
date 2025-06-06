@@ -163,6 +163,20 @@ public class XepTKBTuDongController {
         new Thread(schedulingTask).start();
     }
 
+    private int getPriorityGroup(MonHocHoc mhh) {
+        // Môn có 3 tiết trở lên được ưu tiên cao nhất
+        if (mhh.getTongSoTiet() >= 3) {
+            return 1;
+        }
+        String maMHUpper = mhh.getMaMH().toUpperCase();
+        // Các môn GDQP và GDTC có ưu tiên thứ hai để giải quyết xung đột sớm
+        if (maMHUpper.startsWith(PREFIX_GDQPAN) || maMHUpper.startsWith(PREFIX_GDTC)) {
+            return 2;
+        }
+        // Các môn còn lại có ưu tiên thấp nhất
+        return 3;
+    }
+
     private Map<String, List<ChiTietTKB>> scheduleTimetable() {
         if (!isBaseDataSufficient()) {
             Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Thiếu dữ liệu", "Không đủ dữ liệu nền để xếp TKB. Vui lòng kiểm tra lại cài đặt Học Kỳ và các dữ liệu liên quan (Phân công giảng dạy, danh sách lớp, GV...)."));
@@ -194,15 +208,36 @@ public class XepTKBTuDongController {
             }
         }
 
+        // TẠO COMPARATOR TÙY CHỈNH VỚI LOGIC ƯU TIÊN MỚI
+        Comparator<ClassSubjectPair> customComparator = (csp1, csp2) -> {
+            int group1 = getPriorityGroup(csp1.mhh);
+            int group2 = getPriorityGroup(csp2.mhh);
+
+            // 1. So sánh theo nhóm ưu tiên trước
+            if (group1 != group2) {
+                return Integer.compare(group1, group2); // Group 1 < 2 < 3
+            }
+
+            // 2. Nếu cùng nhóm, so sánh theo tổng số tiết giảm dần
+            return Integer.compare(csp2.mhh.getTongSoTiet(), csp1.mhh.getTongSoTiet());
+        };
+
+        // Áp dụng comparator tùy chỉnh cho cả hai hàng đợi
+        priorityQueue.sort(customComparator);
+        flexibleQueue.sort(customComparator);
+
+
+        // 3. Xử lý hàng đợi ưu tiên trước
         System.out.println("--- BẮT ĐẦU XẾP NHÓM ƯU TIÊN (GV CỐ ĐỊNH TỪ CÀI ĐẶT LỚP HOẶC TKB CƠ SỞ) ---");
-        System.out.println("Số lượng mục trong hàng đợi ưu tiên: " + priorityQueue.size());
+        System.out.println("Thứ tự xử lý (ưu tiên): " + priorityQueue.stream().map(csp -> csp.toString() + "(G" + getPriorityGroup(csp.mhh) + "/" + csp.mhh.getTongSoTiet() + "t)").toList());
         for (ClassSubjectPair csp : priorityQueue) {
             System.out.println("Đang xử lý (Ưu tiên): Lớp " + csp.lop.getMaLop() + " - Môn " + csp.mhh.getMaMH());
             scheduleSingleClassSubjectEntry(csp, true);
         }
 
+        // 4. Xử lý hàng đợi linh hoạt sau
         System.out.println("--- BẮT ĐẦU XẾP NHÓM LINH HOẠT (THUẬT TOÁN TỰ CHỌN GV) ---");
-        System.out.println("Số lượng mục trong hàng đợi linh hoạt: " + flexibleQueue.size());
+        System.out.println("Thứ tự xử lý (linh hoạt): " + flexibleQueue.stream().map(csp -> csp.toString() + "(G" + getPriorityGroup(csp.mhh) + "/" + csp.mhh.getTongSoTiet() + "t)").toList());
         for (ClassSubjectPair csp : flexibleQueue) {
             System.out.println("Đang xử lý (Linh hoạt): Lớp " + csp.lop.getMaLop() + " - Môn " + csp.mhh.getMaMH());
             scheduleSingleClassSubjectEntry(csp, false);
