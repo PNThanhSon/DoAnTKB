@@ -483,6 +483,7 @@ public class XepTKBTuDongController {
         System.out.println(logPrefix + "Bắt đầu tìm GV. Ưu tiên: " + isPriorityRule + ", Lần đầu cho Lớp-Môn: " + isInitialAttemptForThisClassSubject +
                 ", GV loại trừ: " + excludedTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
 
+        // Bước 0: Kiểm tra xem đã có đội GV được khóa cho cặp Lớp-Môn này chưa
         if (isInitialAttemptForThisClassSubject && currentLockedTeachersForClassSubject.containsKey(classSubjectKey)) {
             List<GiaoVien> previouslyLockedTeam = currentLockedTeachersForClassSubject.get(classSubjectKey);
             boolean anyExcluded = !excludedTeachers.isEmpty() && previouslyLockedTeam.stream().anyMatch(excludedTeachers::contains);
@@ -497,9 +498,9 @@ public class XepTKBTuDongController {
         List<GiaoVien> determinedTeam = new ArrayList<>();
         List<String> finalExcludedMaGVs = excludedTeachers.stream().map(GiaoVien::getMaGV).toList();
 
-        // Bước 1 & 2: Ưu tiên cài đặt người dùng và TKB Cơ Sở
+        // Bước 1 & 2: Ưu tiên cài đặt người dùng (CaiDatLop) và TKB Cơ Sở
         if (isPriorityRule || isInitialAttemptForThisClassSubject) {
-            // 1. Ưu tiên cài đặt của người dùng
+            // 1. Ưu tiên cài đặt của người dùng từ CaiDatLopController
             if (classTeacherAssignmentsInput != null && classTeacherAssignmentsInput.containsKey(lop.getMaLop())) {
                 Map<String, List<String>> assignmentsForClass = classTeacherAssignmentsInput.get(lop.getMaLop());
                 if (assignmentsForClass != null && assignmentsForClass.containsKey(mhh.getMaMH())) {
@@ -507,121 +508,80 @@ public class XepTKBTuDongController {
                     if (assignedGvIdsFromSettings != null && !assignedGvIdsFromSettings.isEmpty()) {
                         System.out.println(logPrefix + "Tìm thấy cài đặt GV từ người dùng: " + assignedGvIdsFromSettings);
                         for (String maGV : assignedGvIdsFromSettings) {
-                            if (finalExcludedMaGVs.contains(maGV)) {
-                                System.out.println(logPrefix + "GV " + maGV + " từ cài đặt người dùng bị loại trừ.");
-                                continue;
-                            }
-                            GiaoVien gv = giaoVienHopLe.stream().filter(g -> g.getMaGV().equals(maGV)).findFirst().orElse(null);
-                            if (gv != null) {
-                                TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
-                                boolean canTeachThisSubject = (settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH()));
-                                // Sử dụng isTeacherGenerallyAvailable đã được điều chỉnh
-                                boolean generallyAvailable = isTeacherGenerallyAvailable(gv, mhh.getTongSoTiet());
-
-                                System.out.println(logPrefix + "  Kiểm tra GV " + maGV + " từ cài đặt: Có thể dạy môn này? " + canTeachThisSubject + ". Còn khả năng nhận phân công này? " + generallyAvailable);
-                                if (canTeachThisSubject && generallyAvailable) {
-                                    determinedTeam.add(gv);
-                                } else {
-                                    System.out.println(logPrefix + "  GV " + maGV + " từ cài đặt không thể dạy môn này hoặc không còn khả năng nhận thêm phân công này.");
-                                }
-                            } else {
-                                System.out.println(logPrefix + "  GV " + maGV + " từ cài đặt không nằm trong danh sách GV hợp lệ.");
-                            }
+                            if (finalExcludedMaGVs.contains(maGV)) continue;
+                            giaoVienHopLe.stream()
+                                    .filter(g -> g.getMaGV().equals(maGV))
+                                    .findFirst()
+                                    .ifPresent(determinedTeam::add);
                         }
                         if (!determinedTeam.isEmpty()) {
                             System.out.println(logPrefix + "Đã chọn đội GV từ cài đặt người dùng: " + determinedTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
                             currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
                             return determinedTeam;
-                        } else if (isPriorityRule) {
-                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): Không tìm được GV hợp lệ nào từ cài đặt người dùng.");
-                            currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
-                            return Collections.emptyList();
                         }
                     }
                 }
             }
-            // 2. Ưu tiên TKB Cơ Sở
+            // 2. Ưu tiên GV từ TKB Cơ Sở
             if (pinnedTeacherForSubjectClassFromBaseTKB.containsKey(classSubjectKey)) {
                 String pinnedMaGV = pinnedTeacherForSubjectClassFromBaseTKB.get(classSubjectKey);
-                System.out.println(logPrefix + "Tìm thấy GV từ TKB cơ sở: " + pinnedMaGV);
                 if (!finalExcludedMaGVs.contains(pinnedMaGV)) {
-                    GiaoVien gvFromBase = giaoVienHopLe.stream().filter(gv -> gv.getMaGV().equals(pinnedMaGV)).findFirst().orElse(null);
-                    if (gvFromBase != null) {
-                        TeacherCustomSettings settings = teacherCustomSettingsInput.get(gvFromBase.getMaGV());
-                        boolean canTeachThisSubject = (settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH()));
-                        boolean generallyAvailable = isTeacherGenerallyAvailable(gvFromBase, mhh.getTongSoTiet()); // Sử dụng hàm đã sửa
-                        if (canTeachThisSubject && generallyAvailable) {
-                            determinedTeam.add(gvFromBase);
-                            System.out.println(logPrefix + "Đã chọn GV từ TKB cơ sở: " + determinedTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
-                            currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
-                            return determinedTeam;
-                        } else if (isPriorityRule) {
-                            System.err.println(logPrefix + "LỖI (ƯU TIÊN): GV " + pinnedMaGV + " từ TKB cơ sở không hợp lệ (chuyên môn/quota). Dạy môn? " + canTeachThisSubject + ". Available? " + generallyAvailable);
-                            currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
-                            return Collections.emptyList();
-                        }
-                    } else System.out.println(logPrefix + "  GV " + pinnedMaGV + " từ TKB cơ sở không trong ds hợp lệ.");
-                } else System.out.println(logPrefix + "GV " + pinnedMaGV + " từ TKB cơ sở bị loại trừ.");
+                    giaoVienHopLe.stream().filter(gv -> gv.getMaGV().equals(pinnedMaGV)).findFirst().ifPresent(determinedTeam::add);
+                    if (!determinedTeam.isEmpty()) {
+                        System.out.println(logPrefix + "Đã chọn GV từ TKB cơ sở: " + determinedTeam.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+                        currentLockedTeachersForClassSubject.put(classSubjectKey, determinedTeam);
+                        return determinedTeam;
+                    }
+                }
             }
-        } // Kết thúc khối if (isPriorityRule || isInitialAttemptForThisClassSubject)
+        }
 
-        // Bước 3: "Để thuật toán tự chọn" - Tìm GV lý tưởng (dưới quota)
-        System.out.println(logPrefix + "Thực hiện 'Để thuật toán tự chọn' (tìm GV dưới quota)...");
-        boolean isSpecialSubject = mhh.getMaMH().startsWith("GDDP") || mhh.getMaMH().startsWith("HDTNHN");
-        String targetMaTCM = mhh.getMaTCM();
+        // Bước 3: Thuật toán tự chọn GV dựa trên quyền dạy môn học (thay vì MaTCM)
+        System.out.println(logPrefix + "Thực hiện 'Để thuật toán tự chọn'...");
 
+        // Lọc ra các GV có thể dạy môn này (dựa trên cài đặt) và còn dưới định mức
         List<GiaoVien> idealPotentialTeachers = giaoVienHopLe.stream()
                 .filter(gv -> !finalExcludedMaGVs.contains(gv.getMaGV()))
                 .filter(gv -> {
+                    // **THAY ĐỔI LOGIC CỐT LÕI TẠI ĐÂY**
+                    // Kiểm tra xem GV có được cấu hình để dạy môn này không.
                     TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
                     return settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH());
                 })
-                .filter(gv -> {
-                    if (targetMaTCM != null && !targetMaTCM.isBlank()) {
-                        return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCM);
-                    } else return isSpecialSubject;
-                })
                 .filter(gv -> isTeacherGenerallyAvailable(gv, mhh.getTongSoTiet())) // Kiểm tra xem có dưới quota không
-                .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher))
+                .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher)) // Ưu tiên người ít tiết nhất
                 .toList();
 
         if (!idealPotentialTeachers.isEmpty()) {
             System.out.println(logPrefix + "Danh sách GV tiềm năng (dưới quota) sau khi lọc: " + idealPotentialTeachers.stream().map(GiaoVien::getMaGV).collect(Collectors.joining(",")));
+            // Ưu tiên GVCN nếu họ có trong danh sách
             GiaoVien selectedTeacher = idealPotentialTeachers.stream()
                     .filter(gv -> lop.getGvcn() != null && gv.getMaGV().equals(lop.getGvcn()))
                     .findFirst()
-                    .orElse(idealPotentialTeachers.getFirst());
+                    .orElse(idealPotentialTeachers.getFirst()); // Nếu không thì lấy người ít tiết nhất
 
             determinedTeam.add(selectedTeacher);
-            System.out.println(logPrefix + "Đã chọn GV (dưới quota) bởi thuật toán 'tự chọn': " + selectedTeacher.getMaGV());
+            System.out.println(logPrefix + "Đã chọn GV (dưới quota) bởi thuật toán: " + selectedTeacher.getMaGV());
         } else {
-            // Bước 4: KHÔNG CÓ GV LÝ TƯỞNG (DƯỚI QUOTA) PHÙ HỢP -> "Siêu Last Resort"
-            System.out.println(logPrefix + "Không tìm thấy GV lý tưởng (dưới quota). Thử 'Siêu Last Resort': Tìm GV đủ chuyên môn có số tiết ít nhất (bất kể quota).");
+            // Bước 4: "Siêu Last Resort" - Tìm GV có thể dạy môn này bất kể định mức
+            System.out.println(logPrefix + "Không tìm thấy GV dưới quota. Thử 'Siêu Last Resort'...");
             List<GiaoVien> superLastResortCandidates = giaoVienHopLe.stream()
                     .filter(gv -> !finalExcludedMaGVs.contains(gv.getMaGV()))
-                    .filter(gv -> { // Lọc theo khả năng dạy môn (CaiDatGV)
+                    .filter(gv -> {
+                        // **Sử dụng lại logic đã thay đổi**
                         TeacherCustomSettings settings = teacherCustomSettingsInput.get(gv.getMaGV());
                         return settings != null && settings.getTeachingPreferenceForSubject(mhh.getMaMH());
                     })
-                    .filter(gv -> { // Lọc theo TCM (nếu môn có TCM)
-                        if (targetMaTCM != null && !targetMaTCM.isBlank()) {
-                            return gv.getMaTCM() != null && gv.getMaTCM().equals(targetMaTCM);
-                        } else return isSpecialSubject;
-                    })
                     // KHÔNG lọc theo isTeacherGenerallyAvailable ở đây nữa
-                    .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher)) // Sắp xếp theo số tiết đã thực hiện
+                    .sorted(Comparator.comparingLong(this::countCurrentPeriodsForTeacher))
                     .toList();
 
             if (!superLastResortCandidates.isEmpty()) {
-                GiaoVien selectedTeacher = superLastResortCandidates.getFirst(); // Chọn GV ít tiết nhất trong nhóm này
+                GiaoVien selectedTeacher = superLastResortCandidates.getFirst();
                 determinedTeam.add(selectedTeacher);
-                long currentLoadOfSelected = countCurrentPeriodsForTeacher(selectedTeacher);
-                int chucVuLoad = xepTKBDAO.getSoTietChucVuDaSuDung(selectedTeacher.getMaGV(), (selectedHocKy != null ? selectedHocKy.getMaHK() : ""));
-                System.out.println(logPrefix + "Đã chọn GV bằng 'Siêu Last Resort': " + selectedTeacher.getMaGV() +
-                        " (Số tiết hiện tại: " + currentLoadOfSelected + ", CV: " + chucVuLoad +
-                        ", Quy định: " + selectedTeacher.getSoTietQuyDinh() + "). GV này có thể đã/sẽ vượt quota.");
+                System.out.println(logPrefix + "Đã chọn GV bằng 'Siêu Last Resort' (có thể vượt quota): " + selectedTeacher.getMaGV());
             } else {
-                System.out.println(logPrefix + "KHÔNG tìm thấy GV nào đủ chuyên môn cho 'Siêu Last Resort'.");
+                System.out.println(logPrefix + "KHÔNG tìm thấy GV nào đủ điều kiện cho môn này.");
             }
         }
 
@@ -630,14 +590,11 @@ public class XepTKBTuDongController {
             return determinedTeam;
         }
 
-        // Nếu đến đây mà determinedTeam vẫn rỗng
-        if (isInitialAttemptForThisClassSubject && !currentLockedTeachersForClassSubject.containsKey(classSubjectKey)) {
-            System.out.println(logPrefix + "Không tìm được GV nào sau tất cả các bước, khóa danh sách rỗng cho " + classSubjectKey);
-            currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
-        }
+        // Nếu vẫn không tìm được ai, khóa danh sách rỗng để không thử lại
+        System.out.println(logPrefix + "Không tìm được GV nào sau tất cả các bước, khóa danh sách rỗng.");
+        currentLockedTeachersForClassSubject.put(classSubjectKey, Collections.emptyList());
         return Collections.emptyList();
     }
-
     private boolean isTeacherGenerallyAvailable(GiaoVien gv, int periodsToAdd) {
         if (gv.getSoTietQuyDinh() == null || gv.getSoTietQuyDinh() == 0) {
             return true; // Không giới hạn

@@ -125,23 +125,22 @@ public class CaiDatLopController {
         ComboBox<GiaoVien> gvComboBox = new ComboBox<>();
         gvComboBox.setPrefWidth(300);
 
-        // Lọc danh sách giáo viên:
-        // 1. Thuộc TCM của môn học
-        // 2. Được phép dạy môn này (theo TeacherCustomSettings)
+        // **THAY ĐỔI LOGIC CỐT LÕI TẠI ĐÂY**
+        // Lọc danh sách giáo viên dựa trên cài đặt "có thể dạy môn này"
+        // thay vì dựa trên tổ chuyên môn.
         ObservableList<GiaoVien> teacherOptions = allAvailableTeachers.stream()
                 .filter(gv -> {
-                    if (gv.getMaTCM() == null || !gv.getMaTCM().equals(monHocHoc.getMaTCM())) {
-                        return false; // Không thuộc TCM
-                    }
+                    // Một giáo viên là một lựa chọn nếu họ được cấu hình để dạy môn này.
                     TeacherCustomSettings settings = teacherCustomSettings.get(gv.getMaGV());
-                    // Nếu không có setting riêng, hoặc setting cho phép dạy môn này
-                    return (settings == null) || settings.getTeachingPreferenceForSubject(monHocHoc.getMaMH());
+                    return settings != null && settings.getTeachingPreferenceForSubject(monHocHoc.getMaMH());
                 })
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        teacherOptions.addFirst(AUTO_SELECT_GV_PLACEHOLDER); // Luôn có lựa chọn "Để thuật toán"
+        // Luôn thêm lựa chọn "Để thuật toán tự chọn" vào đầu danh sách
+        teacherOptions.addFirst(AUTO_SELECT_GV_PLACEHOLDER);
         gvComboBox.setItems(teacherOptions);
 
+        // Cấu hình cách hiển thị tên GV trong ComboBox
         gvComboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(GiaoVien gv) {
@@ -154,24 +153,24 @@ public class CaiDatLopController {
 
             @Override
             public GiaoVien fromString(String string) {
-                return null;
+                return null; // Không cần implement
             }
         });
 
-        // Chọn giáo viên đã được gán trước (nếu có)
+        // Chọn giáo viên đã được gán trước đó (nếu có)
         if (selectedMaGV != null) {
             teacherOptions.stream()
                     .filter(gv -> selectedMaGV.equals(gv.getMaGV()))
                     .findFirst()
                     .ifPresent(gvComboBox::setValue);
         } else {
+            // Mặc định là "Để thuật toán tự chọn"
             gvComboBox.setValue(AUTO_SELECT_GV_PLACEHOLDER);
         }
 
+        // Nút để xóa một lựa chọn giáo viên
         Button btnRemoveTeacher = new Button("-");
         btnRemoveTeacher.setOnAction(e -> {
-            // Chỉ xóa nếu còn nhiều hơn 1 selector, hoặc selector hiện tại không phải là "Để thuật toán tự chọn"
-            // và parentVBox có nhiều hơn 1 HBox (selector)
             if (parentVBox.getChildren().size() > 1) {
                 parentVBox.getChildren().remove(selectorHBox);
             } else { // Nếu chỉ còn 1, reset nó về "Để thuật toán"
