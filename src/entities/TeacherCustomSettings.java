@@ -42,7 +42,7 @@ public class TeacherCustomSettings implements Serializable {
     // Tiện ích để lấy hoặc đặt tùy chọn cho một môn học cụ thể
     public boolean getTeachingPreferenceForSubject(String maMH) {
         // Mặc định là true nếu không có cài đặt cụ thể (nghĩa là GV sẽ dạy môn đó nếu thuộc TCM của họ)
-        return subjectTeachingPreference.getOrDefault(maMH, true);
+        return subjectTeachingPreference.getOrDefault(maMH, false);
     }
 
     public void setTeachingPreferenceForSubject(String maMH, boolean teaches) {
