@@ -15,6 +15,7 @@ public class DatabaseConnection {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         } catch (SQLException e) {
             System.err.println("LỖI KẾT NỐI CƠ SỞ DỮ LIỆU:");
             System.err.println("URL: " + DB_URL);
