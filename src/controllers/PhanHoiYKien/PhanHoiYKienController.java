@@ -43,7 +43,6 @@ public class PhanHoiYKienController {
     @FXML private TableColumn<YKien, String> colMaYK;
     @FXML private TableColumn<YKien, String> colNoiDung;
     @FXML private TableColumn<YKien, LocalDate> colNgayGui;
-    @FXML private TableColumn<YKien, Boolean> colAnDanh;
     @FXML private TableColumn<YKien, String> colMaGV;
     @FXML private TableColumn<YKien, String> colTrangthai;
     @FXML private Text txtStatusND;
@@ -64,10 +63,10 @@ public class PhanHoiYKienController {
         Platform.runLater(() -> YKienBorderPane.requestFocus());  // tránh focus vào ô nhập liệu
         initTableColumns(); // khởi tạo bảng danh sách.
         setupContextMenu(); // tạo menu xóa, sửa khi click trái
-        loadDataFromDB();
+        taiDanhSachYKien();
 
         // lắng nghe trực tiếp thay vì ấn thêm nút
-        cbxChonCheDo.valueProperty().addListener((obs, oldVal, newVal) -> updateFilterPredicate());
+        cbxChonCheDo.valueProperty().addListener((obs, oldVal, newVal) -> capNhatBoLocHienThi());
     }
 
 
@@ -75,7 +74,6 @@ public class PhanHoiYKienController {
         colMaYK.setCellValueFactory(new PropertyValueFactory<>("maYK"));
         colNoiDung.setCellValueFactory(new PropertyValueFactory<>("noiDung"));
         colNgayGui.setCellValueFactory(new PropertyValueFactory<>("ngayGui"));
-        colAnDanh.setCellValueFactory(new PropertyValueFactory<>("anDanh"));
         colMaGV.setCellValueFactory(cellData -> {
             YKien yk = cellData.getValue();
             String display = yk.getAnDanh() ? "Ẩn Danh" : yk.getMaGV();
@@ -86,7 +84,7 @@ public class PhanHoiYKienController {
     }
 
     // ẩn các chức năng không được quyền, k phải admin thì không tìm kiếm được và chế độ xem hạn chế
-    public void ishideFuntion() {
+    private void thietLapGiaoDienTheoQuyen() {
         // làm trống rồi set lại cho chắc ))
         cbxChonCheDo.getItems().clear();
 
@@ -107,13 +105,13 @@ public class PhanHoiYKienController {
             btnTim.setVisible(true);
         }
     }
-    private void loadDataFromDB() throws SQLException {
+    private void taiDanhSachYKien() throws SQLException {
         if (giaoviencurrent == null) return;
 
         filteredList = new FilteredList<>(listYkienCurrent, p -> true);
         // phân quyền, bảo mật về mặt backend cho chế độ xem
         if (giaoviencurrent.isAdmin()) {
-            listYkienCurrent.setAll(ykienDAO.TimKiemYKien(""));
+            listYkienCurrent.setAll(ykienDAO.TracuuYKien(""));
         } else {
             String maGV = giaoviencurrent.getMaGV();
             listYkienCurrent.setAll(ykienDAO.TracuuYKien(maGV));
@@ -123,22 +121,22 @@ public class PhanHoiYKienController {
         FXCollections.sort(listYkienCurrent, Comparator.comparing(YKien::getNgayGui).reversed());
         tableYKien.setItems(filteredList); // truyen data vao bang
         // phân quyền, bảo mật về mặt fontend cho chức năng tìm kiếm
-        ishideFuntion();
+        thietLapGiaoDienTheoQuyen();
     }
 
 
     // truyền user tới
-    public void getGiaoVienData(GiaoVien gv) throws SQLException {
+    public void khoiTaoDuLieu(GiaoVien gv) throws SQLException {
         this.giaoviencurrent = gv;
-        loadDataFromDB();
+        taiDanhSachYKien();
     }
 
 
     // reload data, nếu trước đó có tra cứu thì load lại data tra cứu đó nếu không sẽ load lại theo chế độ
     // dùng khi callback để cập nhật hoặc reload lại dữ liệu, có thế dùng Property để đồng bộ thay mã này
     private void reloadDATA() throws SQLException {
-        loadDataFromDB();
-        updateFilterPredicate();
+        taiDanhSachYKien();
+        capNhatBoLocHienThi();
     }
 
     private void setupContextMenu() {
@@ -146,8 +144,8 @@ public class PhanHoiYKienController {
         MenuItem suaItem = new MenuItem("Sửa Nội Dung"); // chỉ xài được khi người sửa là chính người đăng nhập
         MenuItem xoaItem = new MenuItem("Gỡ"); // admin hoặc chính người đăng nhập
 
-        suaItem.setOnAction(e -> handle_Sua());
-        xoaItem.setOnAction(e -> handle_Xoa());
+        suaItem.setOnAction(e -> xuLySuaYKien());
+        xoaItem.setOnAction(e -> xuLyXoaYKien());
 
         contextMenu.getItems().addAll(suaItem, xoaItem);
 
@@ -156,16 +154,20 @@ public class PhanHoiYKienController {
         );
     }
 
-    private void updateFilterPredicate() {
+    private void capNhatBoLocHienThi() {
         String keyword = txtSearch.getText().trim().toUpperCase();
         String cheDo = cbxChonCheDo.getValue();
+        if (cheDo == null) {
+            cheDo = "Tất cả phản hồi";
+        }
+        String finalCheDo = cheDo;
         filteredList.setPredicate(yk -> {
             boolean matchSearch = keyword.isEmpty() ||
                     yk.getMaGV().toUpperCase().contains(keyword) ||
                     yk.getMaYK().toUpperCase().contains(keyword) ||
                     yk.getNoiDung().toUpperCase().contains(keyword);
 
-            boolean matchChedo = cheDo.equals("Tất cả phản hồi") || yk.getMaGV().equals(giaoviencurrent.getMaGV());
+            boolean matchChedo = finalCheDo.equals("Tất cả phản hồi") || yk.getMaGV().equals(giaoviencurrent.getMaGV());
             boolean matchAnDanh = !keyword.isEmpty() && yk.getAnDanh() && !(yk.getMaGV().equals(giaoviencurrent.getMaGV()));
 
             return matchSearch && matchChedo && !matchAnDanh;
@@ -175,7 +177,7 @@ public class PhanHoiYKienController {
 
     // Phương thức gọi khi người dùng gửi ý kiến (gắn event handler ở FXML hoặc code).
     @FXML
-    private void handleGuiYKien() {
+    private void xuLyGuiYKien() {
         String noiDung = txtNoiDung.getText().trim();
         boolean anDanh = chkAnDanh.isSelected();
         String maGV = giaoviencurrent.getMaGV();
@@ -210,8 +212,8 @@ public class PhanHoiYKienController {
     }
 
     @FXML
-    private void handleTim() {
-       updateFilterPredicate();
+    private void xuLyTimKiem() {
+       capNhatBoLocHienThi();
     }
 
 //    private void XuLyTim() {
@@ -224,16 +226,16 @@ public class PhanHoiYKienController {
 //    }
 
     @FXML
-    private void handleLamMoi() throws SQLException {
-        loadDataFromDB();
+    private void xuLyLamMoi() throws SQLException {
+        taiDanhSachYKien();
         txtSearch.clear();
-        updateFilterPredicate();
+        capNhatBoLocHienThi();
     }
 
 
 
     // nút được tạo trong controller
-    private void handle_Sua() {
+    private void xuLySuaYKien() {
         YKien selected = tableYKien.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn giáo viên để sửa.");
@@ -274,7 +276,7 @@ public class PhanHoiYKienController {
     }
 
     // nút được tạo trong controller
-    private void handle_Xoa() {
+    private void xuLyXoaYKien() {
         YKien selected = tableYKien.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn phản hồi để xóa.");

@@ -32,12 +32,11 @@ public class YKienDAO {
     // Truy xuất tất cả ý kiến
     public List<YKien> TracuuYKien(String MaGV) throws SQLException {
         List<YKien> danhSach = new ArrayList<>();
-        String sql = "SELECT * FROM YKien WHERE MaGV = ? ORDER BY NgayGui DESC";
+        String sql = "SELECT yk.MaYK, yk.NoiDung, yk.NgayGui, yk.AnDanh, gv.HoGV || ' ' || gv.TenGV AS HoTenGV FROM YKien yk JOIN GIAOVIEN gv ON yk.MaGV = gv.MaGV  ORDER BY NgayGui DESC";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, MaGV);  // Gán tham số MaGV
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -51,7 +50,7 @@ public class YKienDAO {
                             rs.getString("NoiDung"),
                             rs.getDate("NgayGui").toLocalDate(),
                             rs.getBoolean("AnDanh"),
-                            rs.getString("MaGV"),
+                            rs.getString("HoTenGV"),
                             Trangthai
                     );
                     danhSach.add(yk);

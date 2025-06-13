@@ -8,13 +8,14 @@ public class DatabaseConnection {
     // --- THÔNG SỐ KẾT NỐI CSDL ORACLE CỦA BẠN ---
     private static final String DB_URL = "jdbc:oracle:thin:@//localhost:1521/XEPDB1"; // jdbc:oracle:thin:@localhost:1521:orcl nếu là SID | Lưu ý: Service Name như XEPDB1 và SID như orcl có thể khác tùy máy của bạn!!!
     private static final String DB_USER = "TKB"; // Tên người dùng của bạn
-    private static final String DB_PASSWORD = "pass"; // Mật khẩu của bạn
+    private static final String DB_PASSWORD = "kaxe28"; // Mật khẩu của bạn
     // --- KẾT THÚC PHẦN THÔNG SỐ ---
 
     public static Connection getConnection() {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         } catch (SQLException e) {
             System.err.println("LỖI KẾT NỐI CƠ SỞ DỮ LIỆU:");
             System.err.println("URL: " + DB_URL);

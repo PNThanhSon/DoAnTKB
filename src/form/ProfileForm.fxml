@@ -129,19 +129,19 @@
         <VBox.margin>
             <Insets top="25.0"/>
         </VBox.margin>
-        <Button fx:id="suaThongTinButton" mnemonicParsing="false" onAction="#handleSuaThongTin"
+        <Button fx:id="suaThongTinButton" mnemonicParsing="false" onAction="#xuLyChuyenSangCheDoSua"
                 text="Sửa Thông Tin">
             <font>
                 <Font size="13.0"/>
             </font>
         </Button>
-        <Button fx:id="luuButton" mnemonicParsing="false" onAction="#handleLuuThayDoi" text="Lưu Thay Đổi"
+        <Button fx:id="luuButton" mnemonicParsing="false" onAction="#xuLyLuuThayDoi" text="Lưu Thay Đổi"
                 visible="false" managed="false">
             <font>
                 <Font size="13.0" name="System Bold"/>
             </font>
         </Button>
-        <Button fx:id="huyBoButton" mnemonicParsing="false" onAction="#handleHuyBoSua" text="Hủy Bỏ" visible="false"
+        <Button fx:id="huyBoButton" mnemonicParsing="false" onAction="#xuLyHuyBo" text="Hủy Bỏ" visible="false"
                 managed="false">
             <font>
                 <Font size="13.0"/>

@@ -46,7 +46,7 @@ public class ProfileController {
     @FXML
     public void initialize() {
         // Ban đầu, các trường nhập liệu và nút Lưu/Hủy bị ẩn
-        setUIMode(false); // false = chế độ xem
+        thietLapCheDoGiaoDien(false); // false = chế độ xem
     }
 
     /**
@@ -54,16 +54,16 @@ public class ProfileController {
      * Cũng điền dữ liệu vào các TextField/TextArea để sẵn sàng cho việc sửa.
      * @param giaoVien Đối tượng GiaoVien chứa thông tin người dùng.
      */
-    public void setGiaoVienData(GiaoVien giaoVien) {
+    public void khoiTaoDuLieu(GiaoVien giaoVien) {
         this.currentGiaoVien = giaoVien;
         if (giaoVien != null) {
-            displayGiaoVienInfo();
+            hienThiThongTinGiaoVien();
         } else {
             clearAllFields();
         }
     }
 
-    private void displayGiaoVienInfo() {
+    private void hienThiThongTinGiaoVien() {
         if (currentGiaoVien == null) return;
 
         maGvLabel.setText(getOrDefault(currentGiaoVien.getMaGV()));
@@ -110,7 +110,7 @@ public class ProfileController {
      * Chuyển đổi giao diện giữa chế độ xem và chế độ sửa.
      * @param editing true nếu đang ở chế độ sửa, false nếu ở chế độ xem.
      */
-    private void setUIMode(boolean editing) {
+    private void thietLapCheDoGiaoDien(boolean editing) {
         // Email
         emailLabel.setVisible(!editing); emailLabel.setManaged(!editing);
         emailTextField.setVisible(editing); emailTextField.setManaged(editing);
@@ -130,20 +130,20 @@ public class ProfileController {
     }
 
     @FXML
-    private void handleSuaThongTin(ActionEvent event) {
+    private void xuLyChuyenSangCheDoSua(ActionEvent event) {
         if (currentGiaoVien != null) {
             // Điền dữ liệu hiện tại vào các ô input một lần nữa để chắc chắn
             emailTextField.setText(currentGiaoVien.getEmail() != null ? currentGiaoVien.getEmail() : "");
             sdtTextField.setText(currentGiaoVien.getSdt() != null ? currentGiaoVien.getSdt() : "");
             ghiChuTextArea.setText(currentGiaoVien.getGhiChu() != null ? currentGiaoVien.getGhiChu() : "");
-            setUIMode(true); // Chuyển sang chế độ sửa
+            thietLapCheDoGiaoDien(true); // Chuyển sang chế độ sửa
         } else {
             showAlert(Alert.AlertType.WARNING, "Lỗi", "Không có thông tin giáo viên để sửa.");
         }
     }
 
     @FXML
-    private void handleLuuThayDoi(ActionEvent event) {
+    private void xuLyLuuThayDoi(ActionEvent event) {
         if (currentGiaoVien == null) {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không có thông tin giáo viên để lưu.");
             return;
@@ -181,8 +181,8 @@ public class ProfileController {
             this.currentGiaoVien.setSdt(newSdt);
             this.currentGiaoVien.setGhiChu(newGhiChu);
 
-            displayGiaoVienInfo(); // Hiển thị lại thông tin đã cập nhật trên các Label
-            setUIMode(false); // Chuyển về chế độ xem
+            hienThiThongTinGiaoVien(); // Hiển thị lại thông tin đã cập nhật trên các Label
+            thietLapCheDoGiaoDien(false); // Chuyển về chế độ xem
             showAlert(Alert.AlertType.INFORMATION, "Thành Công", "Thông tin cá nhân đã được cập nhật.");
         } else {
             showAlert(Alert.AlertType.ERROR, "Thất Bại", "Không thể cập nhật thông tin cá nhân.\nVui lòng thử lại hoặc kiểm tra kết nối cơ sở dữ liệu.");
@@ -191,11 +191,11 @@ public class ProfileController {
     }
 
     @FXML
-    private void handleHuyBoSua(ActionEvent event) {
+    private void xuLyHuyBo(ActionEvent event) {
         // Đặt lại giá trị các TextField/TextArea về giá trị ban đầu của currentGiaoVien
         // bằng cách gọi lại displayGiaoVienInfo (vì nó cũng cập nhật TextField/TextArea)
-        displayGiaoVienInfo();
-        setUIMode(false); // Chuyển về chế độ xem
+        hienThiThongTinGiaoVien();
+        thietLapCheDoGiaoDien(false); // Chuyển về chế độ xem
     }
 
     /**

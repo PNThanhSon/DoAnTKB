@@ -144,7 +144,7 @@ public class MainFormController {
             Parent profileRoot = loader.load();
 
             ProfileController profileController = loader.getController();
-            profileController.setGiaoVienData(loggedInGiaoVien);
+            profileController.khoiTaoDuLieu(loggedInGiaoVien);
 
             if (mainBorderPane != null) {
                 mainBorderPane.setCenter(profileRoot); // Đặt nội dung mới vào vùng center

@@ -106,10 +106,12 @@
                     <TableColumn fx:id="colMaYK" prefWidth="100" text="Mã Ý Kiến" />
                     <TableColumn fx:id="colNoiDung" prefWidth="300" text="Nội dung" />
                     <TableColumn fx:id="colNgayGui" prefWidth="150" text="Ngày gửi" />
-                    <TableColumn fx:id="colAnDanh" text="Ẩn danh" />
-                    <TableColumn fx:id="colMaGV" text="Mã GV" />
+                    <TableColumn fx:id="colMaGV" text="Giáo viên" />
                     <TableColumn fx:id="colTrangthai" text="Trạng thái" />
                 </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
             </TableView>
 
         </VBox>

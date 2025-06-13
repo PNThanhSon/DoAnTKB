@@ -41,12 +41,12 @@ public class DangNhapController {
     }
 
     @FXML
-    protected void LayThongTinDangNhap(ActionEvent event) {
+    protected void xuLyDangNhap(ActionEvent event) {
         String maGV = maGvField.getText();
         String matKhau = matKhauField.getText();
 
         // Gọi hàm kiểm tra trường bắt buộc
-        if (!KiemTraTruongBatBuoc(maGV, matKhau)) {
+        if (!kiemTraRangBuocDauVao(maGV, matKhau)) {
             return; // Dừng nếu trường bắt buộc không hợp lệ
         }
         // Nếu trường hợp lệ, xóa thông báo lỗi cũ (nếu có)
@@ -54,7 +54,7 @@ public class DangNhapController {
 
 
         System.out.println("Controller: Đang gọi KiemTraDangNhapCSDL cho MaGV: " + maGV);
-        Optional<GiaoVien> giaoVienOptional = KiemTraDangNhapCSDL(maGV, matKhau);
+        Optional<GiaoVien> giaoVienOptional = xacThucNguoiDung(maGV, matKhau);
 
         if (giaoVienOptional.isPresent()) {
             GiaoVien loggedInGiaoVien = giaoVienOptional.get();
@@ -64,7 +64,7 @@ public class DangNhapController {
             ThongBaoDangNhap(true, loggedInGiaoVien.getHoGV() + " " + loggedInGiaoVien.getTenGV());
 
             try {
-                ChuyenGiaoDien(loggedInGiaoVien, event);
+                chuyenDenTrangChinh(loggedInGiaoVien, event);
             } catch (IOException e) {
                 e.printStackTrace();
                 // Thông báo lỗi nghiêm trọng hơn nếu không mở được form chính
@@ -80,7 +80,7 @@ public class DangNhapController {
         }
     }
 
-    private boolean KiemTraTruongBatBuoc(String maGV, String matKhau) {
+    private boolean kiemTraRangBuocDauVao(String maGV, String matKhau) {
         if (maGV.trim().isEmpty() || matKhau.isEmpty()) {
             ThongBaoLoi("Mã giáo viên và mật khẩu không được để trống!");
             return false;
@@ -109,7 +109,7 @@ public class DangNhapController {
     }
 
 
-    private void ChuyenGiaoDien(GiaoVien giaoVien, ActionEvent event) throws IOException {
+    private void chuyenDenTrangChinh(GiaoVien giaoVien, ActionEvent event) throws IOException {
         Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/MainForm.fxml"));
@@ -141,7 +141,7 @@ public class DangNhapController {
         alert.showAndWait();
     }
 
-    public Optional<GiaoVien> KiemTraDangNhapCSDL(String maGV, String matKhau) {
+    public Optional<GiaoVien> xacThucNguoiDung(String maGV, String matKhau) {
         String sql = "SELECT MaGV, HoGV, TenGV, GioiTinh, ChuyenMon, MaTCM, SoTietQuyDinh, " +
                 "SoTietThucHien, SoTietDuThieu, Email, SDT, MatKhau, GhiChu " +
                 "FROM GIAOVIEN WHERE MaGV = ? AND MatKhau = ?";
