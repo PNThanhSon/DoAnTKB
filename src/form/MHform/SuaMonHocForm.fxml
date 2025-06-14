@@ -60,7 +60,7 @@
       </rowConstraints>
     </GridPane>
     <HBox alignment="CENTER_RIGHT" spacing="10.0">
-        <Button onAction="#handleLuu" text="Lưu Thay Đổi" />
-        <Button onAction="#handleHuy" text="Hủy" />
+        <Button onAction="#xuLyLuuThayDoi" text="Lưu Thay Đổi" />
+        <Button onAction="#xuLyHuy" text="Hủy" />
     </HBox>
 </VBox>

@@ -95,8 +95,8 @@
         </GridPane>
 
         <HBox alignment="CENTER_RIGHT" spacing="10.0">
-            <Button onAction="#handleLuu" text="Lưu"/>
-            <Button onAction="#handleHuy" text="Hủy"/>
+            <Button onAction="#xuLyLuuThayDoi" text="Lưu"/>
+            <Button onAction="#xuLyHuy" text="Hủy"/>
         </HBox>
     </VBox>
 </ScrollPane>

@@ -88,7 +88,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
             <Text fx:id="txtThongBao" />
-            <Button onAction="#handleThem" text="Thêm" />
+            <Button onAction="#xuLyThemTCM" text="Thêm" />
             <Button onAction="#handleLamMoi" text="Làm Mới" />
         </HBox>
     </bottom>

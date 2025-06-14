@@ -56,7 +56,7 @@ public class SuaThongtinGVController {
         comboGioiTinh.getSelectionModel().selectFirst();
     }
     // điền dữ liệu hiện tại vào form sửa
-    public void getGiaoVien(GiaoVien gv) {
+    public void khoiTaoDuLieuSua(GiaoVien gv) {
         this.giaoVien = gv;
         txtMaGV.setText(gv.getMaGV());
         txtHoGV.setText(gv.getHoGV());
@@ -78,9 +78,9 @@ public class SuaThongtinGVController {
     }
 
     @FXML
-    private void handleLuu() throws SQLException {
+    private void xuLyLuuThayDoi() throws SQLException {
 
-        if (!validateInputs()) {
+        if (!kiemTraHopLe()) {
             return;
         }
         // cập nhật lại thông tin
@@ -114,7 +114,7 @@ public class SuaThongtinGVController {
     }
 
     @FXML
-    private void handleHuy() {
+    private void xuLyHuy() {
         dialogStage.close();
     }
 
@@ -129,7 +129,7 @@ public class SuaThongtinGVController {
     }
 
 
-    public boolean validateInputs() {
+    public boolean kiemTraHopLe() {
         boolean isValid = true;
 
         // Reset lỗi

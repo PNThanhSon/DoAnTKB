@@ -56,9 +56,9 @@ public class ThemGVController {
 
 
     @FXML
-    private void handleThem() throws SQLException {
+    private void xuLyLuuMoi() throws SQLException {
 
-        if (!validateInputs()) {
+        if (!kiemTraHopLe()) {
             return;
         }
         giaoVien = new GiaoVien();
@@ -93,7 +93,7 @@ public class ThemGVController {
     }
 
     @FXML
-    private void handleHuy() {
+    private void xuLyHuy() {
         dialogStage.close();
     }
 
@@ -106,7 +106,7 @@ public class ThemGVController {
         this.onSuccess = onSuccess;
     }
 
-    public boolean validateInputs() {
+    public boolean kiemTraHopLe() {
         boolean isValid = true;
 
         // Reset lỗi

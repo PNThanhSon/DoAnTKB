@@ -74,7 +74,7 @@ public class SuaLopHocController {
     }
 
     // Nhận đối tượng LopHoc cần sửa và điền thông tin vào form
-    public void setLopHocToEdit(Lop lopHoc) {
+    public void khoiTaoDuLieuSua(Lop lopHoc) {
         this.lopHocToEdit = lopHoc;
         populateForm();
     }
@@ -105,8 +105,8 @@ public class SuaLopHocController {
     }
 
     @FXML
-    private void handleLuu() {
-        if (validateInputs()) { // Kiểm tra dữ liệu nhập
+    private void xuLyLuuThayDoi() {
+        if (kiemTraHopLe()) { // Kiểm tra dữ liệu nhập
             // Cập nhật thông tin cho đối tượng lopHocToEdit từ form
             lopHocToEdit.setTenLop(txtTenLop.getText().trim());
             lopHocToEdit.setKhoi(comboKhoi.getValue());
@@ -132,11 +132,11 @@ public class SuaLopHocController {
     }
 
     @FXML
-    private void handleHuy() {
+    private void xuLyHuy() {
         dialogStage.close(); // Đóng dialog khi hủy
     }
 
-    private boolean validateInputs() {
+    private boolean kiemTraHopLe() {
         resetErrorMessages(); // Xóa các thông báo lỗi cũ
         boolean isValid = true;
 

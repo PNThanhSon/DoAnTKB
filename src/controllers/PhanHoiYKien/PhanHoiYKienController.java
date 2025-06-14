@@ -84,7 +84,7 @@ public class PhanHoiYKienController {
     }
 
     // ẩn các chức năng không được quyền, k phải admin thì không tìm kiếm được và chế độ xem hạn chế
-    private void thietLapGiaoDienTheoQuyen() {
+    public void thietLapGiaoDienTheoQuyen() {
         // làm trống rồi set lại cho chắc ))
         cbxChonCheDo.getItems().clear();
 

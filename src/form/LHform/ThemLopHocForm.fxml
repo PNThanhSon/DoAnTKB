@@ -62,7 +62,7 @@
 
     </GridPane>
     <HBox alignment="CENTER_RIGHT" spacing="10.0">
-        <Button onAction="#handleThem" text="Lưu" />
-        <Button onAction="#handleHuy" text="Hủy" />
+        <Button onAction="#xuLyLuuMoi" text="Lưu" />
+        <Button onAction="#xuLyHuy" text="Hủy" />
     </HBox>
 </VBox>

@@ -55,7 +55,7 @@
 
                 <Label text="Ẩn danh:" GridPane.rowIndex="1" />
                 <CheckBox fx:id="chkAnDanh" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Button fx:id="btnGuiYKien" onAction="#handleGuiYKien" text="Gửi" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Button fx:id="btnGuiYKien" onAction="#xuLyGuiYKien" text="Gửi" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <columnConstraints>
                <ColumnConstraints />
                <ColumnConstraints />
@@ -93,11 +93,11 @@
                 </ComboBox>
 
                 <!-- Nút Làm mới -->
-                <Button fx:id="btnLamMoi" onAction="#handleLamMoi" text="Làm mới" />
+                <Button fx:id="btnLamMoi" onAction="#xuLyLamMoi" text="Làm mới" />
 
                 <!-- Đẩy thanh tìm kiếm sang phải -->
                 <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnTim" onAction="#handleTim" text="Tìm" />
+                <Button fx:id="btnTim" onAction="#xuLyTimKiem" text="Tìm" />
                 <TextField fx:id="txtSearch" promptText="Tìm kiếm..." />
             </HBox>
 

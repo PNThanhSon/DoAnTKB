@@ -59,8 +59,8 @@ public class ThemMonHocController {
     }
 
     @FXML
-    private void handleThem() {
-        if (validateInputs()) {
+    private void xuLyLuuMoi() {
+        if (kiemTraHopLe()) {
             MonHoc newMonHoc = new MonHoc(txtMaMH.getText().trim(), txtTenMH.getText().trim(), comboKhoi.getValue(), null);
             ToChuyenMon selectedTCM = comboToChuyenMon.getValue();
             if (selectedTCM != null) {
@@ -92,11 +92,11 @@ public class ThemMonHocController {
     }
 
     @FXML
-    private void handleHuy() {
+    private void xuLyHuy() {
         dialogStage.close();
     }
 
-    private boolean validateInputs() {
+    private boolean kiemTraHopLe() {
         resetErrorMessages();
         boolean isValid = true;
 

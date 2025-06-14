@@ -74,7 +74,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
             <Text fx:id="txtThongBao" style="-fx-fill: green;" HBox.hgrow="ALWAYS" />
-            <Button onAction="#handleThem" text="Thêm Môn Học" />
+            <Button onAction="#moCuaSoThemMonHoc" text="Thêm Môn Học" />
             <Button onAction="#handleLamMoi" text="Làm Mới" />
         </HBox>
     </bottom>

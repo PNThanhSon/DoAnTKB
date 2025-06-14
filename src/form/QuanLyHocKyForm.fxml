@@ -65,7 +65,7 @@
             <Label text="Năm học:" GridPane.columnIndex="4" GridPane.rowIndex="0"/> <!-- Thêm Label cho Năm học -->
             <TextField fx:id="txtNamHoc" prefWidth="100" GridPane.columnIndex="5" GridPane.rowIndex="0"/> <!-- Thêm TextField cho Năm học -->
 
-            <Button fx:id="btnThem" text="Thêm" minWidth="80" onAction="#handleThemHocKy" GridPane.columnIndex="6" GridPane.rowIndex="0"/>
+            <Button fx:id="btnThem" text="Thêm" minWidth="80" onAction="#xuLyThem" GridPane.columnIndex="6" GridPane.rowIndex="0"/>
         </GridPane>
     </bottom>
 </BorderPane>

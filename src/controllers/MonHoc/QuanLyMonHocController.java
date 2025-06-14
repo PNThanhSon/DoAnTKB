@@ -117,10 +117,10 @@ public class QuanLyMonHocController {
     private void initContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem suaItem = new MenuItem("Sửa thông tin");
-        suaItem.setOnAction(event -> handleSua());
+        suaItem.setOnAction(event -> moCuaSoSuaMonHoc());
 
         MenuItem xoaItem = new MenuItem("Xóa môn học");
-        xoaItem.setOnAction(event -> handleXoa());
+        xoaItem.setOnAction(event -> xuLyXoaMonHoc());
 
         contextMenu.getItems().addAll(suaItem, xoaItem);
         tableMonHoc.setContextMenu(contextMenu);
@@ -152,7 +152,7 @@ public class QuanLyMonHocController {
     }
 
     @FXML
-    private void handleThem() {
+    private void moCuaSoThemMonHoc() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/MHform/ThemMonHocForm.fxml"));
             Parent root = loader.load();
@@ -176,7 +176,7 @@ public class QuanLyMonHocController {
         }
     }
 
-    private void handleSua() {
+    private void moCuaSoSuaMonHoc() {
         MonHoc selectedMonHoc = tableMonHoc.getSelectionModel().getSelectedItem();
         if (selectedMonHoc == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn một môn học để sửa.");
@@ -190,7 +190,7 @@ public class QuanLyMonHocController {
             SuaMonHocController controller = loader.getController();
             Stage stage = new Stage();
             controller.setDialogStage(stage);
-            controller.setMonHocToEdit(selectedMonHoc); // Pass the selected subject
+            controller.khoiTaoDuLieuSua(selectedMonHoc); // Pass the selected subject
             controller.setOnSuccess(() -> {
                 loadMonHocData();
                 showThongBao("Cập nhật môn học thành công!");
@@ -207,7 +207,7 @@ public class QuanLyMonHocController {
         }
     }
 
-    private void handleXoa() {
+    private void xuLyXoaMonHoc() {
         MonHoc selectedMonHoc = tableMonHoc.getSelectionModel().getSelectedItem();
         if (selectedMonHoc == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn một môn học để xóa.");

@@ -75,8 +75,8 @@ public class ThemLopHocController {
     }
 
     @FXML
-    private void handleThem() {
-        if (validateInputs()) { // Kiểm tra dữ liệu nhập
+    private void xuLyLuuMoi() {
+        if (kiemTraHopLe()) { // Kiểm tra dữ liệu nhập
             Lop newLopHoc = new Lop(txtMaLop.getText().trim().toUpperCase(), txtTenLop.getText().trim(), comboKhoi.getValue(), null);
 
             GiaoVien selectedGVCN = comboGVCN.getValue();
@@ -106,11 +106,11 @@ public class ThemLopHocController {
     }
 
     @FXML
-    private void handleHuy() {
+    private void xuLyHuy() {
         dialogStage.close(); // Đóng dialog khi hủy
     }
 
-    private boolean validateInputs() {
+    private boolean kiemTraHopLe() {
         resetErrorMessages(); // Xóa các thông báo lỗi cũ
         boolean isValid = true;
 

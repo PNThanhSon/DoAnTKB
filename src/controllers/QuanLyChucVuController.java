@@ -39,13 +39,13 @@ public class QuanLyChucVuController {
         tableChucVu.setRowFactory(tv->{
             TableRow<ChucVu> row=new TableRow<>();
             MenuItem del=new MenuItem("🗑 Xoá");
-            del.setOnAction(e->{ tableChucVu.getSelectionModel().select(row.getIndex()); handleXoaChucVu();});
+            del.setOnAction(e->{ tableChucVu.getSelectionModel().select(row.getIndex()); xuLyXoa();});
             row.contextMenuProperty().bind(
                     Bindings.when(row.emptyProperty()).then((ContextMenu)null).otherwise(new ContextMenu(del)));
             return row;
         });
 
-        loadData();
+        taiDuLieu();
 
         filtered=new FilteredList<>(dsChucVu,p->true);
         txtSearch.textProperty().addListener((o,oldV,n)->{
@@ -71,7 +71,7 @@ public class QuanLyChucVuController {
             MenuItem miDel =new MenuItem("🗑 Xoá");
             miDel.setOnAction(e->{
                 tableChucVu.getSelectionModel().select(cell.getIndex());
-                handleXoaChucVu();
+                xuLyXoa();
             });
             cell.setContextMenu(new ContextMenu(miEdit,miDel));
             return cell;
@@ -96,7 +96,7 @@ public class QuanLyChucVuController {
     }
 
     /* ===== load / add / delete (giữ nguyên) ===== */
-    private void loadData(){
+    private void taiDuLieu(){
         dsChucVu.clear();
         String sql="SELECT MaCV,TenCV FROM CHUCVU ORDER BY MaCV";
         try(Connection c=DatabaseConnection.getConnection();
@@ -106,7 +106,7 @@ public class QuanLyChucVuController {
         }catch(SQLException e){ error(e);}
     }
 
-    @FXML private void handleThemChucVu(){
+    @FXML private void xuLyThem(){
         String ma=txtMaCV.getText().trim();
         String ten=txtTenCV.getText().trim();
         if(ma.isEmpty()||ten.isEmpty()){ warn("Nhập đủ Mã & Tên"); return;}
@@ -119,7 +119,7 @@ public class QuanLyChucVuController {
         }catch(SQLIntegrityConstraintViolationException d){ warn("Mã đã tồn tại!"); }
         catch(SQLException e){ error(e);}
     }
-    private void handleXoaChucVu(){
+    private void xuLyXoa(){
         ChucVu sel=tableChucVu.getSelectionModel().getSelectedItem();
         if(sel==null){ warn("Chọn 1 hàng để xoá"); return;}
         if(!confirm("Xoá?","Chắc xoá \""+sel.getMaCV()+"\"?")) return;

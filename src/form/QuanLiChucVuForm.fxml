@@ -51,7 +51,7 @@
             <Label text="Mã:" /><TextField fx:id="txtMaCV" prefWidth="100" />
             <Label text="Tên:" /><TextField fx:id="txtTenCV" prefWidth="180" />
 
-            <Button fx:id="btnThem" minWidth="80" onAction="#handleThemChucVu" text="Thêm" />
+            <Button fx:id="btnThem" minWidth="80" onAction="#xuLyThem" text="Thêm" />
         </HBox>
     </bottom>
 </BorderPane>

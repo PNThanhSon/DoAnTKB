@@ -54,7 +54,7 @@ public class SuaMonHocController {
         this.onSuccess = onSuccess;
     }
 
-    public void setMonHocToEdit(MonHoc monHoc) {
+    public void khoiTaoDuLieuSua(MonHoc monHoc) {
         this.monHocToEdit = monHoc;
         populateForm();
     }
@@ -79,8 +79,8 @@ public class SuaMonHocController {
     }
 
     @FXML
-    private void handleLuu() {
-        if (validateInputs()) {
+    private void xuLyLuuThayDoi() {
+        if (kiemTraHopLe()) {
             monHocToEdit.setTenMH(txtTenMH.getText().trim());
             monHocToEdit.setKhoi(comboKhoi.getValue());
             ToChuyenMon selectedTCM = comboToChuyenMon.getValue();
@@ -105,11 +105,11 @@ public class SuaMonHocController {
     }
 
     @FXML
-    private void handleHuy() {
+    private void xuLyHuy() {
         dialogStage.close();
     }
 
-    private boolean validateInputs() {
+    private boolean kiemTraHopLe() {
         resetErrorMessages();
         boolean isValid = true;
 

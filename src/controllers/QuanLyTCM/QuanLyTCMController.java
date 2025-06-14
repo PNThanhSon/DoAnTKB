@@ -11,23 +11,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -99,13 +91,13 @@ public class QuanLyTCMController {
     /* ------------------------------------------------------------------------*/
     private void initContextMenuTCM() {
         MenuItem xemItem = new MenuItem("Xem danh sách");
-        xemItem.setOnAction(event -> handle_Xemdsgv());
+        xemItem.setOnAction(event -> xuLyXemGiaoVienTrongTo());
 
         MenuItem suaItem = new MenuItem("Sửa tên tổ");
         suaItem.setOnAction(event -> handle_Sua());
 
         MenuItem xoaItem = new MenuItem("Xóa tổ ");
-        xoaItem.setOnAction(event -> handle_Xoa());
+        xoaItem.setOnAction(event -> xuLyXoaTCM());
 
         contextMenutcm.getItems().addAll(xemItem, suaItem, xoaItem);
 
@@ -115,19 +107,19 @@ public class QuanLyTCMController {
     private void initContextMenuGV() {
         MenuItem promote1 = new MenuItem("Bổ nhiệm tổ trưởng");
         promote1.setOnAction(event -> {
-            try { handlePromote(true);}
+            try { xuLyBoNhiem(true);}
             catch (SQLException e) { throw new RuntimeException(e);}
         });
 
         MenuItem promote2 = new MenuItem("Bổ nhiệm tổ phó");
         promote2.setOnAction(event -> {
-            try { handlePromote(false);}
+            try { xuLyBoNhiem(false);}
             catch (SQLException e) { throw new RuntimeException(e);}
         });
 
         MenuItem xoaItem = new MenuItem("Xóa khỏi tổ");
         xoaItem.setOnAction(event -> {
-            try { handle_Xoagv();}
+            try { xuLyXoaGVKhoiTo();}
             catch (SQLException e) { throw new RuntimeException(e);}
         });
 
@@ -152,7 +144,7 @@ public class QuanLyTCMController {
             ToChuyenMon tcm = event.getRowValue();
             String newValue = event.getNewValue();
             tcm.setTenTCM(newValue.trim());
-            if (newValue.trim().equals("") || newValue.isEmpty()) {
+            if (newValue.trim().isEmpty() || newValue.isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Thông tin trống", "Nhập đầy đủ!!");
 
             } else {
@@ -221,7 +213,7 @@ public class QuanLyTCMController {
         reloadALL();
     }
     @FXML
-    private void handleThem() {
+    private void xuLyThemTCM() {
         ToChuyenMon newTCM = new ToChuyenMon("", "","","", 0); // chỉ cần tên TCM
         danhSachToChuyenMonCurrent.add(newTCM);
 
@@ -249,7 +241,7 @@ public class QuanLyTCMController {
 
 
     // nút được tạo trong controller
-    private void handle_Xoa() {
+    private void xuLyXoaTCM() {
         ToChuyenMon selected = tableToChuyenMon.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn tổ chuyên môn để xóa.");
@@ -270,7 +262,7 @@ public class QuanLyTCMController {
             }
         }
     }
-    private void handle_Xemdsgv() {
+    private void xuLyXemGiaoVienTrongTo() {
         searchFieldgv.clear();
         updateFilterPredicateGV();
         infoFormID.setExpanded(true);
@@ -282,7 +274,7 @@ public class QuanLyTCMController {
 
     /* ------------------------menu giao vien----------------------------------*/
     /* ------------------------------------------------------------------------*/
-    private void handle_Xoagv() throws SQLException {
+    private void xuLyXoaGVKhoiTo() throws SQLException {
         GiaoVien gv = tableGiaoVien.getSelectionModel().getSelectedItem();
         ToChuyenMon tcm = tableToChuyenMon.getSelectionModel().getSelectedItem();
         int selectedIndex = tableToChuyenMon.getSelectionModel().getSelectedIndex();
@@ -313,7 +305,7 @@ public class QuanLyTCMController {
     }
 
     // bổ nhiệm tổ trưởng, tổ phó
-    private void handlePromote(Boolean c) throws SQLException {
+    private void xuLyBoNhiem(Boolean c) throws SQLException {
         ToChuyenMon tcm = tableToChuyenMon.getSelectionModel().getSelectedItem();
         GiaoVien gv = tableGiaoVien.getSelectionModel().getSelectedItem();
         if (tcm == null) {
@@ -409,12 +401,9 @@ public class QuanLyTCMController {
     private void updateFilterPredicateTCM() {
         String keyword = searchField.getText().trim().toUpperCase();
 //        String tenTCM = ListToChuyenMon.getValue();
-        filteredListTCM.setPredicate(tcm -> {
-            boolean matchSearch = keyword.isEmpty() ||
-                    tcm.getMaTCM().trim().toUpperCase().contains(keyword) ||
-                    tcm.getTenTCM().trim().toUpperCase().contains(keyword);
-            return matchSearch ;
-        });
+        filteredListTCM.setPredicate(tcm -> keyword.isEmpty() ||
+                tcm.getMaTCM().trim().toUpperCase().contains(keyword) ||
+                tcm.getTenTCM().trim().toUpperCase().contains(keyword));
     }
     private void updateFilterPredicateGV() {
         String keyword = searchFieldgv.getText().trim().toUpperCase();

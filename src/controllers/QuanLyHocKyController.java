@@ -59,7 +59,7 @@ public class QuanLyHocKyController {
             MenuItem delMenuItem = new MenuItem("🗑 Xoá học kỳ này");
             delMenuItem.setOnAction(e -> {
                 if (row.getItem() != null) {
-                    handleXoaHocKy(row.getItem());
+                    xuLyXoa(row.getItem());
                 }
             });
             row.contextMenuProperty().bind(
@@ -68,7 +68,7 @@ public class QuanLyHocKyController {
             return row;
         });
 
-        loadDataFromDatabase();
+        taiDuLieu();
 
         // Cấu hình tìm kiếm
         filteredHocKyList = new FilteredList<>(dsHocKy, p -> true);
@@ -94,7 +94,7 @@ public class QuanLyHocKyController {
         txtNamHoc.setPromptText("Ví dụ: 2024-2025");
     }
 
-    private void loadDataFromDatabase() {
+    private void taiDuLieu() {
         dsHocKy.clear();
         List<HocKy> hocKyListFromDB = hocKyDAO.getAllHocKy();
         if (hocKyListFromDB != null && !hocKyListFromDB.isEmpty()) {
@@ -173,7 +173,7 @@ public class QuanLyHocKyController {
     }
 
     @FXML
-    private void handleThemHocKy() {
+    private void xuLyThem() {
         String maHK = txtMaHk.getText().trim();
         String tenHK = txtHK.getText().trim();
         String namHoc = txtNamHoc.getText().trim();
@@ -210,7 +210,7 @@ public class QuanLyHocKyController {
         }
     }
 
-    private void handleXoaHocKy(HocKy selectedHocKy) {
+    private void xuLyXoa(HocKy selectedHocKy) {
         if (selectedHocKy == null) {
             // Trường hợp này không nên xảy ra nếu gọi từ context menu của một hàng có item
             warn("Không có học kỳ nào được chọn để xoá.");

@@ -68,7 +68,7 @@ public class QuanLyLopHocController {
             public String toString(GiaoVien gv) {
                 // If gv is null, it represents the "Tất cả" option
                 if (gv == null) return "Tất cả";
-                // Otherwise, display teacher's full name and MaGV
+
                 return gv.getHoGV() + " " + gv.getTenGV() + " (" + gv.getMaGV() + ")";
             }
 
@@ -134,10 +134,10 @@ public class QuanLyLopHocController {
     private void initContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem suaItem = new MenuItem("Sửa thông tin lớp");
-        suaItem.setOnAction(event -> handleSua());
+        suaItem.setOnAction(event -> moCuaSoSuaLop());
 
         MenuItem xoaItem = new MenuItem("Xóa lớp học");
-        xoaItem.setOnAction(event -> handleXoa());
+        xoaItem.setOnAction(event -> xuLyXoaLop());
 
         contextMenu.getItems().addAll(suaItem, xoaItem);
         tableLopHoc.setContextMenu(contextMenu);
@@ -157,7 +157,6 @@ public class QuanLyLopHocController {
     private void handleLamMoi() {
         searchField.clear();
         comboKhoiFilter.setValue("Tất cả");
-        // Set comboGVCNFilter back to "Tất cả" (which is represented by null)
         comboGVCNFilter.setValue(null);
 
         loadLopHocData();
@@ -165,7 +164,7 @@ public class QuanLyLopHocController {
     }
 
     @FXML
-    private void handleThem() {
+    private void moCuaSoThemLop() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/LHform/ThemLopHocForm.fxml"));
             Parent root = loader.load();
@@ -189,7 +188,7 @@ public class QuanLyLopHocController {
         }
     }
 
-    private void handleSua() {
+    private void moCuaSoSuaLop() {
         Lop selectedLopHoc = tableLopHoc.getSelectionModel().getSelectedItem();
         if (selectedLopHoc == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn một lớp học để sửa.");
@@ -203,7 +202,7 @@ public class QuanLyLopHocController {
             SuaLopHocController controller = loader.getController();
             Stage stage = new Stage();
             controller.setDialogStage(stage);
-            controller.setLopHocToEdit(selectedLopHoc);
+            controller.khoiTaoDuLieuSua(selectedLopHoc);
             controller.setOnSuccess(() -> {
                 loadLopHocData();
                 showThongBao("Cập nhật lớp học thành công!");
@@ -220,7 +219,7 @@ public class QuanLyLopHocController {
         }
     }
 
-    private void handleXoa() {
+    private void xuLyXoaLop() {
         Lop selectedLopHoc = tableLopHoc.getSelectionModel().getSelectedItem();
         if (selectedLopHoc == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn một lớp học để xóa.");

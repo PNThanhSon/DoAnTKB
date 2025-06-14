@@ -302,11 +302,11 @@ public class MainFormController {
             Parent PhanHoiYKienRoot = loader.load();
 
             PhanHoiYKienController phanHoiYKienController = loader.getController();
-            phanHoiYKienController.getGiaoVienData(loggedInGiaoVien);
+            phanHoiYKienController.khoiTaoDuLieu(loggedInGiaoVien);
 
             // Ẩn các chức năng không được quyền, bảo mật fontend
             if (!loggedInGiaoVien.isAdmin()) {
-                phanHoiYKienController.ishideFuntion();
+                phanHoiYKienController.thietLapGiaoDienTheoQuyen();
             }
 
             if (mainBorderPane != null) {

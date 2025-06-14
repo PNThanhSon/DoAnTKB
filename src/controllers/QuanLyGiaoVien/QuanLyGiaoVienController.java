@@ -62,7 +62,7 @@ public class QuanLyGiaoVienController {
         Platform.runLater(() -> QLGVBorderPane.requestFocus()); // tránh focus vào ô nhập liệu
         setupTableColumns(); // property để tự động update dữ liệu vào bảng
         setupComboBox();
-        loadDataFromDB();
+        taiDuLieu();
         initContextMenu();
 
         // Gắn bộ lọc khi người dùng nhập
@@ -73,10 +73,10 @@ public class QuanLyGiaoVienController {
 
     private void initContextMenu() {
         MenuItem suaItem = new MenuItem("Sửa thông tin");
-        suaItem.setOnAction(event -> handle_Sua());
+        suaItem.setOnAction(event -> moCuaSoSuaGV());
 
         MenuItem xoaItem = new MenuItem("Xóa giáo viên");
-        xoaItem.setOnAction(event -> handle_Xoa());
+        xoaItem.setOnAction(event -> xuLyXoaGV());
 
         contextMenu.getItems().addAll(suaItem, xoaItem);
 
@@ -106,7 +106,7 @@ public class QuanLyGiaoVienController {
     }
 
 
-    private void loadDataFromDB() {
+    private void taiDuLieu() {
         try {
             danhSachGiaoVienCurrent.setAll(giaoVienDAO.TracuuGiaoVien(""));
             FXCollections.sort(danhSachGiaoVienCurrent, Comparator.comparing(GiaoVien::getMaGV));
@@ -158,10 +158,10 @@ public class QuanLyGiaoVienController {
         searchField.clear();
         fieldQuydinh.clear();
         ListGioiTinh.setValue("Tất cả");
-        loadDataFromDB();
+        taiDuLieu();
     }
     @FXML
-    private void handleThem() {
+    private void moCuaSoThemGV() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/QuanLyGiaoVien/ThemGVForm.fxml"));
             Parent root = loader.load();
@@ -170,7 +170,7 @@ public class QuanLyGiaoVienController {
 
             // Gửi callback để cập nhật và reload lại dữ liệu
             controller.setOnSuccess(() -> {
-                loadDataFromDB();
+                taiDuLieu();
                 updateFilterPredicate();
                 showThongBao("Thêm thành công!");
             });
@@ -187,7 +187,7 @@ public class QuanLyGiaoVienController {
     }
 
     // nút được tạo trong controller
-    private void handle_Sua() {
+    private void moCuaSoSuaGV() {
         GiaoVien selected = tableGiaoVien.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn giáo viên để sửa.");
@@ -199,11 +199,11 @@ public class QuanLyGiaoVienController {
             Parent root = loader.load();
 
             SuaThongtinGVController controller = loader.getController();
-            controller.getGiaoVien(selected);
+            controller.khoiTaoDuLieuSua(selected);
 
             // Gửi callback để cập nhật và reload lại dữ liệu
             controller.setOnSuccess(() -> {
-                loadDataFromDB();
+                taiDuLieu();
                 updateFilterPredicate();
                 showThongBao("Sửa thành công!");
             });
@@ -220,7 +220,7 @@ public class QuanLyGiaoVienController {
     }
 
     // nút được tạo trong controller
-    private void handle_Xoa() {
+    private void xuLyXoaGV() {
         GiaoVien selected = tableGiaoVien.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "Chưa chọn", "Vui lòng chọn giáo viên để xóa.");
@@ -233,7 +233,7 @@ public class QuanLyGiaoVienController {
         if (result.isPresent() && result.get() == ButtonType.YES) {
             try {
                 giaoVienDAO.xoaGiaoVien(selected);
-                loadDataFromDB();
+                taiDuLieu();
                 updateFilterPredicate();
                 showThongBao("Xóa thành công!");
                 showAlert(Alert.AlertType.INFORMATION, "Đã xóa", "Giáo viên đã bị xóa.");
